@@ -18,11 +18,7 @@ class Model(object):
     implements(IModel)
 
     def __init__( self, *args, **kw ):
-        self._filename = kw.pop('filename',None)
-        self._storage_type = kw.pop('storage',None)
-
-        # make sure at least one field is the primary key
-        #assert any( [field.primary_key for name,field in self.fields.items()] )
+        pass
 
     def __str__(self):
         return "<{}: {}>".format(self.name, self.pk)
@@ -43,11 +39,17 @@ class Model(object):
 
     @property
     def filename(self):
-        return self._filename
+        try:
+            return self.Meta.filename
+        except AttributeError:
+            return None
 
     @property
     def storage(self):
-        return self._storage_type
+        try:
+            return self.Meta.storage
+        except AttributeError:
+            return None
 
     @property
     def fields(self):

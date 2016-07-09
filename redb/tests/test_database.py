@@ -6,10 +6,11 @@ import datetime as dt
 
 from redb.database import IDatabase, Database
 from redb.model import IModel, Model
-from redb.storage import JSONStorage
+from redb.storage import JSONStorage, TextStorage
 from redb import fields
 
 class MyModel( Model ):
+
     int_type = fields.IntField()
     str_type = fields.StringField()
     date_type  = fields.DateField()
@@ -52,7 +53,34 @@ class TestDatabase( unittest.TestCase ):
     def test_4(self):
         "test overriding filenames"
 
-        model = MyModel(filename='foo.bar')
+        class MyModel( Model ):
+
+            class Meta:
+                filename = 'foo.bar'
+
+            int_type = fields.IntField()
+            str_type = fields.StringField()
+            date_type  = fields.DateField()
+
+        model = MyModel()
         db = Database( models=[model], storage=JSONStorage, root_dir=curr_dir)
 
         self.assertEqual( os.path.join(curr_dir,'foo.bar'), db.get_filename(model) )
+
+    def test_5(self):
+        "test overriding storage"
+
+        class MyModel( Model ):
+
+            class Meta:
+                filename = 'foo.bar'
+                storage = TextStorage
+
+            int_type = fields.IntField()
+            str_type = fields.StringField()
+            date_type  = fields.DateField()
+
+        model = MyModel()
+        db = Database( models=[model], storage=JSONStorage, root_dir=curr_dir)
+
+        self.assertEqual( TextStorage, db.get_storage(model) )
