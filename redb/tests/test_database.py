@@ -9,6 +9,13 @@ from redb.table import ITable, Table
 from redb.storage import JSONStorage
 from redb import fields
 
+class MyTable( Table ):
+    int_type = fields.IntField()
+    str_type = fields.StringField()
+    date_type  = fields.DateField()
+
+curr_dir = os.path.dirname( os.path.abspath( __file__ ) )
+
 class TestTable( unittest.TestCase ):
 
     def test_1(self):
@@ -28,9 +35,6 @@ class TestTable( unittest.TestCase ):
         "test setting values"
         class Foo(object): pass
 
-        class MyTable(Table):
-            pass
-
         table = MyTable()
         db = Database( tables=[table], storage=Foo, root_dir='/foo')
         self.assertTrue( table in db.tables )
@@ -40,22 +44,14 @@ class TestTable( unittest.TestCase ):
     def test_3(self):
         "test filenames"
 
-        class MyTable(Table):
-            pass
-
-        curr_dir = os.path.dirname( os.path.abspath( __file__ ) )
         table = MyTable()
         db = Database( tables=[table], storage=JSONStorage, root_dir=curr_dir)
 
         self.assertEqual( os.path.join(curr_dir,'MyTable.json'), db.get_filename(table) )
 
     def test_4(self):
-        "test filenames"
+        "test overriding filenames"
 
-        class MyTable(Table):
-            pass
-
-        curr_dir = os.path.dirname( os.path.abspath( __file__ ) )
         table = MyTable(filename='foo.bar')
         db = Database( tables=[table], storage=JSONStorage, root_dir=curr_dir)
 
