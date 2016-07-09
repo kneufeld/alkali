@@ -22,7 +22,11 @@ class Field(object):
             self._value = None
 
         self._primary_key = kw.pop('primary_key', False)
+
         # if we're a primary key then we must have a value
+        # unfortunately we can't enforce this otherwise we could not
+        # make an empty object
+        #
         # assert not self.primary_key or self.value is not None
 
         self._modified = False

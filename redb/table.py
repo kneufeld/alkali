@@ -19,6 +19,9 @@ class Table(object):
         self.__get_fields()
         self.__set_fields(**kw)
 
+        # make sure at least one field is the primary key
+        #assert any( [field.primary_key for name,field in self.fields.items()] )
+
     def __get_fields(self):
         # the interesting fields are attached to the class, not
         # the instance, copy them into self._fields
