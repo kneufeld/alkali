@@ -3,38 +3,24 @@ import copy
 import os
 
 from .fields import Field
+from .metatable import MetaTable
 
 class ITable( Interface ):
 
-    modified   = Attribute("are any fields dirty")
-    fields     = Attribute("the dict of fields")
+    pass
+    # modified   = Attribute("are any fields dirty")
+    # fields     = Attribute("the dict of fields")
 
 class Table(object):
+    __metaclass__ = MetaTable
     implements(ITable)
 
     def __init__( self, *args, **kw ):
         self._filename = kw.pop('filename',None)
         self._storage_type = kw.pop('storage',None)
 
-        self._fields = {}
-        self.__get_fields()
-        self.__set_fields(**kw)
-
         # make sure at least one field is the primary key
         #assert any( [field.primary_key for name,field in self.fields.items()] )
-
-    def __get_fields(self):
-        # the interesting fields are attached to the class, not
-        # the instance, copy them into self._fields
-        for k,v in self.__class__.__dict__.items():
-            if isinstance( v, Field ):
-                self._fields[k] = copy.deepcopy(v)
-                setattr(self,k, self._fields[k] )
-
-    def __set_fields(self, **kw):
-        for k,v in kw.items():
-            if k in self.fields:
-                getattr(self,k).value = kw.pop(k)
 
     def __str__(self):
         try:
@@ -66,7 +52,8 @@ class Table(object):
     @property
     def pk(self):
         """return the primary key or a tuple of them"""
-        pks = [field for name,field in self.fields.items() if field.primary_key]
+        pks = [name for name,field in self.fields.items() if field.primary_key]
+        pks = map( lambda name: getattr(self, name), pks )
         if len(pks) == 1:
             return pks[0]
         return tuple(pks)

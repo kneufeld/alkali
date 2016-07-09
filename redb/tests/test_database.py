@@ -16,7 +16,7 @@ class MyTable( Table ):
 
 curr_dir = os.path.dirname( os.path.abspath( __file__ ) )
 
-class TestTable( unittest.TestCase ):
+class TestDatabase( unittest.TestCase ):
 
     def test_1(self):
         "verify class/instance implementation"
