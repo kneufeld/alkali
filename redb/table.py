@@ -34,6 +34,17 @@ class Table(object):
         return self.__class__.__name__
 
     @property
+    def schema(self):
+        ret = "<{} {{".format(self.name)
+
+        for k,v in self.fields.items():
+            nice_type = v.field_type.__name__
+            ret += '{}:{}, '.format(k,nice_type)
+
+        ret += "}>"
+        return ret
+
+    @property
     def filename(self):
         return self._filename
 
