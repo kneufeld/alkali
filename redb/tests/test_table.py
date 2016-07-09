@@ -9,7 +9,7 @@ from redb import fields
 from redb import tznow
 
 class MyTable( Table ):
-    int_type = fields.IntField()
+    int_type = fields.IntField(primary_key=True)
     str_type = fields.StringField()
     dt_type  = fields.DateField()
 
@@ -64,8 +64,13 @@ class TestTable( unittest.TestCase ):
         self.assertEqual( 1, t.int_type.value )
         #self.assertTrue( t.modified ) # FIXME
 
-        t.set('int_type', 2)
+        t.int_type.value = 2
 
         self.assertTrue( t.fields['int_type'].modified ) # extraneous
         self.assertTrue( t.modified )
-        self.assertEqual( 2, t.get('int_type') )
+        self.assertEqual( 2, t.int_type.value )
+
+    def test_7(self):
+        "find the primary key"
+        t=MyTable()
+        self.assertEqual( t.int_type, t.pk )

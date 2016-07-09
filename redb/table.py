@@ -36,9 +36,7 @@ class Table(object):
                 getattr(self,k).value = kw.pop(k)
 
     def __str__(self):
-        return "<{name} {fname}>".format(
-                name=self.__class__.__name__, fname=self.filename
-                )
+        return "<{name} {fname}>".format(name=self.name, fname=self.filename)
 
     @property
     def name(self):
@@ -59,3 +57,11 @@ class Table(object):
     @property
     def modified(self):
         return any( [field.modified for name,field in self.fields.items()] )
+
+    @property
+    def pk(self):
+        """return the primary key or a tuple of them"""
+        pks = [field for name,field in self.fields.items() if field.primary_key]
+        if len(pks) == 1:
+            return pks[0]
+        return tuple(pks)
