@@ -67,6 +67,14 @@ class Model(object):
         """return the primary key or a tuple of them"""
         pks = [name for name,field in self.fields.items() if field.primary_key]
         pks = map( lambda name: getattr(self, name), pks )
+
         if len(pks) == 1:
             return pks[0]
+
         return tuple(pks)
+
+    @property
+    def dict(self):
+
+        return { name: field.dumps( getattr(self,name) )
+                for name, field in self.fields.items() }

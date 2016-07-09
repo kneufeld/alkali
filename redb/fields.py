@@ -1,13 +1,19 @@
 from zope.interface import Interface, Attribute, implements
 import datetime as dt
+import dateutil.parser
 
 from . import tzadd
 
 class IField( Interface ):
 
     field_type = Attribute("the type of the field, str, int, list, etc")
-    value      = Attribute("the value of the field as self.type")
+    value      = Attribute("a json serializable version of current value")
 
+    def dumps(value):
+        "method to serialize the value"
+
+    def loads(value):
+        "method to load the value"
 
 class Field(object):
     """
@@ -70,6 +76,13 @@ class Field(object):
     def primary_key(self):
         return self._primary_key
 
+    @classmethod
+    def dumps(cls, value):
+        return value
+
+    @classmethod
+    def loads(cls, value):
+        return value
 
 class IntField(Field):
 
@@ -99,3 +112,23 @@ class DateField(Field):
         self._value = value
 
         self._modified = True
+
+    @classmethod
+    def dumps(cls, value):
+        if value is None:
+            return 'null'
+        return value.isoformat()
+
+    @classmethod
+    def loads(cls, date):
+        if date is None or date == 'null':
+            return None
+
+        # assume date is in isoformat, this preserves timezone info
+        if type(date) in [unicode,str]:
+            date = dateutil.parser.parse(date)
+
+        if date.tzinfo is None:
+            date = tzadd( date )
+
+        return date

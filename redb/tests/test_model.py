@@ -70,28 +70,50 @@ class TestModel( unittest.TestCase ):
     def test_6(self):
         "test modified flag"
 
-        t = MyModel(int_type=1)
-        self.assertFalse( t.modified )
+        m = MyModel(int_type=1)
+        self.assertFalse( m.modified )
 
         return # FIXME
 
-        self.assertEqual( int, type(t.int_type) )
-        self.assertEqual( fields.IntField, type(t.fields['int_type']) )
-        self.assertEqual( 1, t.int_type )
-        self.assertTrue( t.modified )
+        self.assertEqual( int, type(m.int_type) )
+        self.assertEqual( fields.IntField, type(m.fields['int_type']) )
+        self.assertEqual( 1, m.int_type )
+        self.assertTrue( m.modified )
 
-        t.int_type = 2
+        m.int_type = 2
 
-        self.assertTrue( t.fields['int_type'].modified ) # extraneous
-        self.assertTrue( t.modified )
-        self.assertEqual( 2, t.int_type )
+        self.assertTrue( m.fields['int_type'].modified ) # extraneous
+        self.assertTrue( m.modified )
+        self.assertEqual( 2, m.int_type )
 
     def test_7(self):
         "find the primary key"
-        t=MyModel()
-        self.assertEqual( t.int_type, t.pk )
+        m=MyModel()
+        self.assertEqual( m.int_type, m.pk )
 
     def test_8(self):
         "find the filename and str"
-        t=MyModel()
-        self.assertTrue( t.name in str(t) )
+        m=MyModel()
+        self.assertTrue( m.name in str(m) )
+
+    def test_9(self):
+        "test dict"
+
+        now = tznow()
+        m = MyModel(int_type=3, str_type='string', dt_type=now )
+
+        d={'int_type':3, 'str_type':'string', 'dt_type':now.isoformat()}
+        self.assertDictEqual( d, m.dict )
+
+    def test_10(self):
+        "test dumps/loads"
+
+        now = tznow()
+        m1 = MyModel( int_type=3, str_type='string', dt_type=now )
+
+        d = m1.dict
+        self.assertTrue( d )
+
+        m2 = MyModel( **d )
+
+        self.assertDictEqual( m1.dict, m2.dict )

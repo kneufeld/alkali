@@ -54,6 +54,7 @@ class MetaModel(type):
         obj = type.__call__(self, *args, **kw)
 
         for name, value in fields.items():
+            value = self._fields[name].loads(value)
             setattr(obj, name, value)
 
         return obj
