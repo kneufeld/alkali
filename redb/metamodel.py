@@ -8,35 +8,35 @@ from .fields import Field
 #
 # remember that `type` is actually a class like `str` and `int`
 # so you can inherit from it
-class MetaTable(type):
+class MetaModel(type):
 
     # __new__ is the method called before __init__
-    # meta_class is _this_ class, aka: MetaTable
-    # this makes a new MetaTable instance, I'm not sure why we want to
+    # meta_class is _this_ class, aka: MetaModel
+    # this makes a new MetaModel instance, I'm not sure why we want to
     # do that
     def __new__(meta_class, name, bases, attrs):
         #print "__new__ cls:",type(meta_class),meta_class,name
-        super_new = super(MetaTable, meta_class).__new__
+        super_new = super(MetaModel, meta_class).__new__
 
         # Also ensure initialization is only performed for subclasses of Model
-        # (excluding Model class itself). This keeps all of Tables attrs intact.
-        parents = [b for b in bases if isinstance(b, MetaTable)]
+        # (excluding Model class itself). This keeps all of Models attrs intact.
+        parents = [b for b in bases if isinstance(b, MetaModel)]
         if not parents:
             new_class = super_new(meta_class, name, bases, attrs)
             #meta_class._add_fields( new_class, {}, {} )
             return new_class
 
-        # new_class is an instance of 'name' (aka Table) whose type is MetaTable
+        # new_class is an instance of 'name' (aka Model) whose type is MetaModel
         new_class = super_new(meta_class, name, bases, {})
         # print "new_class", type(new_class), new_class
-        # new_class <class 'redb.metatable.MetaTable'> <class 'redb.metatable.MyTable'>
+        # new_class <class 'redb.metamodel.MetaModel'> <class 'redb.metamodel.MyModel'>
 
         new_class._prepare( attrs )
         #new_class._meta.apps.register_model(new_class._meta.app_label, new_class)
 
         return new_class
 
-    # creates a new instance of derived table
+    # creates a new instance of derived model
     def __call__(self, *args, **kw):
         #print "__call__ self:",type(self),self
         # First, create the object in the normal default way.

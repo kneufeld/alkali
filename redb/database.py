@@ -4,53 +4,53 @@ from collections import OrderedDict
 import os
 
 from .storage import JSONStorage
-from .table import Table
+from .model import Model
 from .fields import Field
 
 class IDatabase( Interface ):
 
-    tables   = Attribute("the dict of tables")
+    models   = Attribute("the dict of models")
 
 class Database(object):
     implements(IDatabase)
 
-    def __init__( self, tables=[], *args, **kw ):
+    def __init__( self, models=[], *args, **kw ):
 
-        self._tables = OrderedDict()
-        for table in tables:
-            self._tables[table.name] = table
+        self._models = OrderedDict()
+        for model in models:
+            self._models[model.name] = model
 
         self._storage_type = kw.pop('storage', JSONStorage)
         self._root_dir = kw.pop('root_dir', '.')
 
     @property
-    def tables(self):
-        return self._tables.values()
+    def models(self):
+        return self._models.values()
 
-    def get_filename(self, table):
+    def get_filename(self, model):
         """
-        allow tables to specify their own filename or use
+        allow models to specify their own filename or use
         storage extension default
         """
         ext = self._storage_type.extension
-        filename = table.filename or "{}.{}".format(table.name,ext)
+        filename = model.filename or "{}.{}".format(model.name,ext)
         return os.path.join( self._root_dir, filename )
 
-    def get_storage(self, table):
+    def get_storage(self, model):
         """
-        allow tables to specify their own storage or use
+        allow models to specify their own storage or use
         database default
         """
-        return table.storage or self._storage_type
+        return model.storage or self._storage_type
 
     def load(self):
         """
-        load the data for each table
+        load the data for each model
         """
         records = OrderedDict()
 
-        for table in self.tables:
-            storage = self.get_storage(table)
+        for model in self.models:
+            storage = self.get_storage(model)
             for record in storage.read():
-                instance = table.__class__(**record)
+                instance = model.__class__(**record)
                 records[ instance.pk ] = instance

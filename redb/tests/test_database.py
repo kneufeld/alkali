@@ -5,11 +5,11 @@ from zope.interface.verify import verifyObject, verifyClass
 import datetime as dt
 
 from redb.database import IDatabase, Database
-from redb.table import ITable, Table
+from redb.model import IModel, Model
 from redb.storage import JSONStorage
 from redb import fields
 
-class MyTable( Table ):
+class MyModel( Model ):
     int_type = fields.IntField()
     str_type = fields.StringField()
     date_type  = fields.DateField()
@@ -35,24 +35,24 @@ class TestDatabase( unittest.TestCase ):
         "test setting values"
         class Foo(object): pass
 
-        table = MyTable()
-        db = Database( tables=[table], storage=Foo, root_dir='/foo')
-        self.assertTrue( table in db.tables )
+        model = MyModel()
+        db = Database( models=[model], storage=Foo, root_dir='/foo')
+        self.assertTrue( model in db.models )
         self.assertEqual( Foo, db._storage_type )
         self.assertEqual( '/foo', db._root_dir )
 
     def test_3(self):
         "test filenames"
 
-        table = MyTable()
-        db = Database( tables=[table], storage=JSONStorage, root_dir=curr_dir)
+        model = MyModel()
+        db = Database( models=[model], storage=JSONStorage, root_dir=curr_dir)
 
-        self.assertEqual( os.path.join(curr_dir,'MyTable.json'), db.get_filename(table) )
+        self.assertEqual( os.path.join(curr_dir,'MyModel.json'), db.get_filename(model) )
 
     def test_4(self):
         "test overriding filenames"
 
-        table = MyTable(filename='foo.bar')
-        db = Database( tables=[table], storage=JSONStorage, root_dir=curr_dir)
+        model = MyModel(filename='foo.bar')
+        db = Database( models=[model], storage=JSONStorage, root_dir=curr_dir)
 
-        self.assertEqual( os.path.join(curr_dir,'foo.bar'), db.get_filename(table) )
+        self.assertEqual( os.path.join(curr_dir,'foo.bar'), db.get_filename(model) )

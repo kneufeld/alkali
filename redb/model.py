@@ -3,17 +3,17 @@ import copy
 import os
 
 from .fields import Field
-from .metatable import MetaTable
+from .metamodel import MetaModel
 
-class ITable( Interface ):
+class IModel( Interface ):
 
     pass
     # modified   = Attribute("are any fields dirty")
     # fields     = Attribute("the dict of fields")
 
-class Table(object):
-    __metaclass__ = MetaTable
-    implements(ITable)
+class Model(object):
+    __metaclass__ = MetaModel
+    implements(IModel)
 
     def __init__( self, *args, **kw ):
         self._filename = kw.pop('filename',None)
