@@ -38,14 +38,13 @@ class Model(object):
 
     @property
     def schema(self):
-        ret = "<{} {{".format(self.name)
 
-        for k,v in self.fields.items():
-            nice_type = v.field_type.__name__
-            ret += '{}:{}, '.format(k,nice_type)
+        fields = ", ".join(
+                [ "{}:{}".format(name, field.field_type.__name__)
+                  for name, field in self.fields.items() ]
+                )
+        return "<{} {}>".format(self.name, fields)
 
-        ret += "}>"
-        return ret
 
     @property
     def filename(self):
