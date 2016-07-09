@@ -8,6 +8,9 @@ from redb.table import ITable, Table
 from redb import fields
 from redb import tznow
 
+class EmptyTable(Table):
+    pass
+
 class MyTable( Table ):
     int_type = fields.IntField(primary_key=True)
     str_type = fields.StringField()
@@ -19,18 +22,18 @@ class TestTable( unittest.TestCase ):
         "verify class/instance implementation"
         self.assertTrue( verifyClass(ITable, Table) )
 
-        t = Table()
+        t = EmptyTable()
         self.assertTrue( verifyObject(ITable, t) )
+        self.assertEqual( "EmptyTable", t.name )
 
     def test_2(self):
         "empty fields by default"
-        self.assertEqual( 0, len(Table().fields) )
+        self.assertEqual( 0, len(EmptyTable().fields) )
 
     def test_3(self):
         "lets make some fields"
         t = MyTable()
         self.assertEqual( 3, len(t.fields) )
-        self.assertEqual( "MyTable", t.name )
 
     def test_4(self):
         "set fields in init"

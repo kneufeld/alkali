@@ -54,7 +54,7 @@ class Table(object):
 
     @property
     def fields(self):
-        return self._fields
+        return self.__class__._fields
 
     @property
     def modified(self):

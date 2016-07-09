@@ -23,6 +23,26 @@ curr_dir = os.path.dirname( os.path.abspath( __file__ ) )
 class TestMetaTable( unittest.TestCase ):
 
     def test_1(self):
-        "verify class/instance implementation"
+        "verify attributes on class, not instance"
 
-        t1 = MyTable()
+        cls = MyTable
+        self.assertTrue( hasattr(cls, '_fields') )
+        self.assertTrue( hasattr(cls, 'objects') )
+        self.assertTrue( hasattr(cls, 'Meta') )
+
+    def test_2(self):
+        "verify attributes on class, not instance"
+
+        class EmptyTable(Table):
+            pass
+
+        cls = EmptyTable
+        self.assertTrue( hasattr(cls, '_fields') )
+        self.assertTrue( hasattr(cls, 'objects') )
+        self.assertTrue( hasattr(cls, 'Meta') )
+
+    def test_3(self):
+        "verify that Meta.ordering works"
+
+        t = MyTable()
+        self.assertEqual( MyTable.Meta.ordering, t.fields.keys() )

@@ -4,6 +4,7 @@ import copy
 from .fields import Field
 
 # from: http://stackoverflow.com/questions/12006267/how-do-django-models-work
+# from: lib/python2.7/site-packages/django/db/models/base.py
 #
 # remember that `type` is actually a class like `str` and `int`
 # so you can inherit from it
@@ -22,7 +23,7 @@ class MetaTable(type):
         parents = [b for b in bases if isinstance(b, MetaTable)]
         if not parents:
             new_class = super_new(meta_class, name, bases, attrs)
-            meta_class.add_fields( new_class, {}, {} )
+            #meta_class._add_fields( new_class, {}, {} )
             return new_class
 
         # new_class is an instance of 'name' (aka Table) whose type is MetaTable
@@ -30,10 +31,9 @@ class MetaTable(type):
         # print "new_class", type(new_class), new_class
         # new_class <class 'redb.metatable.MetaTable'> <class 'redb.metatable.MyTable'>
 
-        meta = attrs.pop('Meta', {})
-        meta_class.add_fields( new_class, meta, attrs )
+        new_class._prepare( attrs )
+        #new_class._meta.apps.register_model(new_class._meta.app_label, new_class)
 
-        assert hasattr(new_class,'_fields')
         return new_class
 
     # creates a new instance of derived table
@@ -51,7 +51,14 @@ class MetaTable(type):
 
         return obj
 
-    def add_fields( new_class, meta, attrs):
+    def _prepare( new_class, attrs ):
+        meta = attrs.pop('Meta', {})
+        setattr( new_class, 'Meta', meta )
+
+        new_class._add_fields( new_class.Meta, attrs )
+        new_class._add_manager( new_class.Meta, attrs )
+
+    def _add_fields( new_class, meta, attrs):
         try:
             ordering = meta.ordering
         except AttributeError:
@@ -61,3 +68,8 @@ class MetaTable(type):
 
         for k in ordering:
             new_class._fields[k] = copy.deepcopy( attrs[k] )
+
+    def _add_manager( new_class, meta, attrs ):
+        class Manager():
+            pass
+        setattr( new_class, 'objects', Manager() )
