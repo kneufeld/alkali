@@ -48,3 +48,6 @@ class TestMetaModel( unittest.TestCase ):
         m1 = MyModel( int_type=3, str_type='string', dt_type=now )
 
         MyModel.objects.save(m1)
+
+        m2 = m1.objects.get(m1.pk)
+        self.assertDictEqual( m1.dict, m2.dict )
