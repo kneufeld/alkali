@@ -28,18 +28,13 @@ class Table(object):
         for k,v in self.__class__.__dict__.items():
             if isinstance( v, Field ):
                 self._fields[k] = copy.deepcopy(v)
+                setattr(self,k, self._fields[k] )
 
     def __set_fields(self, **kw):
         for k,v in kw.items():
             if k in self.fields:
-                self.fields[k].value = kw.pop(k)
+                getattr(self,k).value = kw.pop(k)
 
-    def __getattr__(self, name):
-        try:
-            fields = self.__dict__['fields']
-            return fields[name]
-        except KeyError:
-            raise AttributeError( 'no attribute %s' % name )
     def __str__(self):
         return "<{name} {fname}>".format(
                 name=self.__class__.__name__, fname=self.filename
