@@ -78,6 +78,5 @@ class MetaModel(type):
             new_class._fields[k] = copy.deepcopy( attrs[k] )
 
     def _add_manager( new_class, meta, attrs ):
-        class Manager():
-            pass
-        setattr( new_class, 'objects', Manager() )
+        from .manager import Manager
+        setattr( new_class, 'objects', Manager(new_class) )

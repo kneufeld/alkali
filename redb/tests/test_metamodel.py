@@ -38,5 +38,13 @@ class TestMetaModel( unittest.TestCase ):
     def test_3(self):
         "verify that Meta.ordering works"
 
-        t = MyModel()
-        self.assertEqual( MyModel.Meta.ordering, t.fields.keys() )
+        m = MyModel()
+        self.assertEqual( MyModel.Meta.ordering, m.fields.keys() )
+
+    def test_4(self):
+        "verify that Model.objects exists/works (a ModelManager)"
+
+        now = tznow()
+        m1 = MyModel( int_type=3, str_type='string', dt_type=now )
+
+        MyModel.objects.save(m1)
