@@ -25,11 +25,7 @@ class Model(object):
         #assert any( [field.primary_key for name,field in self.fields.items()] )
 
     def __str__(self):
-        try:
-            basename = ' ' + os.path.basename( self.filename )
-        except AttributeError:
-            basename = ''
-        return "<{name}{fname}>".format(name=self.name, fname=basename)
+        return "<{}: {}>".format(self.name, self.pk)
 
     @property
     def name(self):
