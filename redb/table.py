@@ -58,5 +58,4 @@ class Table(object):
 
     @property
     def modified(self):
-        return False
-        return any( [field.modifed for name,field in self.fields] )
+        return any( [field.modified for name,field in self.fields.items()] )

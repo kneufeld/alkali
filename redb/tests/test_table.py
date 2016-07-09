@@ -37,9 +37,9 @@ class TestTable( unittest.TestCase ):
         "lets set some fields"
         now = tznow()
         t = MyTable(int_type=3, str_type='string', dt_type=now )
-        self.assertEqual( 3, t.fields['int_type'].value )
-        self.assertEqual( 'string', t.fields['str_type'].value )
-        self.assertEqual( now, t.fields['dt_type'].value )
+        self.assertEqual( 3, t.int_type.value )
+        self.assertEqual( 'string', t.str_type.value )
+        self.assertEqual( now, t.dt_type.value )
 
     def test_5(self):
         "lets make a few instances to make sure there are no overwrites"
@@ -50,5 +50,22 @@ class TestTable( unittest.TestCase ):
         t1 = MyTable(int_type=1)
         t2 = MyTable(int_type=2)
 
-        self.assertEqual( 1, t1.fields['int_type'].value )
-        self.assertEqual( 2, t2.fields['int_type'].value )
+        self.assertEqual( 1, t1.int_type.value )
+        self.assertEqual( 2, t2.int_type.value )
+
+    def test_6(self):
+        "test modified flag"
+
+        t = MyTable(int_type=1)
+        #self.assertFalse( t.modified ) # FIXME
+
+        self.assertEqual( fields.IntField, type(t.int_type) )
+        self.assertEqual( fields.IntField, type(t.fields['int_type']) )
+        self.assertEqual( 1, t.int_type.value )
+        #self.assertTrue( t.modified ) # FIXME
+
+        t.set('int_type', 2)
+
+        self.assertTrue( t.fields['int_type'].modified ) # extraneous
+        self.assertTrue( t.modified )
+        self.assertEqual( 2, t.get('int_type') )
