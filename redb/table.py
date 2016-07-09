@@ -37,6 +37,10 @@ class Table(object):
             return fields[name]
         except KeyError:
             raise AttributeError( 'no attribute %s' % name )
+    def __str__(self):
+        return "<{name} {fname}>".format(
+                name=self.__class__.__name__, fname=self.filename
+                )
 
     @property
     def name(self):

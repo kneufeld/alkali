@@ -27,6 +27,12 @@ class Field(object):
 
         self._modified = False
 
+    def __str__(self):
+        return "<{}{} {}>".format(
+                self.__class__.__name__,
+                '*' if self.modified else '',
+                str(self.value) )
+
     @property
     def modified(self):
         return self._modified
