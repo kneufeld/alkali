@@ -7,9 +7,8 @@ from .metamodel import MetaModel
 
 class IModel( Interface ):
 
-    pass
-    # modified   = Attribute("are any fields dirty")
-    # fields     = Attribute("the dict of fields")
+    dict   = Attribute("represent our data as a dict")
+
 
 class Model(object):
     """

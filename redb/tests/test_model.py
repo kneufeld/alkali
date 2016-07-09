@@ -22,9 +22,11 @@ class TestModel( unittest.TestCase ):
         "verify class/instance implementation"
         self.assertTrue( verifyClass(IModel, Model) )
 
-        t = EmptyModel()
-        self.assertTrue( verifyObject(IModel, t) )
-        self.assertEqual( "EmptyModel", t.name )
+        m = EmptyModel()
+        self.assertTrue( verifyObject(IModel, m) )
+        self.assertEqual( "EmptyModel", m.name )
+
+        self.assertTrue( m.schema ) # make sure it doesn't blow up
 
     def test_2(self):
         "empty fields by default"
@@ -32,29 +34,29 @@ class TestModel( unittest.TestCase ):
 
     def test_3(self):
         "lets make some fields"
-        t = MyModel()
-        self.assertEqual( 3, len(t.fields) )
+        m = MyModel()
+        self.assertEqual( 3, len(m.fields) )
 
     def test_4(self):
         "set fields in init"
         now = tznow()
-        t = MyModel(int_type=3, str_type='string', dt_type=now )
-        self.assertEqual( 3, t.int_type )
-        self.assertEqual( 'string', t.str_type )
-        self.assertEqual( now, t.dt_type )
+        m = MyModel(int_type=3, str_type='string', dt_type=now )
+        self.assertEqual( 3, m.int_type )
+        self.assertEqual( 'string', m.str_type )
+        self.assertEqual( now, m.dt_type )
 
     def test_4a(self):
         "set fields after init"
-        t = MyModel()
+        m = MyModel()
         now = tznow()
 
-        t.int_type=3
-        t.str_type='string'
-        t.dt_type=now
+        m.int_type=3
+        m.str_type='string'
+        m.dt_type=now
 
-        self.assertEqual( 3, t.int_type )
-        self.assertEqual( 'string', t.str_type )
-        self.assertEqual( now, t.dt_type )
+        self.assertEqual( 3, m.int_type )
+        self.assertEqual( 'string', m.str_type )
+        self.assertEqual( now, m.dt_type )
 
     def test_5(self):
         "lets make a few instances to make sure there are no overwrites"
