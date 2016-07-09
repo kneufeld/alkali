@@ -1,5 +1,6 @@
 from zope.interface import Interface, Attribute, implements
 import copy
+import os
 
 from .fields import Field
 
@@ -36,7 +37,11 @@ class Table(object):
                 getattr(self,k).value = kw.pop(k)
 
     def __str__(self):
-        return "<{name} {fname}>".format(name=self.name, fname=self.filename)
+        try:
+            basename = ' ' + os.path.basename( self.filename )
+        except AttributeError:
+            basename = ''
+        return "<{name}{fname}>".format(name=self.name, fname=basename)
 
     @property
     def name(self):

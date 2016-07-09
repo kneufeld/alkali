@@ -74,3 +74,8 @@ class TestTable( unittest.TestCase ):
         "find the primary key"
         t=MyTable()
         self.assertEqual( t.int_type, t.pk )
+
+    def test_8(self):
+        "find the filename and str"
+        t=MyTable()
+        self.assertTrue( t.name in str(t) )
