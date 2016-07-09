@@ -10,6 +10,10 @@ class IField( Interface ):
 
 
 class Field(object):
+    """
+    base class for all field types. it tries to hold all the functionality
+    so derived classes only need to override methods in special circumstances.
+    """
     implements(IField)
 
     def __init__(self, field_type, value=None, *args, **kw):

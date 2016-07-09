@@ -9,6 +9,13 @@ from .fields import Field
 # remember that `type` is actually a class like `str` and `int`
 # so you can inherit from it
 class MetaModel(type):
+    """
+    base class for Models. this complicated metaclass is required to convert
+    a stylized class into a useful concrete one.
+
+    it converts Field() variables into their base types as attributes on the
+    instantiated class.
+    """
 
     # __new__ is the method called before __init__
     # meta_class is _this_ class, aka: MetaModel

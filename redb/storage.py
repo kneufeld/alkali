@@ -19,6 +19,11 @@ class IStorage( Interface ):
         """
 
 class Storage(object):
+    """
+    this class determines the on-disk representation of the database. it
+    could write out objects as json or plain txt or binary, that's up to
+    the implementation and should be transparent to any models.
+    """
 
     def __init__(self, filename ):
         self._filename = filename

@@ -12,6 +12,10 @@ class IDatabase( Interface ):
     models   = Attribute("the dict of models")
 
 class Database(object):
+    """
+    This is the glue object that owns and coordinates all the different
+    classes and objects.
+    """
     implements(IDatabase)
 
     def __init__( self, models=[], *args, **kw ):

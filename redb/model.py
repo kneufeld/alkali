@@ -12,6 +12,9 @@ class IModel( Interface ):
     # fields     = Attribute("the dict of fields")
 
 class Model(object):
+    """
+    main class for any database. this holds the actual data of the database.
+    """
     __metaclass__ = MetaModel
     implements(IModel)
 
