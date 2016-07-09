@@ -12,6 +12,8 @@ class Table(object):
     implements(ITable)
 
     def __init__( self, *args, **kw ):
+        self._filename = kw.pop('filename',None)
+
         self._fields = {}
         self.__get_fields()
 
@@ -25,6 +27,10 @@ class Table(object):
     @property
     def name(self):
         return self.__class__.__name__
+
+    @property
+    def filename(self):
+        return self._filename
 
     @property
     def fields(self):

@@ -29,4 +29,5 @@ class Database(object):
 
     def get_filename(self, table):
         ext = self._storage_type.extension
-        return os.path.join( self._root_dir, "{}.{}".format(table.name,ext) )
+        filename = table.filename or "{}.{}".format(table.name,ext)
+        return os.path.join( self._root_dir, filename )

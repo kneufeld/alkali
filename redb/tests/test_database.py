@@ -48,3 +48,15 @@ class TestTable( unittest.TestCase ):
         db = Database( tables=[table], storage=JSONStorage, root_dir=curr_dir)
 
         self.assertEqual( os.path.join(curr_dir,'MyTable.json'), db.get_filename(table) )
+
+    def test_4(self):
+        "test filenames"
+
+        class MyTable(Table):
+            pass
+
+        curr_dir = os.path.dirname( os.path.abspath( __file__ ) )
+        table = MyTable(filename='foo.bar')
+        db = Database( tables=[table], storage=JSONStorage, root_dir=curr_dir)
+
+        self.assertEqual( os.path.join(curr_dir,'foo.bar'), db.get_filename(table) )
