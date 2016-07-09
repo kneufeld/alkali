@@ -9,14 +9,8 @@ from redb.model import IModel, Model
 from redb.metamodel import MetaModel
 from redb.storage import JSONStorage
 from redb import fields
-
-class MyModel( Model ):
-    class Meta:
-        ordering = ['int_type','str_type','date_type']
-
-    int_type = fields.IntField()
-    str_type = fields.StringField()
-    date_type  = fields.DateField()
+from redb import tznow
+from . import MyModel
 
 curr_dir = os.path.dirname( os.path.abspath( __file__ ) )
 

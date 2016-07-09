@@ -8,12 +8,7 @@ from redb.database import IDatabase, Database
 from redb.model import IModel, Model
 from redb.storage import JSONStorage, TextStorage
 from redb import fields
-
-class MyModel( Model ):
-
-    int_type = fields.IntField()
-    str_type = fields.StringField()
-    date_type  = fields.DateField()
+from . import MyModel
 
 curr_dir = os.path.dirname( os.path.abspath( __file__ ) )
 
@@ -73,7 +68,6 @@ class TestDatabase( unittest.TestCase ):
         class MyModel( Model ):
 
             class Meta:
-                filename = 'foo.bar'
                 storage = TextStorage
 
             int_type = fields.IntField()

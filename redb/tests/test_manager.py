@@ -10,13 +10,7 @@ from redb.storage import JSONStorage
 from redb import fields
 from redb import tznow
 
-class EmptyModel(Model):
-    pass
-
-class MyModel( Model ):
-    int_type = fields.IntField(primary_key=True)
-    str_type = fields.StringField()
-    dt_type  = fields.DateField()
+from . import EmptyModel, MyModel
 
 class TestManager( unittest.TestCase ):
 
