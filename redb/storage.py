@@ -18,11 +18,7 @@ class IStorage( Interface ):
         up to implementer but likely you want to write out to filename
         """
 
-
-class JSONStorage(object):
-    implements(IStorage)
-
-    extension = 'json'
+class Storage(object):
 
     def __init__(self, filename ):
         self._filename = filename
@@ -31,16 +27,49 @@ class JSONStorage(object):
     def filename(self):
         return self._filename
 
-    def read(self):
+    def _read(self):
         with open( self.filename, 'r' ) as f:
-            data = f.read()
-            return json.loads(data)
+            return f.read()
+
+    def _write(self, data):
+        if data is None:
+            return False
+
+        with open( self.filename, 'w' ) as f:
+            f.write( bytes(data) )
+
+        return True
+
+class TextStorage(Storage):
+    """
+    just a plain reader/writer, no parsing
+    """
+    implements(IStorage)
+
+    extension = 'txt'
+
+    def read(self):
+        return self._read()
 
     def write(self, data):
         if data is None:
             return False
 
-        with open( self.filename, 'w' ) as f:
-            f.write( json.dumps(data) )
+        return self._write( bytes(data) )
 
-        return True
+
+class JSONStorage(Storage):
+    implements(IStorage)
+
+    extension = 'json'
+
+    def read(self):
+        data = self._read()
+        return json.loads(data)
+
+    def write(self, data):
+        if data is None:
+            return False
+
+        data = json.dumps(data)
+        return self._write(data)

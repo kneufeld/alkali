@@ -3,7 +3,7 @@ import unittest
 import tempfile
 from zope.interface.verify import verifyObject, verifyClass
 
-from redb.storage import IStorage, JSONStorage
+from redb.storage import IStorage, JSONStorage, TextStorage
 
 class TestStorage( unittest.TestCase ):
 
@@ -11,8 +11,10 @@ class TestStorage( unittest.TestCase ):
         "verify class/instance implementation"
         self.assertTrue( verifyClass(IStorage, JSONStorage) )
 
-        storage = JSONStorage('')
-        self.assertTrue( verifyObject(IStorage, storage) )
+        for storage in [JSONStorage, TextStorage]:
+            self.assertTrue( verifyClass(IStorage, storage) )
+            s = storage('')
+            self.assertTrue( verifyObject(IStorage, s) )
 
     def test_2(self):
         "write should handle empty dicts vs None"
@@ -41,10 +43,3 @@ class TestStorage( unittest.TestCase ):
     def test_4(self):
         "make sure we're setting extension"
         self.assertEqual( 'json', JSONStorage.extension )
-
-    def test_5(self):
-        "make sure our filename ends with extension"
-
-        tfile = tempfile.NamedTemporaryFile()
-        storage = JSONStorage( tfile.name )
-        #self.assertTrue( storage.filename.endswith( storage.extension ) )
