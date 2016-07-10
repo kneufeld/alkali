@@ -31,13 +31,16 @@ class Database(object):
     def models(self):
         return self._models.values()
 
+    def get_model(self, model_name):
+        return self._models[model_name]
+
     def get_filename(self, model):
         """
         allow models to specify their own filename or use
         storage extension default
         """
         ext = self._storage_type.extension
-        filename = model.filename or "{}.{}".format(model.name,ext)
+        filename = model.Meta.filename or "{}.{}".format(model.name,ext)
         return os.path.join( self._root_dir, filename )
 
     def get_storage(self, model):

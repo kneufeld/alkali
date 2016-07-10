@@ -60,17 +60,25 @@ class MetaModel(type):
         return obj
 
     def _prepare( new_class, attrs ):
-        meta = attrs.pop('Meta', {})
+        class Object(object): pass
+
+        meta = attrs.pop( 'Meta', Object() )
         setattr( new_class, 'Meta', meta )
+
+        if not hasattr(new_class.Meta, 'filename'):
+            new_class.Meta.filename = ''
+
+        if not hasattr(new_class.Meta, 'storage'):
+            new_class.Meta.storage = ''
+
+        if not hasattr(new_class.Meta, 'ordering'):
+            new_class.Meta.ordering = []
 
         new_class._add_fields( new_class.Meta, attrs )
         new_class._add_manager( new_class.Meta, attrs )
 
     def _add_fields( new_class, meta, attrs):
-        try:
-            ordering = meta.ordering
-        except AttributeError:
-            ordering = [k for k,v in attrs.items() if isinstance(v,Field)]
+        ordering = meta.ordering or [k for k,v in attrs.items() if isinstance(v,Field)]
 
         setattr(new_class, '_fields', OrderedDict())
 

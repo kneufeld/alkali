@@ -36,21 +36,6 @@ class Model(object):
                 )
         return "<{} {}>".format(self.name, fields)
 
-
-    @property
-    def filename(self):
-        try:
-            return self.__class__.Meta.filename
-        except AttributeError:
-            return None
-
-    @property
-    def storage(self):
-        try:
-            return self.__class__.Meta.storage
-        except AttributeError:
-            return None
-
     @property
     def fields(self):
         return self.__class__._fields
