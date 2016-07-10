@@ -39,7 +39,7 @@ class Database(object):
         allow models to specify their own filename or use
         storage extension default
         """
-        ext = self._storage_type.extension
+        ext = self.get_storage(model).extension
         filename = model.Meta.filename or "{}.{}".format(model.name,ext)
         return os.path.join( self._root_dir, filename )
 
