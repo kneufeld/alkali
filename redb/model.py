@@ -38,18 +38,21 @@ class Model(object):
         return "<{} {}>".format(self.name, fields)
 
     @property
-    def fields(self):
-        return self.__class__._fields
-
-    @property
     def modified(self):
         return any( [field.modified for name,field in self.fields.items()] )
 
     @property
+    def fields(self):
+        return self.__class__._fields
+
+    @property
+    def pk_fields(self):
+        return [name for name,field in self.fields.items() if field.primary_key]
+
+    @property
     def pk(self):
-        """return the primary key or a tuple of them"""
-        pks = [name for name,field in self.fields.items() if field.primary_key]
-        pks = map( lambda name: getattr(self, name), pks )
+        """return the primary key value or a tuple of them"""
+        pks = map( lambda name: getattr(self, name), self.pk_fields )
 
         if len(pks) == 1:
             return pks[0]
