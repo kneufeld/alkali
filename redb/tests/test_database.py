@@ -81,7 +81,6 @@ class TestDatabase( unittest.TestCase ):
         self.assertEqual( TextStorage, db.get_storage(model) )
 
     def test_get_models(self):
-        print MyModel.name
         db = Database( models=[MyModel] )
         self.assertTrue( db.get_model('MyModel') )
 

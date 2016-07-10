@@ -3,12 +3,11 @@ import copy
 import os
 
 from .model import Model
+from .query import IQuery, Query
 
 class IManager( Interface ):
 
     pass
-    # modified   = Attribute("are any fields dirty")
-    # fields     = Attribute("the dict of fields")
 
 class Manager(object):
     """
@@ -34,8 +33,9 @@ class Manager(object):
     def name(self):
         return "{}Manager".format(self._model_class.__name__)
 
-    def get(self, pk):
-        return self._instances[pk]
+    @property
+    def instances(self):
+        return self._instances
 
     def save(self, instance):
         assert instance.pk is not None
@@ -61,3 +61,20 @@ class Manager(object):
         for elem in data:
             m = self._model_class( **elem )
             self.save(m)
+
+    def get(self, *args, **kw):
+        if len(args):
+            kw['pk'] = args[0]
+
+        results = Query(self).filter(**kw).instances
+
+        if len(results) > 1:
+            raise KeyError("got more than 1 result")
+
+        if not results:
+            raise KeyError("got no results")
+
+        return results[0]
+
+    def filter(self, **kw):
+        return Query(self).filter(**kw)
