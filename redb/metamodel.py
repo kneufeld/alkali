@@ -65,6 +65,8 @@ class MetaModel(type):
         meta = attrs.pop( 'Meta', Object() )
         setattr( new_class, 'Meta', meta )
 
+        setattr( new_class, 'name', new_class.__name__ )
+
         if not hasattr(new_class.Meta, 'filename'):
             new_class.Meta.filename = ''
 

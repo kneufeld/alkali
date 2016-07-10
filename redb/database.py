@@ -48,16 +48,22 @@ class Database(object):
         allow models to specify their own storage or use
         database default
         """
-        return model.storage or self._storage_type
+        return model.Meta.storage or self._storage_type
+
+    def store(self):
+        """
+        save the data for each model
+        """
+        for model in self.models:
+            filename = self.get_filename(model)
+            storage = self.get_storage(model)(filename)
+            model.objects.store(storage)
 
     def load(self):
         """
         load the data for each model
         """
-        records = OrderedDict()
-
         for model in self.models:
-            storage = self.get_storage(model)
-            for record in storage.read():
-                instance = model.__class__(**record)
-                records[ instance.pk ] = instance
+            filename = self.get_filename(model)
+            storage = self.get_storage(model)(filename)
+            model.objects.load(storage)

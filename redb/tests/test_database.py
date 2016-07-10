@@ -8,6 +8,7 @@ from redb.database import IDatabase, Database
 from redb.model import IModel, Model
 from redb.storage import JSONStorage, TextStorage
 from redb import fields
+from redb import tznow
 from . import MyModel
 
 curr_dir = os.path.dirname( os.path.abspath( __file__ ) )
@@ -78,3 +79,44 @@ class TestDatabase( unittest.TestCase ):
         db = Database( models=[model], storage=JSONStorage, root_dir=curr_dir)
 
         self.assertEqual( TextStorage, db.get_storage(model) )
+
+    def test_get_models(self):
+        print MyModel.name
+        db = Database( models=[MyModel] )
+        self.assertTrue( db.get_model('MyModel') )
+
+    def test_6(self):
+        "test saving/loading"
+
+        tfile = tempfile.NamedTemporaryFile()
+
+        class MyModel( Model ):
+            class Meta:
+                ordering = ['int_type','str_type','dt_type']
+                filename = tfile.name
+
+            int_type = fields.IntField(primary_key=True)
+            str_type = fields.StringField()
+            dt_type  = fields.DateField()
+
+        db = Database( models=[MyModel] )
+        man = MyModel.objects
+
+        now = tznow()
+        instances = [ MyModel(int_type=i, str_type='string', dt_type=now ) for i in range(3)]
+
+        for inst in instances:
+            man.save(inst)
+
+        db.store()
+        self.assertTrue( os.path.getsize(tfile.name) )
+
+        # with open(tfile.name,'r') as f:
+        #     print f.read()
+
+        db = Database( models=[MyModel] )
+        db.load()
+
+        # not sure if this is a valid test, MyModel.objects is still around
+        model = db.get_model('MyModel')
+        self.assertEqual( 3, len(model.objects) )
