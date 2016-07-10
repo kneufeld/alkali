@@ -11,6 +11,9 @@ from . import EmptyModel, MyModel
 
 class TestModel( unittest.TestCase ):
 
+    def tearDown(self):
+        MyModel.objects.clear()
+
     def test_1(self):
         "verify class/instance implementation"
         self.assertTrue( verifyClass(IModel, Model) )
@@ -112,3 +115,18 @@ class TestModel( unittest.TestCase ):
         m2 = MyModel( **d )
 
         self.assertDictEqual( m1.dict, m2.dict )
+
+    def test_11(self):
+        "test save to manager"
+
+        self.assertEqual(0, len(MyModel.objects) )
+
+        now = tznow()
+        m1 = MyModel( int_type=3, str_type='string', dt_type=now )
+
+        m1.save()
+        self.assertEqual(1, len(MyModel.objects) )
+
+        m1.str_type = 'new string'
+        m1.save()
+        self.assertEqual(1, len(MyModel.objects) )

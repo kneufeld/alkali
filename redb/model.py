@@ -61,3 +61,6 @@ class Model(object):
 
         return { name: field.dumps( getattr(self,name) )
                 for name, field in self.fields.items() }
+
+    def save(self):
+        self.__class__.objects.save(self)

@@ -41,6 +41,9 @@ class Manager(object):
         assert instance.pk is not None
         self._instances[ instance.pk ] = instance
 
+    def clear(self):
+        self._instances = {}
+
     def delete(self, instance):
         try:
             del self._instances[ instance.pk ]
