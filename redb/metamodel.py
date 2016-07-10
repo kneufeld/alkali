@@ -48,13 +48,13 @@ class MetaModel(type):
         #print "__call__ self:",type(self),self
         # First, create the object in the normal default way.
         fields={}
-        for name, field in self._fields.items():
+        for name, field in self.Meta.fields.items():
             fields[name] = kw.pop(name, None)#field.field_type())
 
         obj = type.__call__(self, *args, **kw)
 
         for name, value in fields.items():
-            value = self._fields[name].loads(value)
+            value = self.Meta.fields[name].loads(value)
             setattr(obj, name, value)
 
         return obj
@@ -80,12 +80,24 @@ class MetaModel(type):
         new_class._add_manager( new_class.Meta, attrs )
 
     def _add_fields( new_class, meta, attrs):
+        "put fields in meta class"
         ordering = meta.ordering or [k for k,v in attrs.items() if isinstance(v,Field)]
 
-        setattr(new_class, '_fields', OrderedDict())
+        setattr(meta, 'fields', OrderedDict())
 
-        for k in ordering:
-            new_class._fields[k] = copy.deepcopy( attrs[k] )
+        for field in ordering:
+            meta.fields[field] = copy.deepcopy( attrs[field] )
+
+        """
+    @property
+    def fields(self):
+        return self.__class__._fields
+
+    @property
+    def pk_fields(self):
+        return [name for name,field in self.fields.items() if field.primary_key]
+    """
+
 
     def _add_manager( new_class, meta, attrs ):
         from .manager import Manager

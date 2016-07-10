@@ -20,9 +20,9 @@ class TestMetaModel( unittest.TestCase ):
         "verify attributes on class, not instance"
 
         cls = MyModel
-        self.assertTrue( hasattr(cls, '_fields') )
         self.assertTrue( hasattr(cls, 'objects') )
         self.assertTrue( hasattr(cls, 'Meta') )
+        self.assertTrue( hasattr(cls.Meta, 'fields') )
 
     def test_2(self):
         "verify attributes on class, not instance"
@@ -31,9 +31,9 @@ class TestMetaModel( unittest.TestCase ):
             pass
 
         cls = EmptyModel
-        self.assertTrue( hasattr(cls, '_fields') )
         self.assertTrue( hasattr(cls, 'objects') )
         self.assertTrue( hasattr(cls, 'Meta') )
+        self.assertTrue( hasattr(cls.Meta, 'fields') )
 
     def test_3(self):
         "verify that Meta.ordering works"

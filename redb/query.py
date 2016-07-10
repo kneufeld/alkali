@@ -29,7 +29,7 @@ class Query(object):
     @property
     def fields(self):
         "helper to get dict of model fields"
-        return self.model_class._fields
+        return self.model_class.Meta.fields
 
     @property
     def model_class(self):
@@ -41,7 +41,7 @@ class Query(object):
 
     def filter(self, **kw):
         def pk_fields(model_class):
-            return [name for name,field in model_class._fields.items() if field.primary_key]
+            return [name for name,field in model_class.Meta.fields.items() if field.primary_key]
 
         if 'pk' in kw:
             query = kw.pop('pk')

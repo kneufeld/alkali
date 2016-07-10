@@ -43,11 +43,11 @@ class Model(object):
 
     @property
     def fields(self):
-        return self.__class__._fields
+        return self.Meta.fields
 
     @property
     def pk_fields(self):
-        return [name for name,field in self.fields.items() if field.primary_key]
+        return [name for name,field in self.Meta.fields.items() if field.primary_key]
 
     @property
     def pk(self):
