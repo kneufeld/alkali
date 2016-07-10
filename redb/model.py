@@ -30,10 +30,11 @@ class Model(object):
     @property
     def schema(self):
 
-        fields = ", ".join(
-                [ "{}:{}".format(name, field.field_type.__name__)
-                  for name, field in self.fields.items() ]
-                )
+        def fmt(name, field):
+            return "{}:{}".format(name, field.field_type.__name__)
+
+        name_type = [ fmt(n,f) for n,f in self.fields.items() ]
+        fields = ", ".join( name_type )
         return "<{} {}>".format(self.name, fields)
 
     @property
