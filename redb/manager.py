@@ -30,6 +30,10 @@ class Manager(object):
         return len(self._instances)
 
     @property
+    def count(self):
+        return len(self)
+
+    @property
     def name(self):
         return "{}Manager".format(self._model_class.__name__)
 

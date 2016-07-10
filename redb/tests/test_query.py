@@ -132,3 +132,19 @@ class TestQuery( unittest.TestCase ):
 
         q = MyModel.objects.filter(int_type__gt=0).filter(int_type=1)
         self.assertEqual( 1, len(q) )
+
+    def test_30(self):
+        "test query iteration"
+
+        now = tznow()
+        instances = [ MyModel(int_type=i, str_type='string', dt_type=now ) for i in range(3)]
+
+        for inst in instances:
+            inst.save()
+
+        q = MyModel.objects.filter()
+        c = 0
+        for i in q:
+            c += 1
+
+        self.assertEqual( 3, c )
