@@ -38,7 +38,7 @@ class Manager(object):
         return self._instances[pk]
 
     def save(self, instance):
-        assert instance.pk
+        assert instance.pk is not None
         self._instances[ instance.pk ] = instance
 
     def delete(self, instance):
