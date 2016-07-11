@@ -86,7 +86,7 @@ class MetaModel(type):
         setattr(meta, 'fields', OrderedDict())
 
         for field in ordering:
-            meta.fields[field] = copy.deepcopy( attrs[field] )
+            meta.fields[field] = attrs[field]
 
         """
     @property
