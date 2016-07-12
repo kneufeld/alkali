@@ -30,16 +30,16 @@ class TestStorage( unittest.TestCase ):
         tfile = tempfile.NamedTemporaryFile()
         storage = JSONStorage( tfile.name )
 
-        d = [MyModel(int_type=1), MyModel(int_type=2)]
-        self.assertTrue( storage.write(d) )
+        entries = [MyModel(int_type=1), MyModel(int_type=2)]
+        self.assertTrue( storage.write(entries) )
 
         size = os.path.getsize(tfile.name)
         self.assertTrue( size > 0 )
 
-        data = [e for e in storage.read(MyModel)]
-        self.assertEqual( 2, len(data) )
+        loaded = [e for e in storage.read(MyModel)]
+        self.assertEqual( 2, len(loaded) )
 
-        for a,b in zip(d,data):
+        for a,b in zip(entries,loaded):
             self.assertDictEqual( a.dict, b.dict )
 
     def test_4(self):
