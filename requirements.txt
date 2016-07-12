@@ -1,0 +1,4 @@
+py==1.4.31
+python-dateutil==2.5.3
+six==1.10.0
+zope.interface==4.2.0
