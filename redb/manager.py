@@ -17,7 +17,7 @@ class Manager(object):
 
     def __init__( self, model_class, *args, **kw ):
         self._model_class = model_class
-        self._instances = {}
+        self.clear()
 
     def __str__(self):
         try:
@@ -64,11 +64,11 @@ class Manager(object):
                 yield elements[key]
 
         storage.write( dict_sorter(self._instances) )
-        #walker = iter(sorted(self._instances.iteritems()))
-        #storage.write( walker )
 
     def load(self, storage):
         "load all our instances from storage"
+
+        self.clear()
 
         for elem in storage.read( self._model_class ):
             self.save(elem)
