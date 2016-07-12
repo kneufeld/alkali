@@ -47,12 +47,11 @@ class Query(object):
         return self.fields.keys()
 
     def filter(self, **kw):
-        def pk_fields(model_class):
-            return [name for name,field in model_class.Meta.fields.items() if field.primary_key]
 
+        # TODO can only handle single pk field
         if 'pk' in kw:
             query = kw.pop('pk')
-            pk_field_name = pk_fields(self.model_class)[0]
+            pk_field_name = self.model_class.Meta.pk_fields[0]
             kw[pk_field_name] = query
 
         for field, query in kw.items():
