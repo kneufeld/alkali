@@ -67,9 +67,14 @@ class Query(object):
 
         return self
 
-    def _filter(self, name, oper, value, instances):
-        def func( oper, a, b ):
-            return oper(a,b)
+    def _filter(self, field, oper, value, instances):
 
-        oper = getattr(operator,oper)
-        return filter( lambda e: func(oper, getattr(e,name), value), instances)
+        def in_(coll, val):
+            return val in coll
+
+        if oper == 'in':
+            oper = in_
+        else:
+            oper = getattr(operator,oper)
+
+        return filter( lambda e: oper(getattr(e,field), value), instances)

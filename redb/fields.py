@@ -118,3 +118,10 @@ class DateField(Field):
 
         return value
 
+class SetField(Field):
+
+    def __init__(self, *args, **kw):
+        super(SetField, self).__init__(set, *args, **kw)
+
+    def cast(self, value):
+        return value
