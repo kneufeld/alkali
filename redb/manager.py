@@ -71,7 +71,12 @@ class Manager(object):
         self.clear()
 
         for elem in storage.read( self._model_class ):
+            if elem.pk in self._instances:
+                print str(elem)
+                raise RuntimeError('collision detected while loading file. pk: %s' % elem.pk)
             self.save(elem)
+
+        #print "loaded:",len(self._instances)
 
     def get(self, *args, **kw):
         if len(args):
