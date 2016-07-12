@@ -24,6 +24,10 @@ class Model(object):
         return "<{}: {}>".format(self.name, self.pk)
 
     @property
+    def meta(self):
+        return self.__class__.Meta
+
+    @property
     def name(self):
         return self.__class__.__name__
 
@@ -33,26 +37,18 @@ class Model(object):
         def fmt(name, field):
             return "{}:{}".format(name, field.field_type.__name__)
 
-        name_type = [ fmt(n,f) for n,f in self.fields.items() ]
+        name_type = [ fmt(n,f) for n,f in self.meta.fields.items() ]
         fields = ", ".join( name_type )
         return "<{} {}>".format(self.name, fields)
 
     @property
     def modified(self):
-        return any( [field.modified for name,field in self.fields.items()] )
-
-    @property
-    def fields(self):
-        return self.Meta.fields
-
-    @property
-    def pk_fields(self):
-        return [name for name,field in self.Meta.fields.items() if field.primary_key]
+        return any( [field.modified for name,field in self.meta.fields.items()] )
 
     @property
     def pk(self):
         """return the primary key value or a tuple of them"""
-        pks = map( lambda name: getattr(self, name), self.pk_fields )
+        pks = map( lambda name: getattr(self, name), self.meta.pk_fields )
 
         if len(pks) == 1:
             return pks[0]
@@ -63,7 +59,7 @@ class Model(object):
     def dict(self):
 
         return { name: field.dumps( getattr(self,name) )
-                for name, field in self.fields.items() }
+                for name, field in self.meta.fields.items() }
 
     def save(self):
         self.__class__.objects.save(self)

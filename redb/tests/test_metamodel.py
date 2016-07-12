@@ -37,9 +37,7 @@ class TestMetaModel( unittest.TestCase ):
 
     def test_3(self):
         "verify that Meta.ordering works"
-
-        m = MyModel()
-        self.assertEqual( MyModel.Meta.ordering, m.fields.keys() )
+        self.assertEqual( MyModel.Meta.ordering, MyModel.Meta.fields.keys() )
 
     def test_4(self):
         "verify that Model.objects exists/works (a ModelManager)"
@@ -56,4 +54,4 @@ class TestMetaModel( unittest.TestCase ):
         "verify meta.fields and meta.pk_fields"
 
         self.assertEqual( 3, len(MyModel.Meta.fields) )
-        self.assertEqual( 1, len(MyModel.Meta.pk_fields) )
+        self.assertEqual( 'int_type', MyModel.Meta.pk_fields[0] )

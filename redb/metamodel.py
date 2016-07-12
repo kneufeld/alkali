@@ -96,7 +96,6 @@ class MetaModel(type):
         # meta.pk_fields is a property
         meta.pk_fields = new_class.pk_fields
 
-
     def _add_manager( new_class, meta, attrs ):
         from .manager import Manager
         setattr( new_class, 'objects', Manager(new_class) )

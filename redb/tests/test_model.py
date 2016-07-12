@@ -26,12 +26,13 @@ class TestModel( unittest.TestCase ):
 
     def test_2(self):
         "empty fields by default"
-        self.assertEqual( 0, len(EmptyModel().fields) )
+        self.assertEqual( 0, len(EmptyModel.Meta.fields) )
 
     def test_3(self):
         "lets make some fields"
         m = MyModel()
-        self.assertEqual( 3, len(m.fields) )
+        self.assertEqual( 3, len(m.meta.fields) )
+        self.assertEqual( 3, len(MyModel.Meta.fields) )
 
     def test_4(self):
         "set fields in init"
