@@ -18,10 +18,26 @@ class Model(object):
     implements(IModel)
 
     def __init__( self, *args, **kw ):
-        pass
+        self._modified = False
 
     def __str__(self):
         return "<{}: {}>".format(self.name, self.pk)
+
+    def __setattr__(self, attr, val):
+        # if we're setting a field value and that value
+        # is not none then mark us as modified
+        if attr in self.meta.fields:
+            if hasattr(self,attr):
+                curr_val = getattr(self,attr)
+                if curr_val != val:
+                    self.__dict__['_modified'] = True
+            self.__dict__[attr] = self.meta.fields[attr].cast(val)
+        else:
+            self.__dict__[attr] = val
+
+    @property
+    def modified(self):
+        return self._modified
 
     @property
     def meta(self):
@@ -40,10 +56,6 @@ class Model(object):
         name_type = [ fmt(n,f) for n,f in self.meta.fields.items() ]
         fields = ", ".join( name_type )
         return "<{} {}>".format(self.name, fields)
-
-    @property
-    def modified(self):
-        return any( [field.modified for name,field in self.meta.fields.items()] )
 
     @property
     def pk(self):

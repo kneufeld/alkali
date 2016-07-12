@@ -69,21 +69,23 @@ class TestModel( unittest.TestCase ):
     def test_6(self):
         "test modified flag"
 
+        m = MyModel()
+        self.assertFalse( m.modified )
+
         m = MyModel(int_type=1)
         self.assertFalse( m.modified )
 
-        return # FIXME
+    def test_6a(self):
+        "test modified flag"
+
+        m = MyModel()
+
+        m.int_type = 1
+        self.assertTrue( m.modified )
 
         self.assertEqual( int, type(m.int_type) )
-        self.assertEqual( fields.IntField, type(m.fields['int_type']) )
+        self.assertEqual( fields.IntField, type(MyModel.Meta.fields['int_type']) )
         self.assertEqual( 1, m.int_type )
-        self.assertTrue( m.modified )
-
-        m.int_type = 2
-
-        self.assertTrue( m.fields['int_type'].modified ) # extraneous
-        self.assertTrue( m.modified )
-        self.assertEqual( 2, m.int_type )
 
     def test_7(self):
         "find the primary key"
@@ -131,3 +133,14 @@ class TestModel( unittest.TestCase ):
         m1.str_type = 'new string'
         m1.save()
         self.assertEqual(1, len(MyModel.objects) )
+
+    def test_15(self):
+        "test setting/casting"
+        m = MyModel()
+
+        with self.assertRaises( ValueError ):
+            m.int_type = "abc"
+
+        m.int_type = "1"
+        self.assertEqual( 1, m.int_type )
+        self.assertEqual( int, type(m.int_type) )

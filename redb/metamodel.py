@@ -45,16 +45,15 @@ class MetaModel(type):
 
     # creates a new instance of derived model
     def __call__(self, *args, **kw):
-        #print "__call__ self:",type(self),self
-        # First, create the object in the normal default way.
-        fields={}
-        for name, field in self.Meta.fields.items():
-            fields[name] = kw.pop(name, None)#field.field_type())
+
+        kw_fields={}
+        for name,_ in self.Meta.fields.items():
+            kw_fields[name] = kw.pop(name, None)
 
         obj = type.__call__(self, *args, **kw)
 
-        for name, value in fields.items():
-            value = self.Meta.fields[name].loads(value)
+        for name, value in kw_fields.items():
+            value = self.Meta.fields[name].cast(value)
             setattr(obj, name, value)
 
         return obj
