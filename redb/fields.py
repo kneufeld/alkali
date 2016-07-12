@@ -88,13 +88,10 @@ class DateField(Field):
             return None
 
         if type(value) in [unicode,str]:
-            value = dateutil.parser.parse(value)
+            return DateField.loads(value)
 
         if type(value) is not self.field_type:
-            try:
-                value = self.field_type(value)
-            except:
-                print value
+            value = self.field_type(value)
 
         if value.tzinfo is None:
             value = tzadd( value )
