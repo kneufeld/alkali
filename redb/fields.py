@@ -90,6 +90,12 @@ class IntField(Field):
         super(IntField, self).__init__(int, value, *args, **kw)
 
 
+class FloatField(Field):
+
+    def __init__(self, value=None, *args, **kw):
+        super(IntField, self).__init__(float, value, *args, **kw)
+
+
 class StringField(Field):
 
     def __init__(self, value=None, *args, **kw):
