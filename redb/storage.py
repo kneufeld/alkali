@@ -6,15 +6,15 @@ class IStorage( Interface ):
     extension   = Attribute("class level attr of desired filename extension. eg. json")
     filename    = Attribute("file we'll be writing too")
 
-    def read():
+    def read(model_class):
         """
-        return a dict
+        yield (or return a list) of instantiated model_class objects
         up to implementer but likely you want to read filename
         """
 
-    def write( data ):
+    def write( iterator ):
         """
-        accept a dict
+        accept an iterator that yields pk,element
         up to implementer but likely you want to write out to filename
         """
 
@@ -45,36 +45,18 @@ class Storage(object):
 
         return True
 
-class TextStorage(Storage):
-    """
-    just a plain reader/writer, no parsing
-    """
-    implements(IStorage)
-
-    extension = 'txt'
-
-    def read(self):
-        return self._read()
-
-    def write(self, data):
-        if data is None:
-            return False
-
-        return self._write( bytes(data) )
-
 
 class JSONStorage(Storage):
     implements(IStorage)
 
     extension = 'json'
 
-    def read(self):
+    def read(self, model_class):
         data = self._read()
-        return json.loads(data)
+        for elem in json.loads(data):
+            yield model_class(**elem)
 
-    def write(self, data):
-        if data is None:
-            return False
-
+    def write(self, iterator):
+        data = [e.dict for pk,e in iterator]
         data = json.dumps(data)
         return self._write(data)

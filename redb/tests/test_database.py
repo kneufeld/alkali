@@ -6,7 +6,7 @@ import datetime as dt
 
 from redb.database import IDatabase, Database
 from redb.model import IModel, Model
-from redb.storage import JSONStorage, TextStorage
+from redb.storage import JSONStorage, Storage
 from redb import fields
 from redb import tznow
 from . import MyModel
@@ -66,10 +66,13 @@ class TestDatabase( unittest.TestCase ):
     def test_5(self):
         "test overriding storage"
 
+        class FooStorage(Storage):
+            pass
+
         class MyModel( Model ):
 
             class Meta:
-                storage = TextStorage
+                storage = FooStorage
 
             int_type = fields.IntField()
             str_type = fields.StringField()
@@ -78,7 +81,7 @@ class TestDatabase( unittest.TestCase ):
         model = MyModel()
         db = Database( models=[model], storage=JSONStorage, root_dir=curr_dir)
 
-        self.assertEqual( TextStorage, db.get_storage(model) )
+        self.assertEqual( FooStorage, db.get_storage(model) )
 
     def test_get_models(self):
         db = Database( models=[MyModel] )

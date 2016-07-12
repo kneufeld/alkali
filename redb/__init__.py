@@ -25,8 +25,8 @@ def tzadd( dtstamp, tzinfo=None ):
 
 
 from .database import Database
-from .storage import Storage, JSONStorage, TextStorage
+from .storage import IStorage, Storage, JSONStorage
 from .manager import Manager
-from .model import Model
+from .model import IModel, Model
 from .query import Query
 from . import fields

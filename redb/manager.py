@@ -1,5 +1,5 @@
 from zope.interface import Interface, Attribute, implements
-import copy
+from collections import OrderedDict
 import os
 
 from .model import Model
@@ -56,15 +56,22 @@ class Manager(object):
 
     def store(self, storage):
         "save all our instances to storage"
-        storage.write( [m.dict for pk,m in self._instances.items()] )
+
+        def dict_sorter( elements, **kw ):
+            "yield elements in key order"
+            keys = sorted( elements.keys(), **kw )
+            for key in keys:
+                yield key, elements[key]
+
+        storage.write( dict_sorter(self._instances) )
+        #walker = iter(sorted(self._instances.iteritems()))
+        #storage.write( walker )
 
     def load(self, storage):
         "load all our instances from storage"
-        data = storage.read() # data is a list of dicts
 
-        for elem in data:
-            m = self._model_class( **elem )
-            self.save(m)
+        for elem in storage.read( self._model_class ):
+            self.save(elem)
 
     def get(self, *args, **kw):
         if len(args):

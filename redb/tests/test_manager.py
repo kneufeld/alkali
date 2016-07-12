@@ -90,8 +90,8 @@ class TestManager( unittest.TestCase ):
         storage = JSONStorage(tfile.name)
         man.store( storage )
 
-        from_disk = storage.read()
-        self.assertDictEqual( d, from_disk[0] )
+        from_disk = [e for e in storage.read(MyModel)]
+        self.assertDictEqual( d, from_disk[0].dict )
 
     def test_6(self):
         "test loading actual model objects"
