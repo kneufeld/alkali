@@ -79,24 +79,22 @@ class MetaModel(type):
         new_class._add_fields( new_class.Meta, attrs )
         new_class._add_manager( new_class.Meta, attrs )
 
+    @property
+    def pk_fields(new_class):
+        return [name for name,field in new_class.Meta.fields.items() if field.primary_key]
+
     def _add_fields( new_class, meta, attrs):
         "put fields in meta class"
         ordering = meta.ordering or [k for k,v in attrs.items() if isinstance(v,Field)]
 
-        setattr(meta, 'fields', OrderedDict())
+        meta.fields = OrderedDict()
 
         for field in ordering:
             meta.fields[field] = attrs[field]
 
-        """
-    @property
-    def fields(self):
-        return self.__class__._fields
-
-    @property
-    def pk_fields(self):
-        return [name for name,field in self.fields.items() if field.primary_key]
-    """
+        # HACK I can't figure out how to set a property function on Meta directly
+        # meta.pk_fields is a property
+        meta.pk_fields = new_class.pk_fields
 
 
     def _add_manager( new_class, meta, attrs ):

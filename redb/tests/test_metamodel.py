@@ -51,3 +51,9 @@ class TestMetaModel( unittest.TestCase ):
 
         m2 = m1.objects.get(m1.pk)
         self.assertDictEqual( m1.dict, m2.dict )
+
+    def test_5(self):
+        "verify meta.fields and meta.pk_fields"
+
+        self.assertEqual( 3, len(MyModel.Meta.fields) )
+        self.assertEqual( 1, len(MyModel.Meta.pk_fields) )
