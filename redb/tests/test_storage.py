@@ -19,28 +19,28 @@ class TestStorage( unittest.TestCase ):
 
     def test_2(self):
         "write should handle empty dicts vs None"
-        return # FIXME
         tfile = tempfile.NamedTemporaryFile()
         storage = JSONStorage( tfile.name )
 
-        self.assertFalse( storage.write( None ) )
-        self.assertTrue( storage.write( {} ) )
+        self.assertTrue( storage.write( iter([]) ) )
 
     def test_3(self):
         "test simple reading and writing"
 
-        return # FIXME disabled, storage now accepts models
         tfile = tempfile.NamedTemporaryFile()
         storage = JSONStorage( tfile.name )
 
         d = [MyModel(int_type=1), MyModel(int_type=2)]
-        self.assertTrue( storage.write(d.items()) )
+        self.assertTrue( storage.write(d) )
 
         size = os.path.getsize(tfile.name)
         self.assertTrue( size > 0 )
 
-        data = storage.read()
-        self.assertDictEqual( d, data )
+        data = [e for e in storage.read(MyModel)]
+        self.assertEqual( 2, len(data) )
+
+        for a,b in zip(d,data):
+            self.assertDictEqual( a.dict, b.dict )
 
     def test_4(self):
         "make sure we're setting extension"

@@ -61,7 +61,7 @@ class Manager(object):
             "yield elements in key order"
             keys = sorted( elements.keys(), **kw )
             for key in keys:
-                yield key, elements[key]
+                yield elements[key]
 
         storage.write( dict_sorter(self._instances) )
         #walker = iter(sorted(self._instances.iteritems()))

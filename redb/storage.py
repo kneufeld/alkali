@@ -57,6 +57,6 @@ class JSONStorage(Storage):
             yield model_class(**elem)
 
     def write(self, iterator):
-        data = [e.dict for pk,e in iterator]
+        data = [e.dict for e in iterator]
         data = json.dumps(data)
         return self._write(data)
