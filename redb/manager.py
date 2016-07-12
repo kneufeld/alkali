@@ -19,12 +19,8 @@ class Manager(object):
         self._model_class = model_class
         self.clear()
 
-    def __str__(self):
-        try:
-            basename = ' ' + os.path.basename( self.filename )
-        except AttributeError:
-            basename = ''
-        return "<{name}{fname}>".format(name=self.name, fname=basename)
+    def __repr__(self):
+        return "<{}>".format(self.name)
 
     def __len__(self):
         return len(self._instances)
