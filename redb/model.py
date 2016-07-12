@@ -20,12 +20,12 @@ class Model(object):
     def __init__( self, *args, **kw ):
         self._modified = False
 
-    def __str__(self):
+    def __repr__(self):
         return "<{}: {}>".format(self.name, self.pk)
 
     def __setattr__(self, attr, val):
-        # if we're setting a field value and that value
-        # is not none then mark us as modified
+        # if we're setting a field value and that value is different
+        # than current value, mark self as modified
         if attr in self.meta.fields:
             if hasattr(self,attr):
                 curr_val = getattr(self,attr)
@@ -49,7 +49,6 @@ class Model(object):
 
     @property
     def schema(self):
-
         def fmt(name, field):
             return "{}:{}".format(name, field.field_type.__name__)
 
@@ -69,7 +68,6 @@ class Model(object):
 
     @property
     def dict(self):
-
         return { name: field.dumps( getattr(self,name) )
                 for name, field in self.meta.fields.items() }
 
