@@ -105,15 +105,16 @@ class DateField(Field):
         return value.isoformat()
 
     @classmethod
-    def loads(cls, date):
-        if date is None or date == 'null':
+    def loads(cls, value):
+        if value is None or value == 'null':
             return None
 
         # assume date is in isoformat, this preserves timezone info
-        if type(date) in [unicode,str]:
-            date = dateutil.parser.parse(date)
+        if type(value) in [unicode,str]:
+            value = dateutil.parser.parse(value)
 
-        if date.tzinfo is None:
-            date = tzadd( date )
+        if value.tzinfo is None:
+            value = tzadd( value )
 
-        return date
+        return value
+
