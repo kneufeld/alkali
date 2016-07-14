@@ -25,6 +25,9 @@ class Query(object):
     def __iter__(self):
         return iter(self._instances)
 
+    def __getitem__(self, i):
+        return self._instances[i]
+
     @property
     def count(self):
         return len(self)
