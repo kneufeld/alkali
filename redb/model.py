@@ -1,4 +1,5 @@
 from zope.interface import Interface, Attribute, implements
+import json
 import copy
 import os
 
@@ -70,6 +71,10 @@ class Model(object):
     def dict(self):
         return { name: field.dumps( getattr(self,name) )
                 for name, field in self.meta.fields.items() }
+
+    @property
+    def json(self):
+        return json.dumps(self.dict)
 
     def save(self):
         self.__class__.objects.save(self)
