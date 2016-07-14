@@ -36,6 +36,12 @@ class Model(object):
         else:
             self.__dict__[attr] = val
 
+    def __eq__(self, other):
+        return self.pk == other.pk
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
     @property
     def modified(self):
         return self._modified
