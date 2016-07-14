@@ -18,8 +18,22 @@ class Model(object):
     __metaclass__ = MetaModel
     implements(IModel)
 
-    def __init__( self, *args, **kw ):
-        self._modified = False
+    def __new__(cls, *args, **kw_fields):
+        """
+        return a new instance of Model (or derived type)
+
+        MetaModel passes in our fields, we need to add them before
+        Model.__init__ is called so that they exist can be referenced
+        """
+        obj = super(Model,cls).__new__(cls)
+
+        for name, value in kw_fields.items():
+            value = obj.Meta.fields[name].cast(value)
+            setattr(obj, name, value)
+
+        setattr( obj, '_modified', False )
+
+        return obj
 
     def __repr__(self):
         return "<{}: {}>".format(self.name, self.pk)

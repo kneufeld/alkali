@@ -88,11 +88,6 @@ class MetaModel(type):
         for name,_ in self.Meta.fields.items():
             kw_fields[name] = kw.pop(name, None)
 
+        # this calls Model.__new__ and then Model.__init__
         # obj is a instance of Model (or a derived class)
-        obj = type.__call__(self, *args, **kw) # this calls obj.__init__
-
-        for name, value in kw_fields.items():
-            value = self.Meta.fields[name].cast(value)
-            setattr(obj, name, value)
-
-        return obj
+        return type.__call__(self, **kw_fields)

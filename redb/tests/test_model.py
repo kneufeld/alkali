@@ -21,6 +21,7 @@ class TestModel( unittest.TestCase ):
         m = EmptyModel()
         self.assertTrue( verifyObject(IModel, m) )
         self.assertEqual( "EmptyModel", m.name )
+        self.assertEqual( "EmptyModel", EmptyModel.name )
 
         self.assertTrue( m.schema ) # make sure it doesn't blow up
 
