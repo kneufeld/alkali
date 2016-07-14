@@ -90,3 +90,6 @@ class Manager(object):
 
     def filter(self, **kw):
         return Query(self).filter(**kw)
+
+    def all(self):
+        return Query(self)
