@@ -2,7 +2,7 @@ from zope.interface import Interface, Attribute, implements
 import datetime as dt
 import dateutil.parser
 
-from . import tzadd
+from . import tzadd, tznow
 
 class IField( Interface ):
 
@@ -88,7 +88,10 @@ class DateField(Field):
             return None
 
         if type(value) in [unicode,str]:
-            return DateField.loads(value)
+            if value == 'now':
+                value = tznow()
+            else:
+                return DateField.loads(value)
 
         if type(value) is not self.field_type:
             value = self.field_type(value)
