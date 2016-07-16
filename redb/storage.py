@@ -54,7 +54,7 @@ class JSONStorage(Storage):
     def read(self, model_class):
         data = self._read()
         for elem in json.loads(data):
-            yield model_class(**elem)
+            yield elem
 
     def write(self, iterator):
         data = [e.dict for e in iterator]

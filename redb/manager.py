@@ -67,12 +67,13 @@ class Manager(object):
         self.clear()
 
         for elem in storage.read( self._model_class ):
+            if isinstance(elem, dict):
+                elem = self._model_class( **elem )
+
             if elem.pk in self._instances:
                 raise RuntimeError('pk collision detected during load: %s' % elem.pk)
 
             self.save(elem)
-
-        #print "loaded:",len(self._instances)
 
     def get(self, *args, **kw):
         if len(args):
@@ -80,11 +81,11 @@ class Manager(object):
 
         results = Query(self).filter(**kw).instances
 
+        if len(results) == 0:
+            raise KeyError("got no results")
+
         if len(results) > 1:
             raise KeyError("got more than 1 result")
-
-        if not results:
-            raise KeyError("got no results")
 
         return results[0]
 

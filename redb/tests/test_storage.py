@@ -40,7 +40,7 @@ class TestStorage( unittest.TestCase ):
         self.assertEqual( 2, len(loaded) )
 
         for a,b in zip(entries,loaded):
-            self.assertDictEqual( a.dict, b.dict )
+            self.assertDictEqual( a.dict, b )
 
     def test_4(self):
         "make sure we're setting extension"

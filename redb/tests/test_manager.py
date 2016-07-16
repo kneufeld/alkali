@@ -91,7 +91,7 @@ class TestManager( unittest.TestCase ):
         man.store( storage )
 
         from_disk = [e for e in storage.read(MyModel)]
-        self.assertDictEqual( d, from_disk[0].dict )
+        self.assertDictEqual( d, from_disk[0] )
 
     def test_6(self):
         "test loading actual model objects"
