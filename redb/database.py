@@ -26,6 +26,11 @@ class Database(object):
 
         self._storage_type = kw.pop('storage', JSONStorage)
         self._root_dir = kw.pop('root_dir', '.')
+        self._save_on_exit = kw.pop('save_on_exit', False)
+
+    def __del__(self):
+        if self._save_on_exit:
+            self.store()
 
     @property
     def models(self):
