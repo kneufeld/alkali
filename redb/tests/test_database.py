@@ -86,6 +86,7 @@ class TestDatabase( unittest.TestCase ):
     def test_get_models(self):
         db = Database( models=[MyModel] )
         self.assertTrue( db.get_model('MyModel') )
+        self.assertIsNone( db.get_model('NotAModel') )
 
     def test_6(self):
         "test saving/loading"

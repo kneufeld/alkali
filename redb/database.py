@@ -37,7 +37,12 @@ class Database(object):
         return self._models.values()
 
     def get_model(self, model_name):
-        return self._models[model_name]
+        try:
+            return self._models[model_name]
+        except KeyError:
+            pass
+
+        return None
 
     def get_filename(self, model):
         """
