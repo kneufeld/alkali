@@ -1,6 +1,7 @@
 from zope.interface import Interface, Attribute, implements
 import copy
 import operator
+import re
 
 class IQuery( Interface ):
 
@@ -74,8 +75,18 @@ class Query(object):
         def in_(coll, val):
             return val in coll
 
+        def regex(coll, val):
+            return re.search(val, coll, re.UNICODE)
+
+        def regexi(coll, val):
+            return re.search(val, coll, re.UNICODE|re.IGNORECASE)
+
         if oper == 'in':
             oper = in_
+        elif oper == 're':
+            oper = regex
+        elif oper == 'rei':
+            oper = regexi
         else:
             oper = getattr(operator,oper)
 
