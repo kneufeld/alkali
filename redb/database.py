@@ -7,6 +7,9 @@ from .storage import JSONStorage
 from .model import Model
 from .fields import Field
 
+import logging
+logger = logging.getLogger(__name__)
+
 class IDatabase( Interface ):
 
     models   = Attribute("the dict of models")
@@ -20,8 +23,11 @@ class Database(object):
 
     def __init__( self, models=[], *args, **kw ):
 
+        logger.debug( "creating database" )
+
         self._models = OrderedDict()
         for model in models:
+            logger.debug( "adding model to database: %s", model.name )
             self._models[model.name] = model
 
         self._storage_type = kw.pop('storage', JSONStorage)
@@ -64,7 +70,11 @@ class Database(object):
         """
         save the data for each model
         """
+        logger.debug( "storing models" )
+
         for model in self.models:
+            logger.debug( "storing model: %s", model.name )
+
             filename = filename or self.get_filename(model)
             storage = self.get_storage(model)(filename)
             model.objects.store(storage)
@@ -73,7 +83,11 @@ class Database(object):
         """
         load the data for each model
         """
+        logger.debug( "loading models" )
+
         for model in self.models:
+            logger.debug( "loading model: %s", model.name )
+
             filename = self.get_filename(model)
             storage = self.get_storage(model)(filename)
             model.objects.load(storage)

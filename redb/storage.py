@@ -1,6 +1,9 @@
 from zope.interface import Interface, Attribute, implements
 import json
 
+import logging
+logger = logging.getLogger(__name__)
+
 class IStorage( Interface ):
 
     extension   = Attribute("class level attr of desired filename extension. eg. json")
@@ -8,13 +11,13 @@ class IStorage( Interface ):
 
     def read(model_class):
         """
-        yield (or return a list) of instantiated model_class objects
+        yield (or return a list) of instantiated model_class objects or dicts
         up to implementer but likely you want to read filename
         """
 
     def write( iterator ):
         """
-        accept an iterator that yields pk,element
+        accept an iterator that yields elements
         up to implementer but likely you want to write out to filename
         """
 
@@ -22,7 +25,7 @@ class Storage(object):
     """
     this class determines the on-disk representation of the database. it
     could write out objects as json or plain txt or binary, that's up to
-    the implementation and should be transparent to any models.
+    the implementation and should be transparent to any models/database.
     """
 
     def __init__(self, filename ):
@@ -33,10 +36,17 @@ class Storage(object):
         return self._filename
 
     def _read(self):
+        """
+        helper function that does just reads a file
+        """
         with open( self.filename, 'r' ) as f:
             return f.read()
 
     def _write(self, data):
+        """
+        helper function that does just writes a file if
+        data is not None
+        """
         if data is None:
             return False
 
@@ -47,6 +57,9 @@ class Storage(object):
 
 
 class JSONStorage(Storage):
+    """
+    save models in json format
+    """
     implements(IStorage)
 
     extension = 'json'

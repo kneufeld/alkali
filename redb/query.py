@@ -3,6 +3,9 @@ import copy
 import operator
 import re
 
+import logging
+logger = logging.getLogger(__name__)
+
 class IQuery( Interface ):
 
     def filter(**kw):
@@ -10,14 +13,15 @@ class IQuery( Interface ):
 
 class Query(object):
     """
-    main class for any database. this holds the actual data of the database.
+    this class performs queries on manager instances
+    returns lists of model instances
     """
     implements(IQuery)
 
     def __init__( self, manager):
         self.manager = manager
 
-        # shallow copy, new dict but same objects
+        # shallow copy, new list but same objects
         self._instances = copy.copy( manager.instances.values() )
 
     def __len__(self):
@@ -51,6 +55,11 @@ class Query(object):
         return self.fields.keys()
 
     def filter(self, **kw):
+        """
+        based on **kw, return a subset of instances
+        """
+
+        logger.debug( "query: %s", str(kw) )
 
         # TODO can only handle single pk field
         if 'pk' in kw:
@@ -71,6 +80,9 @@ class Query(object):
         return self
 
     def _filter(self, field, oper, value, instances):
+        """
+        helper function that does the actual work of filtering out instances
+        """
 
         def in_(coll, val):
             return val in coll
