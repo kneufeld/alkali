@@ -72,8 +72,23 @@ class FloatField(Field):
 class StringField(Field):
 
     def __init__(self, *args, **kw):
-        super(StringField, self).__init__(str, *args, **kw)
+        super(StringField, self).__init__(unicode, *args, **kw)
 
+    def cast(self, value):
+        """
+        cast non field_type to correct type
+        """
+        if value is None:
+            return None
+
+        if type(value) is not self._field_type:
+            try:
+                return self.field_type(value)
+            except UnicodeDecodeError:
+                # assume value is a utf-8 byte string
+                return self.field_type( value.decode('utf-8') )
+
+        return value
 
 class DateField(Field):
 
