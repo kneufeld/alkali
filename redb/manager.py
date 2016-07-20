@@ -40,15 +40,26 @@ class Manager(object):
     def instances(self):
         return self._instances
 
-    def save(self, instance):
+    @property
+    def modified(self):
+        if self._modified:
+            return True
+
+        return any( map( lambda e: e.modified, self.instances.values() ) )
+
+    def save(self, instance, modify=True):
         #logger.debug( "saving model instance: %s", str(instance.pk) )
 
         assert instance.pk is not None
         self._instances[ instance.pk ] = instance
 
+        if modify:
+            self._modified = True
+
     def clear(self):
-        logger.debug( "clearing all models" )
+        logger.debug( "%s: clearing all models", self.name )
         self._instances = {}
+        self._modified = False
 
     def delete(self, instance):
         logger.debug( "deleting model instance: %s", str(instance.pk) )
@@ -58,7 +69,7 @@ class Manager(object):
         except KeyError:
             pass
 
-    def store(self, storage):
+    def store(self, storage, force=False):
         "save all our instances to storage"
 
         def dict_sorter( elements, **kw ):
@@ -67,15 +78,24 @@ class Manager(object):
             for key in keys:
                 yield elements[key]
 
-        logger.debug( "storing models via storage class: %s", storage.__class__.__name__ )
-        storage.write( dict_sorter(self._instances) )
+        if force:
+            self._modified = True
+
+        if self.modified:
+            logger.debug( "%s: has dirty records, saving", self.name )
+            logger.debug( "%s: storing models via storage class: %s", self.name, storage.name )
+
+            storage.write( dict_sorter(self._instances) )
+        else:
+            logger.debug( "%s: has no dirty records, not saving", self.name )
+
 
     def load(self, storage):
         "load all our instances from storage"
 
-        logger.debug( "loading models via storage class: %s", storage.__class__.__name__ )
-
         self.clear()
+
+        logger.debug( "%s: loading models via storage class: %s", self.name, storage.name )
 
         for elem in storage.read( self._model_class ):
             if isinstance(elem, dict):
@@ -85,7 +105,10 @@ class Manager(object):
                 raise RuntimeError('pk collision detected during load: %s' % elem.pk)
 
             # this adds elem to our internal list
-            self.save(elem)
+            self.save(elem, modify=False)
+
+        logger.debug( "%s: finished loading", self.name )
+
 
     def get(self, *args, **kw):
         """

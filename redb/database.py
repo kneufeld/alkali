@@ -66,7 +66,7 @@ class Database(object):
         """
         return model.Meta.storage or self._storage_type
 
-    def store(self, filename=None):
+    def store(self, filename=None, force=False):
         """
         save the data for each model
         """
@@ -77,7 +77,7 @@ class Database(object):
 
             filename = filename or self.get_filename(model)
             storage = self.get_storage(model)(filename)
-            model.objects.store(storage)
+            model.objects.store(storage, force=force)
 
     def load(self):
         """

@@ -34,6 +34,10 @@ class Query(object):
         return self._instances[i]
 
     @property
+    def name(self):
+        return "{}Query".format(self.model_class.name)
+
+    @property
     def count(self):
         return len(self)
 
@@ -59,7 +63,7 @@ class Query(object):
         based on **kw, return a subset of instances
         """
 
-        logger.debug( "query: %s", str(kw) )
+        logger.debug( "%s: query: %s", self.name, str(kw) )
 
         # TODO can only handle single pk field
         if 'pk' in kw:

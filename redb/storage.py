@@ -32,6 +32,10 @@ class Storage(object):
         self._filename = filename
 
     @property
+    def name(self):
+        return self.__class__.__name__
+
+    @property
     def filename(self):
         return self._filename
 
