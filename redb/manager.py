@@ -47,14 +47,15 @@ class Manager(object):
 
     @property
     def instances(self):
-        return self._instances
+        "return list of model instances"
+        return self._instances.values()
 
     @property
     def modified(self):
         if self._modified:
             return True
 
-        return any( map( lambda e: e.modified, self.instances.values() ) )
+        return any( map( lambda e: e.modified, self.instances ) )
 
     def save(self, instance, modify=True):
         #logger.debug( "saving model instance: %s", str(instance.pk) )

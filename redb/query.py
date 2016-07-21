@@ -22,7 +22,7 @@ class Query(object):
         self.manager = manager
 
         # shallow copy, new list but same objects
-        self._instances = copy.copy( manager.instances.values() )
+        self._instances = copy.copy( manager.instances )
 
     def __len__(self):
         return len(self._instances)
