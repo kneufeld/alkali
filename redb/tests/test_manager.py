@@ -51,7 +51,7 @@ class TestManager( unittest.TestCase ):
         man = Manager(MyModel)
 
         m1 = MyModel(int_type=1)
-        man.save(m1)
+        man.save(m1, modify=False)
         self.assertEqual( 1, len(man) )
 
         man.delete(m1)
@@ -60,6 +60,8 @@ class TestManager( unittest.TestCase ):
         # make sure deleting a non-existant instance is a no-op
         man.delete(m1)
         self.assertEqual( 0, len(man) )
+
+        self.assertTrue( man.modified )
 
     def test_4(self):
         "test getting"

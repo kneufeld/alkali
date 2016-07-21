@@ -20,6 +20,9 @@ class Manager(object):
 
     def __init__( self, model_class, *args, **kw ):
         self._model_class = model_class
+        self._instances = {}
+        self._modified = False
+
         self.clear()
 
     def __repr__(self):
@@ -58,14 +61,16 @@ class Manager(object):
 
     def clear(self):
         logger.debug( "%s: clearing all models", self.name )
+
+        self._modified = len(self._instances) > 0
         self._instances = {}
-        self._modified = False
 
     def delete(self, instance):
         logger.debug( "deleting model instance: %s", str(instance.pk) )
 
         try:
             del self._instances[ instance.pk ]
+            self._modified = True
         except KeyError:
             pass
 
@@ -88,6 +93,8 @@ class Manager(object):
             storage.write( dict_sorter(self._instances) )
         else:
             logger.debug( "%s: has no dirty records, not saving", self.name )
+
+        self._modified = False
 
 
     def load(self, storage):
