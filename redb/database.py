@@ -28,7 +28,7 @@ class Database(object):
         self._models = OrderedDict()
         for model in models:
             logger.debug( "adding model to database: %s", model.name )
-            self._models[model.name] = model
+            self._models[model.name.lower()] = model
 
         self._storage_type = kw.pop('storage', JSONStorage)
         self._root_dir = kw.pop('root_dir', '.')
@@ -44,7 +44,7 @@ class Database(object):
 
     def get_model(self, model_name):
         try:
-            return self._models[model_name]
+            return self._models[model_name.lower()]
         except KeyError:
             pass
 

@@ -14,7 +14,8 @@ class IManager( Interface ):
 
 class Manager(object):
     """
-    main class for any database. this holds the actual data of the database.
+    the Manaager class holds the data of the database. It could rightly be
+    called Table.
     """
     implements(IManager)
 
