@@ -26,7 +26,7 @@ class Manager(object):
         self.clear()
 
     def __repr__(self):
-        return "<{}>".format(self.name)
+        return "<{}: {}>".format(self.name, len(self))
 
     def __len__(self):
         return len(self._instances)
