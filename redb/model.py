@@ -98,3 +98,4 @@ class Model(object):
 
     def save(self):
         self.__class__.objects.save(self)
+        self._modified = False

@@ -84,9 +84,8 @@ class TestModel( unittest.TestCase ):
         m.int_type = 1
         self.assertTrue( m.modified )
 
-        self.assertEqual( int, type(m.int_type) )
-        self.assertEqual( fields.IntField, type(MyModel.Meta.fields['int_type']) )
-        self.assertEqual( 1, m.int_type )
+        m.save()
+        self.assertFalse( m.modified )
 
     def test_7(self):
         "find the primary key"
