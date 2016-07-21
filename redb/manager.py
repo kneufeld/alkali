@@ -40,6 +40,11 @@ class Manager(object):
         return "{}Manager".format(self._model_class.__name__)
 
     @property
+    def pks(self):
+        "return all primary keys"
+        return self._instances.keys()
+
+    @property
     def instances(self):
         return self._instances
 
