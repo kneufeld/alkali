@@ -47,6 +47,7 @@ class Field(object):
 
         if type(value) is not self._field_type:
             return self.field_type(value)
+
         return value
 
     @classmethod
@@ -66,7 +67,7 @@ class IntField(Field):
 class FloatField(Field):
 
     def __init__(self, *args, **kw):
-        super(IntField, self).__init__(float, *args, **kw)
+        super(FloatField, self).__init__(float, *args, **kw)
 
 
 class StringField(Field):
