@@ -7,6 +7,7 @@ import datetime as dt
 from redb.model import Model
 from redb.manager import IManager, Manager
 from redb.storage import JSONStorage
+from .. import Query
 from redb import fields
 from redb import tznow
 
@@ -35,6 +36,7 @@ class TestManager( unittest.TestCase ):
         m1.int_type = 1
         man.save(m1)
         self.assertEqual( 1, len(man) )
+        self.assertEqual( 1, man.count )
 
         # same primary key, same len
         man.save(m1)
@@ -66,7 +68,7 @@ class TestManager( unittest.TestCase ):
     def test_4(self):
         "test getting"
 
-        man = Manager(MyModel)
+        man = MyModel.objects
 
         m1 = MyModel(int_type=1)
         man.save(m1)
@@ -76,6 +78,9 @@ class TestManager( unittest.TestCase ):
 
         # does not exist
         self.assertRaises( KeyError, man.get, 2 )
+
+        MyModel(int_type=2).save()
+        self.assertRaises( KeyError, man.get, int_type__gt=0  )
 
     def test_5(self):
         "test saving actual model objects"
@@ -91,6 +96,7 @@ class TestManager( unittest.TestCase ):
 
         storage = JSONStorage(tfile.name)
         man.store( storage )
+        man.store( storage, force=True ) # just make sure force works
 
         from_disk = [e for e in storage.read(MyModel)]
         self.assertDictEqual( d, from_disk[0] )
@@ -116,3 +122,37 @@ class TestManager( unittest.TestCase ):
         m2 = man.get(m1.pk)
 
         self.assertDictEqual( m1.dict, m2.dict )
+
+    def test_7(self):
+        "test pks"
+
+        man = MyModel.objects
+
+        man.save( MyModel(int_type=1) )
+        man.save( MyModel(int_type=2) )
+        MyModel(int_type=3).save()
+        self.assertEqual( 3, man.count )
+
+        self.assertEqual( [1,2,3], man.pks )
+
+    def test_8(self):
+        "test modified"
+
+        man = MyModel.objects
+
+        m=MyModel(int_type=3)
+        m.save()
+        self.assertTrue( man.modified )
+
+        man._modified = False
+        self.assertFalse( man.modified )
+
+        m.str_type = 'foo'
+        self.assertTrue( man.modified )
+
+    def test_9(self):
+        self.assertEqual( Query, type(MyModel.objects.all()) )
+        self.assertEqual( Query, type(MyModel.objects.filter()) )
+
+        MyModel(int_type=1).save()
+        self.assertEqual( MyModel, type(MyModel.objects.get(1)) )

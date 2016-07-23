@@ -144,3 +144,12 @@ class TestModel( unittest.TestCase ):
         m.int_type = "1"
         self.assertEqual( 1, m.int_type )
         self.assertEqual( int, type(m.int_type) )
+
+    def test_16(self):
+        "test equality"
+        m1 = MyModel(int_type=1)
+        m2 = MyModel(int_type=1)
+
+        self.assertTrue( id(m1) != id(m2) )
+        self.assertEqual( m1, m2 )
+        self.assertFalse( m1 != m2 )

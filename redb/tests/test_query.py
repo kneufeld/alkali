@@ -49,6 +49,7 @@ class TestQuery( unittest.TestCase ):
         m.save()
 
         self.assertEqual( 0, len(q) )
+        self.assertEqual( 0, q.count )
         self.assertEqual( 1, len(man) )
 
     def test_10(self):
@@ -61,8 +62,9 @@ class TestQuery( unittest.TestCase ):
         man = MyModel.objects
         q = Query(man)
 
-        self.assertEqual( 1, len(q) )
         self.assertEqual( 1, len(man) )
+        self.assertEqual( 1, len(q) )
+        self.assertEqual( m, q[0] )
 
     def test_15(self):
         "make sure query objects are 'updated' when manager objects changes"
@@ -97,7 +99,7 @@ class TestQuery( unittest.TestCase ):
         "test different filter functions"
 
         now = tznow()
-        instances = [ MyModel(int_type=i, str_type='string', dt_type=now ) for i in range(3)]
+        instances = [ MyModel(int_type=i, str_type='string %d' % i, dt_type=now ) for i in range(3)]
 
         for inst in instances:
             inst.save()
@@ -108,11 +110,20 @@ class TestQuery( unittest.TestCase ):
         results = MyModel.objects.filter(int_type__gt=0).instances
         self.assertEqual( 2, len(results) )
 
-        results = MyModel.objects.filter(int_type=0, str_type='string').instances
+        results = MyModel.objects.filter(int_type=0, str_type='string 0').instances
         self.assertEqual( 1, len(results) )
 
         results = MyModel.objects.filter(int_type=0, str_type='string XXX').instances
         self.assertEqual( 0, len(results) )
+
+        results = MyModel.objects.filter(str_type__in='1').instances
+        self.assertEqual( 1, len(results) )
+
+        results = MyModel.objects.filter(str_type__re='1$').instances
+        self.assertEqual( 1, len(results) )
+
+        results = MyModel.objects.filter(str_type__rei='^STR').instances
+        self.assertEqual( 3, len(results) )
 
         # test pk queries
         results = MyModel.objects.filter(pk=1).instances

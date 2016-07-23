@@ -123,3 +123,34 @@ class TestDatabase( unittest.TestCase ):
         # not sure if this is a valid test, MyModel.objects is still around
         model = db.get_model('MyModel')
         self.assertEqual( 3, len(model.objects) )
+
+    def test_save_on_exit(self):
+        "make sure we can actually save a database"
+
+        tfile = tempfile.NamedTemporaryFile()
+
+        class MyModel( Model ):
+            class Meta:
+                ordering = ['int_type','str_type','dt_type']
+                filename = tfile.name
+
+            int_type = fields.IntField(primary_key=True)
+            str_type = fields.StringField()
+            dt_type  = fields.DateField()
+
+        with open( tfile.name, 'r') as f:
+            data = f.read()
+        self.assertFalse( data )
+
+        db = Database( models=[MyModel], save_on_exit=True )
+
+        now = tznow()
+        m = MyModel(int_type=1, str_type='string', dt_type=now )
+        m.save()
+        self.assertEqual( 1, len(MyModel.objects) )
+
+        del db
+
+        with open( tfile.name, 'r') as f:
+            data = f.read()
+        self.assertTrue( data )
