@@ -112,10 +112,7 @@ class DateField(Field):
         if type(value) is not self.field_type:
             value = self.field_type(value)
 
-        if value.tzinfo is None:
-            value = tzadd( value )
-
-        return value
+        return tzadd( value )
 
     @classmethod
     def dumps(cls, value):

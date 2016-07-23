@@ -42,13 +42,13 @@ class Manager(object):
 
     @property
     def pks(self):
-        "return all primary keys"
-        return self._instances.keys()
+        "return all primary keys in sorted order"
+        return sorted( self._instances.keys() )
 
     @property
     def instances(self):
         "return list of model instances"
-        return self._instances.values()
+        return [elem for elem in Manager.sorter(self._instances)]
 
     @property
     def modified(self):
@@ -56,6 +56,18 @@ class Manager(object):
             return True
 
         return any( map( lambda e: e.modified, self.instances ) )
+
+
+    @staticmethod
+    def sorter(elements, **kw ):
+        """
+        yield elements in key order
+        pass in reverse=True for reverse order
+        """
+        keys = sorted( elements.keys(), **kw )
+        for key in keys:
+            yield elements[key]
+
 
     def save(self, instance, modify=True):
         #logger.debug( "saving model instance: %s", str(instance.pk) )
@@ -84,12 +96,6 @@ class Manager(object):
     def store(self, storage, force=False):
         "save all our instances to storage"
 
-        def dict_sorter( elements, **kw ):
-            "yield elements in key order"
-            keys = sorted( elements.keys(), **kw )
-            for key in keys:
-                yield elements[key]
-
         if force:
             self._modified = True
 
@@ -97,7 +103,7 @@ class Manager(object):
             logger.debug( "%s: has dirty records, saving", self.name )
             logger.debug( "%s: storing models via storage class: %s", self.name, storage.name )
 
-            storage.write( dict_sorter(self._instances) )
+            storage.write( Manager.sorter(self._instances) )
         else:
             logger.debug( "%s: has no dirty records, not saving", self.name )
 
