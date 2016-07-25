@@ -1,4 +1,4 @@
-from zope.interface import Interface, Attribute, implements
+from zope.interface import Interface, Attribute, implementer
 import copy
 import types
 import operator
@@ -13,12 +13,12 @@ class IQuery( Interface ):
     def filter(**kw):
         "return a query object with multiple objects"
 
+@implementer(IQuery)
 class Query(object):
     """
     this class performs queries on manager instances
     returns lists of model instances
     """
-    implements(IQuery)
 
     def __init__( self, manager):
         self.manager = manager

@@ -3,6 +3,7 @@ from collections import OrderedDict
 import os
 
 from .query import Query
+from .storage import IStorage
 
 import logging
 logger = logging.getLogger(__name__)
@@ -110,6 +111,8 @@ class Manager(object):
 
     def load(self, storage):
         "load all our instances from storage"
+
+        storage = IStorage(storage)
 
         self.clear()
 
