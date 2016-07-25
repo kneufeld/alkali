@@ -54,11 +54,8 @@ class MetaModel(type):
     def name(new_class):
         return new_class.__name__
 
-    @property
-    def pk_fields(new_class):
-        return [name for name,field in new_class.Meta.fields.items() if field.primary_key]
-
     def _add_meta( new_class, attrs ):
+
         def _get_fields( attrs ):
             return [(k,v) for k,v in attrs.items() if isinstance(v,Field)]
 
@@ -69,14 +66,14 @@ class MetaModel(type):
 
         class Object(object): pass
 
-        meta = attrs.pop( 'Meta', Object() )
+        meta = attrs.pop( 'Meta', Object )
         setattr( new_class, 'Meta', meta )
 
         if not hasattr(meta, 'filename'):
-            meta.filename = ''
+            meta.filename = None
 
         if not hasattr(meta, 'storage'):
-            meta.storage = ''
+            meta.storage = None
 
         if not hasattr(meta, 'ordering'):
             meta.ordering = _get_field_order(attrs)
@@ -89,9 +86,9 @@ class MetaModel(type):
             meta.fields[field] = attrs.pop(field)
             delattr( meta.fields[field], '_order' )
 
-        # HACK I can't figure out how to set a property function on Meta directly
-        # meta.pk_fields is a property
-        meta.pk_fields = new_class.pk_fields
+        # you can set a property on a class but it will only be called on an instance
+        # I'd prefer this to be a read-only property but I guess that can't happen
+        meta.pk_fields = [name for name,field in meta.fields.items() if field.primary_key]
 
     # creates a new instance of derived model
     def __call__(self, *args, **kw):
