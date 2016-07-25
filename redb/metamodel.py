@@ -58,6 +58,11 @@ class MetaModel(type):
     def pk_fields(new_class):
         return [name for name,field in new_class.Meta.fields.items() if field.primary_key]
 
+    def _get_field_order(new_class, attrs):
+        fields = [(k,v) for k,v in attrs.items() if isinstance(v,Field)]
+        fields.sort(key=lambda e: e[1]._order)
+        return [k for k,v in fields]
+
     def _add_meta( new_class, attrs ):
         class Object(object): pass
 
@@ -71,13 +76,12 @@ class MetaModel(type):
             meta.storage = ''
 
         if not hasattr(meta, 'ordering'):
-            meta.ordering = []
+            meta.ordering = new_class._get_field_order(attrs)
 
-        ordering = meta.ordering or [k for k,v in attrs.items() if isinstance(v,Field)]
-
+        assert len(meta.ordering) == len([k for k,v in attrs.items() if isinstance(v,Field)])
         meta.fields = OrderedDict()
 
-        for field in ordering:
+        for field in meta.ordering:
             meta.fields[field] = attrs.pop(field)
 
         # HACK I can't figure out how to set a property function on Meta directly

@@ -164,9 +164,28 @@ class TestModel( unittest.TestCase ):
         self.assertFalse( m1 != m2 )
 
     def test_17(self):
-        "test schema"
+        "test meta ordering"
 
-        now = tznow()
-        m = MyModel(int_type=3, str_type='string', dt_type=now )
+        with self.assertRaises( AssertionError):
+            class MyMulti(Model):
+                class Meta:
+                    ordering = ['f1','f2']
 
+                f1 = fields.IntField()
+                f2 = fields.IntField()
+                other = fields.StringField()
+
+    def test_18(self):
+        "test multi field primary key"
+
+        class MyMulti(Model):
+            pk1 = fields.IntField(primary_key=True)
+            pk2 = fields.IntField(primary_key=True)
+            other = fields.StringField()
+
+        self.assertTrue( verifyClass(IModel, MyMulti) )
+        m = MyMulti()
+        self.assertTrue( verifyObject(IModel, m) )
         self.assertTrue( m.schema )
+
+        self.assertEqual( ['pk1','pk2'], MyMulti.Meta.pk_fields )
