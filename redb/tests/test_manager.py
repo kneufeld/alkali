@@ -3,6 +3,7 @@ import unittest
 import tempfile
 from zope.interface.verify import verifyObject, verifyClass
 import datetime as dt
+import json
 
 from redb.model import Model
 from redb.manager import IManager, Manager
@@ -22,6 +23,10 @@ class TestManager( unittest.TestCase ):
         man = Manager(MyModel)
         self.assertTrue( verifyObject(IManager, man) )
         self.assertEqual( "MyModelManager", man.name )
+
+        self.assertTrue( repr(man) )
+        self.assertTrue( str(man) )
+        self.assertTrue( unicode(man) )
 
     def test_2(self):
         "test saving"
@@ -97,6 +102,7 @@ class TestManager( unittest.TestCase ):
         storage = JSONStorage(tfile.name)
         man.store( storage )
         man.store( storage, force=True ) # just make sure force works
+        man.store( storage ) # now verify this is a no op
 
         from_disk = [e for e in storage.read(MyModel)]
         self.assertDictEqual( d, from_disk[0] )
@@ -151,8 +157,21 @@ class TestManager( unittest.TestCase ):
         self.assertTrue( man.modified )
 
     def test_9(self):
+        "verify some simple queries"
         self.assertEqual( Query, type(MyModel.objects.all()) )
         self.assertEqual( Query, type(MyModel.objects.filter()) )
 
         MyModel(int_type=1).save()
         self.assertEqual( MyModel, type(MyModel.objects.get(1)) )
+
+    def test_10(self):
+        "test that bad data throws a pk error"
+
+        tfile = tempfile.NamedTemporaryFile()
+
+        m = MyModel(int_type=1)
+        with open(tfile.name,'w') as f:
+            f.write( json.dumps([m.dict,m.dict]) )
+
+        man = Manager(MyModel)
+        self.assertRaises( RuntimeError, man.load, JSONStorage(tfile.name) )

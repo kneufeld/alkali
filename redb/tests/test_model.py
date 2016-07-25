@@ -24,8 +24,10 @@ class TestModel( unittest.TestCase ):
 
             self.assertTrue( m.dict or m.dict == {} ) # make sure it doesn't blow up
             self.assertTrue( m.schema ) # make sure it doesn't blow up
+            self.assertTrue( m.json ) # make sure it doesn't blow up
 
-        m = EmptyModel()
+        m = EmptyModel(foo='bar')
+        self.assertEqual( 'bar', m.foo )
         self.assertEqual( "EmptyModel", m.name )
         self.assertEqual( "EmptyModel", EmptyModel.name )
 

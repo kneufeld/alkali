@@ -56,7 +56,6 @@ class Manager(object):
 
         return any( map( lambda e: e.modified, self.instances ) )
 
-
     @staticmethod
     def sorter(elements, **kw ):
         """

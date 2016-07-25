@@ -55,6 +55,8 @@ class TestField( unittest.TestCase ):
         v = f.loads('2016-07-20 17:53')
         self.assertEqual( dt.datetime, type(v) )
 
+        self.assertRaises( TypeError, f.cast, 1 )
+
     def test_6(self):
         "test SetField"
         s=set([1,2,3])
@@ -84,4 +86,3 @@ class TestField( unittest.TestCase ):
 
         v = f.loads('null')
         self.assertIsNone(v)
-

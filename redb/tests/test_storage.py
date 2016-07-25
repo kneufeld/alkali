@@ -3,7 +3,7 @@ import unittest
 import tempfile
 from zope.interface.verify import verifyObject, verifyClass
 
-from redb.storage import IStorage, JSONStorage
+from redb.storage import IStorage, Storage, JSONStorage
 from . import MyModel
 
 class TestStorage( unittest.TestCase ):
@@ -23,6 +23,8 @@ class TestStorage( unittest.TestCase ):
         storage = JSONStorage( tfile.name )
 
         self.assertTrue( storage.write( iter([]) ) )
+
+        self.assertFalse( Storage(tfile.name)._write( None ) )
 
     def test_3(self):
         "test simple reading and writing"
