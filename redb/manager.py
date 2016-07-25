@@ -42,7 +42,7 @@ class Manager(object):
     @property
     def pks(self):
         "return all primary keys in sorted order"
-        return sorted( self._instances.keys() )
+        return self._instances.keys()
 
     @property
     def instances(self):
