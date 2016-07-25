@@ -27,8 +27,7 @@ class MetaModel(type):
 
         # Also ensure initialization is only performed for subclasses of Model
         # (excluding Model class itself). This keeps all of Models attrs intact.
-        parents = [b for b in bases if isinstance(b, MetaModel)]
-        if not parents:
+        if not any( map( lambda b: isinstance(b, MetaModel), bases ) ):
             new_class = super_new(meta_class, name, bases, attrs)
             return new_class
 
@@ -44,13 +43,16 @@ class MetaModel(type):
         for name, attr in attrs.items():
             setattr(new_class, name, attr)
 
-        setattr( new_class, 'name', new_class.__name__ )
-
         return new_class
 
     def _add_manager( new_class ):
         from .manager import Manager
         setattr( new_class, 'objects', Manager(new_class) )
+
+    # this attribute exists on the class
+    @property
+    def name(new_class):
+        return new_class.__name__
 
     @property
     def pk_fields(new_class):

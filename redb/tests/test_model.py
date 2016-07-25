@@ -16,14 +16,21 @@ class TestModel( unittest.TestCase ):
 
     def test_1(self):
         "verify class/instance implementation"
-        self.assertTrue( verifyClass(IModel, Model) )
+
+        for model_class in [EmptyModel, MyModel]:
+            self.assertTrue( verifyClass(IModel, model_class) )
+            m = model_class()
+            self.assertTrue( verifyObject(IModel, m) )
+
+            self.assertTrue( m.dict or m.dict == {} ) # make sure it doesn't blow up
+            self.assertTrue( m.schema ) # make sure it doesn't blow up
 
         m = EmptyModel()
-        self.assertTrue( verifyObject(IModel, m) )
         self.assertEqual( "EmptyModel", m.name )
         self.assertEqual( "EmptyModel", EmptyModel.name )
 
-        self.assertTrue( m.schema ) # make sure it doesn't blow up
+        self.assertTrue( EmptyModel.objects != MyModel.objects )
+
 
     def test_2(self):
         "empty fields by default"
@@ -153,3 +160,11 @@ class TestModel( unittest.TestCase ):
         self.assertTrue( id(m1) != id(m2) )
         self.assertEqual( m1, m2 )
         self.assertFalse( m1 != m2 )
+
+    def test_17(self):
+        "test schema"
+
+        now = tznow()
+        m = MyModel(int_type=3, str_type='string', dt_type=now )
+
+        self.assertTrue( m.schema )

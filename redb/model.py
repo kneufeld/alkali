@@ -1,9 +1,6 @@
 from zope.interface import Interface, Attribute, implements
 import json
-import copy
-import os
 
-from .fields import Field
 from .metamodel import MetaModel
 
 class IModel( Interface ):
@@ -64,6 +61,7 @@ class Model(object):
     def meta(self):
         return self.__class__.Meta
 
+    # this property exists on the instance
     @property
     def name(self):
         return self.__class__.__name__

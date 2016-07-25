@@ -2,8 +2,7 @@ from zope.interface import Interface, Attribute, implements
 from collections import OrderedDict
 import os
 
-from .model import Model
-from .query import IQuery, Query
+from .query import Query
 
 import logging
 logger = logging.getLogger(__name__)
