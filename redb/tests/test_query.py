@@ -10,7 +10,7 @@ from redb.storage import JSONStorage
 from redb import fields
 from redb import tznow
 
-from . import EmptyModel, MyModel
+from . import EmptyModel, MyModel, MyMulti
 
 class TestQuery( unittest.TestCase ):
 
@@ -171,3 +171,30 @@ class TestQuery( unittest.TestCase ):
             c += 1
 
         self.assertEqual( 3, c )
+
+    def test_31(self):
+        "test pk searching with multiple primary keys"
+        m1 = MyMulti(pk1=1,pk2=2,other='1 2')
+        m1.save()
+        m2 = MyMulti(pk1=10,pk2=2,other='10 2')
+        m2.save()
+        m3 = MyMulti(pk1=10,pk2=3,other='10 3')
+        m3.save()
+
+        results = MyMulti.objects.filter(pk=(1,2)).instances
+        self.assertEqual( 1, len(results) )
+
+        results = MyMulti.objects.filter(pk=[1,2]).instances
+        self.assertEqual( 0, len(results) )
+
+        results = MyMulti.objects.filter(pk=1).instances
+        self.assertEqual( 0, len(results) )
+
+        results = MyMulti.objects.filter(pk=(10,2)).instances
+        self.assertEqual( 1, len(results) )
+
+        results = MyMulti.objects.filter(pk=(2,10)).instances
+        self.assertEqual( 0, len(results) )
+
+        results = MyMulti.objects.filter(pk1=10).instances
+        self.assertEqual( 2, len(results) )

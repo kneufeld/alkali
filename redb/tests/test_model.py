@@ -7,7 +7,7 @@ import datetime as dt
 from redb.model import IModel, Model
 from redb import fields
 from redb import tznow
-from . import EmptyModel, MyModel
+from . import EmptyModel, MyModel, MyMulti
 
 class TestModel( unittest.TestCase ):
 
@@ -177,12 +177,6 @@ class TestModel( unittest.TestCase ):
 
     def test_18(self):
         "test multi field primary key"
-
-        class MyMulti(Model):
-            pk1 = fields.IntField(primary_key=True)
-            pk2 = fields.IntField(primary_key=True)
-            other = fields.StringField()
-
         self.assertTrue( verifyClass(IModel, MyMulti) )
         m = MyMulti(pk1=100,pk2=200)
         self.assertTrue( verifyObject(IModel, m) )

@@ -15,3 +15,9 @@ class MyModel( Model ):
     @property
     def iter_type(self):
         return [self.int_type]
+
+class MyMulti(Model):
+    pk1 = fields.IntField(primary_key=True)
+    pk2 = fields.IntField(primary_key=True)
+    other = fields.StringField()
+

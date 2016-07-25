@@ -67,12 +67,6 @@ class Query(object):
 
         logger.debug( "%s: query: %s", self.name, str(kw) )
 
-        # TODO can only handle single pk field
-        if 'pk' in kw:
-            query = kw.pop('pk')
-            pk_field_name = self.model_class.Meta.pk_fields[0]
-            kw[pk_field_name] = query
-
         for field, query in kw.items():
             try:
                 field, oper = field.split('__')
