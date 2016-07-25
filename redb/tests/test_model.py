@@ -184,8 +184,9 @@ class TestModel( unittest.TestCase ):
             other = fields.StringField()
 
         self.assertTrue( verifyClass(IModel, MyMulti) )
-        m = MyMulti()
+        m = MyMulti(pk1=100,pk2=200)
         self.assertTrue( verifyObject(IModel, m) )
         self.assertTrue( m.schema )
 
         self.assertEqual( ['pk1','pk2'], MyMulti.Meta.pk_fields )
+        self.assertEqual( (100,200), m.pk )
