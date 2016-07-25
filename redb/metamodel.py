@@ -92,4 +92,5 @@ class MetaModel(type):
 
         # this calls Model.__new__ and then Model.__init__
         # obj is a instance of Model (or a derived class)
-        return type.__call__(self, **kw_fields)
+        kw['kw_fields'] = kw_fields
+        return type.__call__(self, **kw)

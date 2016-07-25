@@ -15,7 +15,7 @@ class Model(object):
     __metaclass__ = MetaModel
     implements(IModel)
 
-    def __new__(cls, *args, **kw_fields):
+    def __new__(cls, *args, **kw):
         """
         return a new instance of Model (or derived type)
 
@@ -24,8 +24,12 @@ class Model(object):
         """
         obj = super(Model,cls).__new__(cls)
 
+        kw_fields = kw.pop('kw_fields')
         for name, value in kw_fields.items():
             value = obj.Meta.fields[name].cast(value)
+            setattr(obj, name, value)
+
+        for name, value in kw.items():
             setattr(obj, name, value)
 
         setattr( obj, '_modified', False )
