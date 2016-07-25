@@ -1,6 +1,8 @@
 from zope.interface import Interface, Attribute, implements
 import copy
+import types
 import operator
+import collections
 import re
 
 import logging
@@ -89,16 +91,31 @@ class Query(object):
         """
 
         def in_(coll, val):
-            return val in coll
+            if not isinstance(coll, types.StringTypes) \
+            and isinstance(coll, collections.Iterable):
+                return bool( set(coll) & set(val) ) # intersection
+            else:
+                return coll in val
+
+        def rin_(coll, val):
+            if not isinstance(val, types.StringTypes) \
+            and isinstance(val, collections.Iterable):
+                return bool( set(coll) & set(val) ) # intersection
+            else:
+                return val in coll
 
         def regex(coll, val):
             return re.search(val, coll, re.UNICODE)
 
         def regexi(coll, val):
-            return re.search(val, coll, re.UNICODE|re.IGNORECASE)
+            return re.search(val, coll, re.UNICODE | re.IGNORECASE)
 
         if oper == 'in':
+            assert isinstance(value, collections.Iterable)
             oper = in_
+        elif oper == 'rin':
+            assert isinstance(field, collections.Iterable)
+            oper = rin_
         elif oper == 're':
             oper = regex
         elif oper == 'rei':

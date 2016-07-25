@@ -116,7 +116,19 @@ class TestQuery( unittest.TestCase ):
         results = MyModel.objects.filter(int_type=0, str_type='string XXX').instances
         self.assertEqual( 0, len(results) )
 
-        results = MyModel.objects.filter(str_type__in='1').instances
+        results = MyModel.objects.filter(iter_type__in=[1]).instances
+        self.assertEqual( 1, len(results) )
+
+        results = MyModel.objects.filter(iter_type__rin=1).instances
+        self.assertEqual( 1, len(results) )
+
+        results = MyModel.objects.filter(iter_type__rin=[1]).instances
+        self.assertEqual( 1, len(results) )
+
+        results = MyModel.objects.filter(str_type__in=['string 1']).instances
+        self.assertEqual( 1, len(results) )
+
+        results = MyModel.objects.filter(str_type__rin='1').instances
         self.assertEqual( 1, len(results) )
 
         results = MyModel.objects.filter(str_type__re='1$').instances
