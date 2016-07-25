@@ -25,9 +25,10 @@ class Field(object):
     _counter = itertools.count() # keeps track of declaration order in the Models
 
     def __init__(self, field_type, *args, **kw):
+        self._order = Field._counter.next() # DO NOT TOUCH, deleted in MetaModel
+
         assert field_type is not None
         self._field_type = field_type
-        self._order = Field._counter.next()
 
         self._primary_key = kw.pop('primary_key', False)
 

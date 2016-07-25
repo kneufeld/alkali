@@ -58,12 +58,15 @@ class MetaModel(type):
     def pk_fields(new_class):
         return [name for name,field in new_class.Meta.fields.items() if field.primary_key]
 
-    def _get_field_order(new_class, attrs):
-        fields = [(k,v) for k,v in attrs.items() if isinstance(v,Field)]
-        fields.sort(key=lambda e: e[1]._order)
-        return [k for k,v in fields]
-
     def _add_meta( new_class, attrs ):
+        def _get_fields( attrs ):
+            return [(k,v) for k,v in attrs.items() if isinstance(v,Field)]
+
+        def _get_field_order(attrs):
+            fields = _get_fields(attrs)
+            fields.sort(key=lambda e: e[1]._order)
+            return [k for k,v in fields]
+
         class Object(object): pass
 
         meta = attrs.pop( 'Meta', Object() )
@@ -76,13 +79,15 @@ class MetaModel(type):
             meta.storage = ''
 
         if not hasattr(meta, 'ordering'):
-            meta.ordering = new_class._get_field_order(attrs)
+            meta.ordering = _get_field_order(attrs)
 
-        assert len(meta.ordering) == len([k for k,v in attrs.items() if isinstance(v,Field)])
+        # don't let user miss a field if they've defined Meta.ordering
+        assert len(meta.ordering) == len(_get_fields(attrs)), "missing/extra fields defined in Meta.ordering"
+
         meta.fields = OrderedDict()
-
         for field in meta.ordering:
             meta.fields[field] = attrs.pop(field)
+            delattr( meta.fields[field], '_order' )
 
         # HACK I can't figure out how to set a property function on Meta directly
         # meta.pk_fields is a property
@@ -90,11 +95,10 @@ class MetaModel(type):
 
     # creates a new instance of derived model
     def __call__(self, *args, **kw):
-        kw_fields={}
+        kw_fields=OrderedDict()
         for name,_ in self.Meta.fields.items():
             kw_fields[name] = kw.pop(name, None)
+        kw['kw_fields'] = kw_fields
 
         # this calls Model.__new__ and then Model.__init__
-        # obj is a instance of Model (or a derived class)
-        kw['kw_fields'] = kw_fields
         return type.__call__(self, **kw)
