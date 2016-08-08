@@ -118,3 +118,26 @@ class Query(object):
             oper = getattr(operator,oper)
 
         return filter( lambda e: oper(getattr(e,field), value), instances)
+
+    def order_by(self, *args):
+        """
+        change order of self.instances, args should be field names
+        with optional '-' to indicate reverse order
+
+        warning: because this isn't a real database and we don't have
+        grouping, passing in multiple fields will very possibly sort
+        on the last field only. python sorting is stable however, so a
+        multiple field sort may work as intended.
+        """
+        def _order_by( field ):
+            "return reversed, field_name"
+            if field.startswith('-'):
+                return True, field[1:]
+            else:
+                return False, field
+
+        for field in args:
+            reverse, field = _order_by( field )
+            self._instances = sorted( self._instances, key=lambda e: getattr(e,field), reverse=reverse)
+
+        return self

@@ -198,3 +198,20 @@ class TestQuery( unittest.TestCase ):
 
         results = MyMulti.objects.filter(pk1=10).instances
         self.assertEqual( 2, len(results) )
+
+    def test_35(self):
+        "test order_by"
+
+        # make some instances
+        now = tznow()
+        instances = [ MyModel(int_type=i, str_type='string', dt_type=now ) for i in range(3)]
+        map( lambda e: e.save(), instances )
+        self.assertEqual( instances, MyModel.objects.all().instances )
+
+        self.assertEqual( Query, type(MyModel.objects.all().order_by('int_type')) )
+        self.assertEqual( instances, MyModel.objects.all().instances )
+
+        self.assertEqual( instances[::-1], MyModel.objects.all().order_by('-int_type').instances )
+        self.assertEqual( instances, MyModel.objects.all().order_by('str_type','dt_type').instances )
+
+        self.assertEqual( instances, MyModel.objects.all().order_by('pk').instances )
