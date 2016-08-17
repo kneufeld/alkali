@@ -5,24 +5,29 @@ ACKNOWLEDGEMENTS
 -----------------
 "plof" for the name: http://stackoverflow.com/a/10576559/589362
 Ned Batchelder for the buffered __peek__: http://stackoverflow.com/a/1517965/589362
+
+from: https://gist.github.com/dmckeone/7518335
+slightly modified by Kurt Neufeld
 """
 
-def peek(peekorator, n=None, default=None):
+class PeekoratorDefault(object): pass
+
+def peek(peekorator, n=0, default=PeekoratorDefault()):
     """
     next()-like function to be used with a Peekorator
 
     :param peekorator: Peekorator to use
     :param n: Number of items to look ahead
     :type n: int
-    :param default: If the iterator is exhausted then a default is given
+    :param default: If the iterator is exhausted then a default is given, raise StopIteration if not given
     """
     try:
         return peekorator.__peek__(n=n)
     except StopIteration:
-        if default is not None:
+        if not isinstance(default, PeekoratorDefault):
             return default
         else:
-            raise
+            raise # StopIteration
 
 
 class Peekorator(object):
@@ -32,8 +37,15 @@ class Peekorator(object):
     """
 
     def __init__(self, generator):
+        # a generator is an iterator
+        import collections
+        if not isinstance( generator, collections.Iterator ):
+            generator = iter(generator)
+
         self.generator = generator
         self._peek_buffer = []
+
+        self._first = None
 
     def __peek__(self, n=0):
         """
@@ -55,9 +67,16 @@ class Peekorator(object):
         Get the next result from the generator
         """
         if self._peek_buffer:
-            return self._peek_buffer.pop(0)
+            ret = self._peek_buffer.pop(0)
         else:
-            return next(self.generator)
+            ret = next(self.generator)
+
+        if self._first is None:
+            self._first = True
+        elif self._first is True:
+            self._first = False
+
+        return ret
 
     # Allow Python 2/3
     next = __next__
@@ -67,3 +86,23 @@ class Peekorator(object):
         Allow the Peakorator to be used as a regular iterable
         """
         return self
+
+    def first(self):
+        """
+        if you're about to get the first element or just got the first
+        element then return true
+        """
+        if self._first is None:
+            return True # pre first call to next()
+        return self._first
+
+    def last(self):
+        """
+        return true if we'll get a StopIteration on the next() call
+        """
+        try:
+            self.peek()
+        except StopIteration:
+            return True
+
+        return False

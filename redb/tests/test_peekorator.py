@@ -1,9 +1,13 @@
+"""
+see ../peekorator.py for attribution
+"""
+
 from mock import Mock
-from unitest import UnitTest
+from unittest import TestCase
 
 from ..peekorator import peek, Peekorator
 
-class Test_peek(TestCase):
+class TestPeek(TestCase):
 
     @staticmethod
     def throwing_peekorator(*args, **kwargs):
@@ -40,7 +44,7 @@ class Test_peek(TestCase):
 class TestPeekorator(TestCase):
 
     def test_sequential_use(self):
-        peekorator = Peekorator(iter([1, 2, 3]))
+        peekorator = Peekorator([1, 2, 3])
         self.assertEqual(1, peekorator.peek())
         self.assertEqual(1, peekorator.next())
         self.assertEqual(2, peekorator.peek())
@@ -85,3 +89,36 @@ class TestPeekorator(TestCase):
 
         with self.assertRaises(StopIteration):
             peekorator.peek(3)
+
+    def test_first_last(self):
+        peekorator = Peekorator([1, 2, 3])
+
+        self.assertTrue( peekorator.first() )
+        self.assertFalse( peekorator.last() )
+
+        self.assertEqual( 1, next(peekorator) )
+        self.assertTrue( peekorator.first() )
+        self.assertFalse( peekorator.last() )
+
+        self.assertEqual( 2, next(peekorator) )
+        self.assertFalse( peekorator.first() )
+        self.assertFalse( peekorator.last() )
+
+        self.assertEqual( 3, next(peekorator) )
+        self.assertFalse( peekorator.first() )
+        self.assertTrue( peekorator.last() )
+
+    def test_first_last_2(self):
+        peekorator = Peekorator([])
+
+        self.assertTrue( peekorator.first() )
+        self.assertTrue( peekorator.last() )
+
+        peekorator = Peekorator([1])
+
+        self.assertTrue( peekorator.first() )
+        self.assertFalse( peekorator.last() )
+
+        self.assertEqual( 1, next(peekorator) )
+        self.assertTrue( peekorator.first() )
+        self.assertTrue( peekorator.last() )
