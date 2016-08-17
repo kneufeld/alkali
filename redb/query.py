@@ -138,6 +138,6 @@ class Query(object):
 
         for field in args:
             reverse, field = _order_by( field )
-            self._instances = sorted( self._instances, key=lambda e: getattr(e,field), reverse=reverse)
+            self._instances = sorted( self._instances, key=operator.attrgetter(field), reverse=reverse)
 
         return self
