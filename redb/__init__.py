@@ -23,6 +23,9 @@ def tzadd( dtstamp, tzinfo=None ):
 
     return dtstamp.replace( tzinfo=tzinfo )
 
+def fromts( ts ):
+    return tzadd( dt.datetime.fromtimestamp(ts) )
+
 
 from .database import Database
 from .storage import IStorage, Storage, JSONStorage
