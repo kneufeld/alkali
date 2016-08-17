@@ -74,6 +74,19 @@ class JSONStorage(Storage):
             yield elem
 
     def write(self, iterator):
-        data = [e.dict for e in iterator]
-        data = json.dumps(data)
-        return self._write(data)
+        from peekorator import Peekorator
+
+        with open( self.filename, 'w' ) as f:
+            f.write('[\n')
+
+            _peek = Peekorator(iter(iterator))
+            for e in _peek:
+                data = json.dumps(e.dict)
+                f.write(data)
+
+                if not _peek.last():
+                    f.write(',\n')
+
+            f.write('\n]')
+
+        return True
