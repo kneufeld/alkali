@@ -125,7 +125,7 @@ class Manager(object):
                 elem = self._model_class( **elem )
 
             if elem.pk in self._instances:
-                raise RuntimeError('pk collision detected during load: %s' % elem.pk)
+                raise RuntimeError( 'pk collision detected during load: %s' % str(elem.pk) )
 
             # this adds elem to our internal list
             self.save(elem, modify=False)
