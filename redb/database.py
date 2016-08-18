@@ -2,6 +2,7 @@ from zope.interface import Interface, Attribute, implements
 import datetime as dt
 from collections import OrderedDict
 import types
+import inspect
 import os
 
 from .storage import JSONStorage
@@ -79,6 +80,9 @@ class Database(object):
         """
         logger.debug( "Database: storing models" )
 
+        # make sure storage is an instantiated class
+        assert storage is None or not inspect.isclass(storage)
+
         for model in self.models:
             logger.debug( "Database: storing model: %s", model.name )
 
@@ -91,6 +95,9 @@ class Database(object):
         load the data for each model
         """
         logger.debug( "Database: loading models" )
+
+        # make sure storage is an instantiated class
+        assert storage is None or not inspect.isclass(storage)
 
         for model in self.models:
             logger.debug( "Database: loading model: %s", model.name )

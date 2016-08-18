@@ -1,5 +1,6 @@
 from zope.interface import Interface, Attribute, implements
 from collections import OrderedDict
+import inspect
 import os
 
 from .query import Query
@@ -94,6 +95,7 @@ class Manager(object):
 
     def store(self, storage, force=False):
         "save all our instances to storage"
+        assert not inspect.isclass(storage)
 
         if force:
             self._modified = True
