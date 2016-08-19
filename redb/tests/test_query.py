@@ -8,7 +8,7 @@ from redb.model import Model
 from redb.query import IQuery, Query
 from redb.storage import JSONStorage
 from redb import fields
-from redb import tznow
+from redb import tznow, fromts
 
 from . import EmptyModel, MyModel, MyMulti
 
@@ -135,6 +135,9 @@ class TestQuery( unittest.TestCase ):
         self.assertEqual( 1, len(results) )
 
         results = MyModel.objects.filter(str_type__rei='^STR').instances
+        self.assertEqual( 3, len(results) )
+
+        results = MyModel.objects.filter(dt_type__gt=fromts(0)).instances
         self.assertEqual( 3, len(results) )
 
         # test pk queries

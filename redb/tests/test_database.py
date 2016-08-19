@@ -67,10 +67,10 @@ class TestDatabase( unittest.TestCase ):
         "test overriding storage"
 
         class FooStorage(Storage):
+            extension = 'foo'
             pass
 
         class MyModel( Model ):
-
             class Meta:
                 storage = FooStorage
 
@@ -81,7 +81,7 @@ class TestDatabase( unittest.TestCase ):
         model = MyModel()
         db = Database( models=[model], storage=JSONStorage, root_dir=curr_dir)
 
-        self.assertEqual( FooStorage, db.get_storage(model) )
+        self.assertEqual( FooStorage, type(db.get_storage(model)) )
 
     def test_get_models(self):
         db = Database( models=[MyModel] )
