@@ -58,7 +58,7 @@ class TestManager( unittest.TestCase ):
         man = Manager(MyModel)
 
         m1 = MyModel(int_type=1)
-        man.save(m1, modify=False)
+        man.save(m1, dirty=False)
         self.assertEqual( 1, len(man) )
 
         man.delete(m1)
@@ -68,7 +68,7 @@ class TestManager( unittest.TestCase ):
         man.delete(m1)
         self.assertEqual( 0, len(man) )
 
-        self.assertTrue( man.modified )
+        self.assertTrue( man.dirty )
 
     def test_4(self):
         "test getting"
@@ -142,19 +142,19 @@ class TestManager( unittest.TestCase ):
         self.assertEqual( [1,2,3], man.pks )
 
     def test_8(self):
-        "test modified"
+        "test dirty"
 
         man = MyModel.objects
 
         m=MyModel(int_type=3)
         m.save()
-        self.assertTrue( man.modified )
+        self.assertTrue( man.dirty )
 
-        man._modified = False
-        self.assertFalse( man.modified )
+        man._dirty = False
+        self.assertFalse( man.dirty )
 
         m.str_type = 'foo'
-        self.assertTrue( man.modified )
+        self.assertTrue( man.dirty )
 
     def test_9(self):
         "verify some simple queries"

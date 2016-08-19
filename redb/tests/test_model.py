@@ -77,24 +77,24 @@ class TestModel( unittest.TestCase ):
         self.assertEqual( 2, t2.int_type )
 
     def test_6(self):
-        "test modified flag"
+        "test dirty flag"
 
         m = MyModel()
-        self.assertFalse( m.modified )
+        self.assertFalse( m.dirty )
 
         m = MyModel(int_type=1)
-        self.assertFalse( m.modified )
+        self.assertFalse( m.dirty )
 
     def test_6a(self):
-        "test modified flag"
+        "test dirty flag"
 
         m = MyModel()
 
         m.int_type = 1
-        self.assertTrue( m.modified )
+        self.assertTrue( m.dirty )
 
         m.save()
-        self.assertFalse( m.modified )
+        self.assertFalse( m.dirty )
 
     def test_7(self):
         "find the primary key"

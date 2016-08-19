@@ -61,7 +61,7 @@ class Model(object):
         return not self.__eq__(other)
 
     @property
-    def modified(self):
+    def dirty(self):
         return self._modified
 
     @property

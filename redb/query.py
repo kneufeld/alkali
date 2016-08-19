@@ -65,7 +65,7 @@ class Query(object):
         based on **kw, return a subset of instances
         """
 
-        logger.debug( "%s: query: %s", self.name, str(kw) )
+        #logger.debug( "%s: query: %s", self.name, str(kw) )
 
         for field, query in kw.items():
             try:

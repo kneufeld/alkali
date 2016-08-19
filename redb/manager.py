@@ -23,7 +23,7 @@ class Manager(object):
     def __init__( self, model_class, *args, **kw ):
         self._model_class = model_class
         self._instances = {}
-        self._modified = False
+        self._dirty = False
 
         self.clear()
 
@@ -52,11 +52,11 @@ class Manager(object):
         return [elem for elem in Manager.sorter(self._instances)]
 
     @property
-    def modified(self):
-        if self._modified:
+    def dirty(self):
+        if self._dirty:
             return True
 
-        return any( map( lambda e: e.modified, self.instances ) )
+        return any( map( lambda e: e.dirty, self.instances ) )
 
     @staticmethod
     def sorter(elements, **kw ):
@@ -69,19 +69,19 @@ class Manager(object):
             yield elements[key]
 
 
-    def save(self, instance, modify=True):
+    def save(self, instance, dirty=True):
         #logger.debug( "saving model instance: %s", str(instance.pk) )
 
         assert instance.pk is not None
         self._instances[ instance.pk ] = instance
 
-        if modify:
-            self._modified = True
+        if dirty:
+            self._dirty = True
 
     def clear(self):
         logger.debug( "%s: clearing all models", self.name )
 
-        self._modified = len(self._instances) > 0
+        self._dirty = len(self._instances) > 0
         self._instances = {}
 
     def delete(self, instance):
@@ -89,7 +89,7 @@ class Manager(object):
 
         try:
             del self._instances[ instance.pk ]
-            self._modified = True
+            self._dirty = True
         except KeyError:
             pass
 
@@ -98,9 +98,9 @@ class Manager(object):
         assert not inspect.isclass(storage)
 
         if force:
-            self._modified = True
+            self._dirty = True
 
-        if self.modified:
+        if self.dirty:
             logger.debug( "%s: has dirty records, saving", self.name )
             logger.debug( "%s: storing models via storage class: %s", self.name, storage.name )
 
@@ -108,7 +108,7 @@ class Manager(object):
         else:
             logger.debug( "%s: has no dirty records, not saving", self.name )
 
-        self._modified = False
+        self._dirty = False
 
 
     def load(self, storage):
@@ -128,7 +128,7 @@ class Manager(object):
                 raise RuntimeError( 'pk collision detected during load: %s' % str(elem.pk) )
 
             # this adds elem to our internal list
-            self.save(elem, modify=False)
+            self.save(elem, dirty=False)
 
         logger.debug( "%s: finished loading", self.name )
 
