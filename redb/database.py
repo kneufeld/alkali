@@ -52,7 +52,7 @@ class Database(object):
 
         return None
 
-    def get_filename(self, model):
+    def get_filename(self, model, storage=None):
         """
         allow models to specify their own filename or use
         storage extension default
@@ -60,11 +60,15 @@ class Database(object):
         if isinstance(model, types.StringTypes):
             model = self.get_model(model)
 
-        ext = self.get_storage(model).extension
-        filename = model.Meta.filename or "{}.{}".format(model.name,ext)
+        filename = model.Meta.filename
+
+        if not filename:
+            storage = storage or self.get_storage(model)
+            filename = "{}.{}".format(model.name, storage.extension)
+
         return os.path.join( self._root_dir, filename )
 
-    def get_storage(self, model):
+    def get_storage(self, model, default=None, filename=None):
         """
         allow models to specify their own storage or use
         database default
@@ -72,7 +76,13 @@ class Database(object):
         if isinstance(model, types.StringTypes):
             model = self.get_model(model)
 
-        return model.Meta.storage or self._storage_type
+        storage = model.Meta.storage or default or self._storage_type
+
+        if inspect.isclass(storage):
+            filename = filename or self.get_filename(model, storage)
+            storage = storage(filename)
+
+        return storage
 
     def store(self, filename=None, storage=None, force=False):
         """
@@ -86,8 +96,7 @@ class Database(object):
         for model in self.models:
             logger.debug( "Database: storing model: %s", model.name )
 
-            filename = filename or self.get_filename(model)
-            storage = storage or self.get_storage(model)(filename)
+            storage = storage or self.get_storage(model, filename=filename)
             model.objects.store(storage, force=force)
 
     def load(self, filename=None, storage=None):
@@ -102,6 +111,5 @@ class Database(object):
         for model in self.models:
             logger.debug( "Database: loading model: %s", model.name )
 
-            filename = filename or self.get_filename(model)
-            storage = storage or self.get_storage(model)(filename)
+            storage = storage or self.get_storage(model, filename=filename)
             model.objects.load(storage)
