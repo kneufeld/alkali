@@ -158,6 +158,6 @@ class Manager(object):
 
     def all(self):
         """
-        return a full Query, aka list of ll model instances
+        return a full Query, aka list of all model instances
         """
         return Query(self)
