@@ -24,16 +24,17 @@ def peek(peekorator, n=0, default=PeekoratorDefault()):
     try:
         return peekorator.__peek__(n=n)
     except StopIteration:
-        if not isinstance(default, PeekoratorDefault):
-            return default
-        else:
+        if isinstance(default, PeekoratorDefault):
             raise # StopIteration
+        else:
+            return default
 
 
 class Peekorator(object):
     """
-    Wrap a generator (or iterator) and allow the ability to peek at the next element in a lazy fashion.  If
-    the user never uses peek(), then the only cost over a regular generator is the proxied function call.
+    Wrap a generator (or iterator) and allow the ability to peek at the
+    next element in a lazy fashion. If the user never uses peek(), then
+    the only cost over a regular generator is the proxied function call.
     """
 
     def __init__(self, generator):
