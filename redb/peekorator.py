@@ -87,7 +87,7 @@ class Peekorator(object):
         """
         return self
 
-    def first(self):
+    def is_first(self):
         """
         if you're about to get the first element or just got the first
         element then return true
@@ -96,7 +96,7 @@ class Peekorator(object):
             return True # pre first call to next()
         return self._first
 
-    def last(self):
+    def is_last(self):
         """
         return true if we'll get a StopIteration on the next() call
         """

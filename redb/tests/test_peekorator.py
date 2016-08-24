@@ -93,32 +93,32 @@ class TestPeekorator(TestCase):
     def test_first_last(self):
         peekorator = Peekorator([1, 2, 3])
 
-        self.assertTrue( peekorator.first() )
-        self.assertFalse( peekorator.last() )
+        self.assertTrue( peekorator.is_first() )
+        self.assertFalse( peekorator.is_last() )
 
         self.assertEqual( 1, next(peekorator) )
-        self.assertTrue( peekorator.first() )
-        self.assertFalse( peekorator.last() )
+        self.assertTrue( peekorator.is_first() )
+        self.assertFalse( peekorator.is_last() )
 
         self.assertEqual( 2, next(peekorator) )
-        self.assertFalse( peekorator.first() )
-        self.assertFalse( peekorator.last() )
+        self.assertFalse( peekorator.is_first() )
+        self.assertFalse( peekorator.is_last() )
 
         self.assertEqual( 3, next(peekorator) )
-        self.assertFalse( peekorator.first() )
-        self.assertTrue( peekorator.last() )
+        self.assertFalse( peekorator.is_first() )
+        self.assertTrue( peekorator.is_last() )
 
     def test_first_last_2(self):
         peekorator = Peekorator([])
 
-        self.assertTrue( peekorator.first() )
-        self.assertTrue( peekorator.last() )
+        self.assertTrue( peekorator.is_first() )
+        self.assertTrue( peekorator.is_last() )
 
         peekorator = Peekorator([1])
 
-        self.assertTrue( peekorator.first() )
-        self.assertFalse( peekorator.last() )
+        self.assertTrue( peekorator.is_first() )
+        self.assertFalse( peekorator.is_last() )
 
         self.assertEqual( 1, next(peekorator) )
-        self.assertTrue( peekorator.first() )
-        self.assertTrue( peekorator.last() )
+        self.assertTrue( peekorator.is_first() )
+        self.assertTrue( peekorator.is_last() )

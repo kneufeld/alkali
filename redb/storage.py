@@ -84,7 +84,7 @@ class JSONStorage(Storage):
                 data = json.dumps(e.dict)
                 f.write(data)
 
-                if not _peek.last():
+                if not _peek.is_last():
                     f.write(',\n')
 
             f.write('\n]')
