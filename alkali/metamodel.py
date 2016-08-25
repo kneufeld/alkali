@@ -33,7 +33,7 @@ class MetaModel(type):
 
         # new_class is an instance of 'name' (aka Model) whose type is MetaModel
         # print "new_class", type(new_class), new_class
-        # new_class <class 'redb.metamodel.MetaModel'> <class 'redb.metamodel.MyModel'>
+        # new_class <class 'alkali.metamodel.MetaModel'> <class 'redb.metamodel.MyModel'>
         new_class = super_new(meta_class, name, bases, {})
         new_class._add_meta( attrs )
         new_class._add_manager()

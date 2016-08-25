@@ -4,11 +4,11 @@ import tempfile
 from zope.interface.verify import verifyObject, verifyClass
 import datetime as dt
 
-from redb.database import IDatabase, Database
-from redb.model import IModel, Model
-from redb.storage import JSONStorage, Storage
-from redb import fields
-from redb import tznow
+from alkali.database import IDatabase, Database
+from alkali.model import IModel, Model
+from alkali.storage import JSONStorage, Storage
+from alkali import fields
+from alkali import tznow
 from . import MyModel
 
 curr_dir = os.path.dirname( os.path.abspath( __file__ ) )

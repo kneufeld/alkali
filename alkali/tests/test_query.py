@@ -4,11 +4,11 @@ import tempfile
 from zope.interface.verify import verifyObject, verifyClass
 import datetime as dt
 
-from redb.model import Model
-from redb.query import IQuery, Query
-from redb.storage import JSONStorage
-from redb import fields
-from redb import tznow, fromts
+from alkali.model import Model
+from alkali.query import IQuery, Query
+from alkali.storage import JSONStorage
+from alkali import fields
+from alkali import tznow, fromts
 
 from . import EmptyModel, MyModel, MyMulti
 

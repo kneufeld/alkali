@@ -1,5 +1,5 @@
-from redb.model import Model
-from redb import fields
+from alkali.model import Model
+from alkali import fields
 
 class EmptyModel(Model):
     pass

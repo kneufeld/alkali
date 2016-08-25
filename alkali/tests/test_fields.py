@@ -6,9 +6,9 @@ import tempfile
 from zope.interface.verify import verifyObject, verifyClass
 import datetime as dt
 
-from redb.fields import IField, Field, IntField, StringField
-from redb.fields import DateField, FloatField, SetField
-from redb import tznow, tzadd
+from alkali.fields import IField, Field, IntField, StringField
+from alkali.fields import DateField, FloatField, SetField
+from alkali import tznow, tzadd
 
 class TestField( unittest.TestCase ):
 

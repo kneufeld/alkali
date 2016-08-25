@@ -4,9 +4,9 @@ import tempfile
 from zope.interface.verify import verifyObject, verifyClass
 import datetime as dt
 
-from redb.model import IModel, Model
-from redb import fields
-from redb import tznow
+from alkali.model import IModel, Model
+from alkali import fields
+from alkali import tznow
 from . import EmptyModel, MyModel, MyMulti
 
 class TestModel( unittest.TestCase ):

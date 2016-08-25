@@ -5,12 +5,12 @@ from zope.interface.verify import verifyObject, verifyClass
 import datetime as dt
 import json
 
-from redb.model import Model
-from redb.manager import IManager, Manager
-from redb.storage import JSONStorage
-from .. import Query
-from redb import fields
-from redb import tznow
+from alkali.model import Model
+from alkali.manager import IManager, Manager
+from alkali.storage import JSONStorage
+from alkali.query import Query
+from alkali import fields
+from alkali import tznow
 
 from . import EmptyModel, MyModel
 

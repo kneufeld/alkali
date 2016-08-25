@@ -3,7 +3,7 @@ import unittest
 import tempfile
 from zope.interface.verify import verifyObject, verifyClass
 
-from redb.storage import IStorage, Storage, JSONStorage
+from alkali.storage import IStorage, Storage, JSONStorage
 from . import MyModel
 
 class TestStorage( unittest.TestCase ):

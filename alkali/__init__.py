@@ -1,9 +1,9 @@
-__title__ = 'redb'
+__title__ = 'alkali'
 __version__ = '0.0.1'
 __author__ = 'Kurt Neufeld'
 __author_email__ = 'kneufeld@burgundywall.com'
 __license__ = 'MIT License'
-__copyright__ = 'Copyright 2016 - 2016 Kurt Neufeld'
+__copyright__ = 'Copyright 2016 to ~2086 Kurt Neufeld'
 
 import datetime as dt
 from dateutil.tz import tzlocal
