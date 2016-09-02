@@ -141,3 +141,17 @@ class Query(object):
             self._instances = sorted( self._instances, key=operator.attrgetter(field), reverse=reverse)
 
         return self
+
+    def limit(self, n):
+        """
+        return first(+) or last(-) n elements
+
+        this has to be the last call during a query since it returns a
+        list of instances and not a Query
+        """
+        if n > 0:
+            return self._instances[:n]
+        elif n < 0:
+            return self._instances[n:]
+        else: # n == 0, return all instead of [] because why not?
+            return self._instances
