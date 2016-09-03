@@ -10,7 +10,7 @@ class MyModel( Model ):
 
     int_type = fields.IntField(primary_key=True)
     str_type = fields.StringField()
-    dt_type  = fields.DateField()
+    dt_type  = fields.DateTimeField()
 
     @property
     def iter_type(self):

@@ -7,7 +7,7 @@ from zope.interface.verify import verifyObject, verifyClass
 import datetime as dt
 
 from alkali.fields import IField, Field, IntField, StringField
-from alkali.fields import DateField, FloatField, SetField
+from alkali.fields import DateTimeField, FloatField, SetField
 from alkali import tznow, tzadd
 
 class TestField( unittest.TestCase ):
@@ -16,7 +16,7 @@ class TestField( unittest.TestCase ):
         "verify class/instance implementation"
         self.assertTrue( verifyClass(IField, Field) )
 
-        for field in [IntField, StringField, DateField, FloatField, SetField]:
+        for field in [IntField, StringField, DateTimeField, FloatField, SetField]:
             self.assertTrue( verifyClass(IField, field) )
             f = field()
             self.assertTrue( verifyObject(IField, f) )
@@ -41,7 +41,7 @@ class TestField( unittest.TestCase ):
     def test_5(self):
         "test date setting"
         now = dt.datetime.now()
-        f = DateField()
+        f = DateTimeField()
         v = f.cast(now)
 
         self.assertIsNotNone( v.tzinfo )
@@ -79,7 +79,7 @@ class TestField( unittest.TestCase ):
 
     def test_8(self):
         "test none/null"
-        f = DateField()
+        f = DateTimeField()
 
         v = f.loads(None)
         self.assertIsNone(v)

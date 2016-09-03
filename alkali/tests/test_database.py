@@ -56,7 +56,7 @@ class TestDatabase( unittest.TestCase ):
 
             int_type = fields.IntField()
             str_type = fields.StringField()
-            date_type  = fields.DateField()
+            date_type  = fields.DateTimeField()
 
         model = MyModel()
         db = Database( models=[model], storage=JSONStorage, root_dir=curr_dir)
@@ -76,7 +76,7 @@ class TestDatabase( unittest.TestCase ):
 
             int_type = fields.IntField()
             str_type = fields.StringField()
-            date_type  = fields.DateField()
+            date_type  = fields.DateTimeField()
 
         model = MyModel()
         db = Database( models=[model], storage=JSONStorage, root_dir=curr_dir)
@@ -100,7 +100,7 @@ class TestDatabase( unittest.TestCase ):
 
             int_type = fields.IntField(primary_key=True)
             str_type = fields.StringField()
-            dt_type  = fields.DateField()
+            dt_type  = fields.DateTimeField()
 
         db = Database( models=[MyModel] )
         man = MyModel.objects
@@ -136,7 +136,7 @@ class TestDatabase( unittest.TestCase ):
 
             int_type = fields.IntField(primary_key=True)
             str_type = fields.StringField()
-            dt_type  = fields.DateField()
+            dt_type  = fields.DateTimeField()
 
         with open( tfile.name, 'r') as f:
             data = f.read()

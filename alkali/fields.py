@@ -97,10 +97,10 @@ class StringField(Field):
 
         return value
 
-class DateField(Field):
+class DateTimeField(Field):
 
     def __init__(self, *args, **kw):
-        super(DateField, self).__init__(dt.datetime, *args, **kw)
+        super(DateTimeField, self).__init__(dt.datetime, *args, **kw)
 
     def cast(self, value):
         """
@@ -113,7 +113,7 @@ class DateField(Field):
             if value == 'now':
                 value = tznow()
             else:
-                return DateField.loads(value)
+                return DateTimeField.loads(value)
 
         if type(value) is not self.field_type:
             value = self.field_type(value)
