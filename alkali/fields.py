@@ -2,6 +2,7 @@ from zope.interface import Interface, Attribute, implements
 import datetime as dt
 import dateutil.parser
 import itertools
+import types
 
 from . import tzadd, tznow
 
@@ -108,7 +109,7 @@ class DateField(Field):
         if value is None:
             return None
 
-        if type(value) in [unicode,str]:
+        if isinstance(value, types.StringTypes):
             if value == 'now':
                 value = tznow()
             else:
@@ -131,7 +132,7 @@ class DateField(Field):
             return None
 
         # assume date is in isoformat, this preserves timezone info
-        if type(value) in [unicode,str]:
+        if isinstance(value, types.StringTypes):
             value = dateutil.parser.parse(value)
 
         if value.tzinfo is None:
