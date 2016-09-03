@@ -4,7 +4,7 @@ import dateutil.parser
 import itertools
 import types
 
-from . import tzadd, tznow
+from .utils import tzadd, tznow
 
 class IField( Interface ):
 
