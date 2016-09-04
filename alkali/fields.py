@@ -8,7 +8,7 @@ from .utils import tzadd, tznow
 
 class IField( Interface ):
 
-    field_type = Attribute("the type of the field, str, int, list, etc")
+    field_type = Attribute("the type of the field: str/int/float/etc")
 
     def dumps(value):
         "method to serialize the value"
@@ -16,16 +16,32 @@ class IField( Interface ):
     def loads(value):
         "method to load the value"
 
+    def cast(value):
+        """
+        function that can potentially convert passed in value to correct type
+
+        :param value: value to convert
+        :rtype: :func:`IField.field_type`
+        """
+
 class Field(object):
     """
     base class for all field types. it tries to hold all the functionality
     so derived classes only need to override methods in special circumstances.
+
+    **Note**: the Field does not hold a value, only meta information about a value
     """
     implements(IField)
 
     _counter = itertools.count() # keeps track of declaration order in the Models
 
     def __init__(self, field_type, *args, **kw):
+        """
+        :param field_type: the type this field should hold
+        :type field_type: str/int/float/etc
+        :param kw:
+            * primary_key: is this field a primary key of parent model
+        """
         self._order = Field._counter.next() # DO NOT TOUCH, deleted in MetaModel
 
         assert field_type is not None
@@ -38,16 +54,19 @@ class Field(object):
 
     @property
     def field_type(self):
+        """
+        **property**: return ``type`` of this field
+        """
         return self._field_type
 
     @property
     def primary_key(self):
+        """
+        **property**: return true/false if this field is a primary key
+        """
         return self._primary_key
 
     def cast(self, value):
-        """
-        cast non field_type to correct type
-        """
         if value is None:
             return None
 
@@ -77,14 +96,14 @@ class FloatField(Field):
 
 
 class StringField(Field):
+    """
+    holds a unicode string
+    """
 
     def __init__(self, *args, **kw):
         super(StringField, self).__init__(unicode, *args, **kw)
 
     def cast(self, value):
-        """
-        cast non field_type to correct type
-        """
         if value is None:
             return None
 
