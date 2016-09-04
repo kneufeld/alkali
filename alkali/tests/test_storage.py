@@ -47,3 +47,14 @@ class TestStorage( unittest.TestCase ):
     def test_4(self):
         "make sure we're setting extension"
         self.assertEqual( 'json', JSONStorage.extension )
+
+    def test_5(self):
+        "test plain Storage class"
+        tfile = tempfile.NamedTemporaryFile()
+        storage = Storage( tfile.name )
+
+        models = [ MyModel() ]
+
+        self.assertTrue( storage._write( models ) )
+        self.assertTrue( open( tfile.name, 'r').read() )
+        self.assertTrue( storage._read() )
