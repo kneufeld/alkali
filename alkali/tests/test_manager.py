@@ -174,4 +174,4 @@ class TestManager( unittest.TestCase ):
             f.write( json.dumps([m.dict,m.dict]) )
 
         man = Manager(MyModel)
-        self.assertRaises( RuntimeError, man.load, JSONStorage(tfile.name) )
+        self.assertRaises( KeyError, man.load, JSONStorage(tfile.name) )
