@@ -1,5 +1,27 @@
 # -*- coding: utf-8 -*-
 
+"""
+::
+
+    from alkali import Database, JSONStorage, Model, fields
+
+    class MyModel( Model ):
+        id = fields.IntField(primary_key=True)
+        title = fields.StringField()
+
+    db = Database(models=[MyModel], storage=JSONStorage, root_dir='/tmp', save_on_exit=True)
+
+    m = MyModel(id=1,title='old title')
+    m.save()                      # adds model MyModel.objects
+    db.store()                    # creates /tmp/MyModel.json
+
+    db.load()                     # read /tmp/MyModel.json
+    m = MyModel.objects.get(pk=1) # do a search on primary key
+    m.title = "my new title"      # change the title
+    # don't need to call m.save() since the database "knows" about m
+    # db.store() is automatically called as db goes out of scope, save_on_exit==True
+"""
+
 from zope.interface import Interface, Attribute, implements
 from collections import OrderedDict
 import types
