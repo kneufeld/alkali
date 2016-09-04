@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from zope.interface import Interface, Attribute, implements
-import datetime as dt
 from collections import OrderedDict
 import types
 import inspect
 import os
 
 from .storage import JSONStorage
-from .model import Model
-from .fields import Field
 
 import logging
 logger = logging.getLogger(__name__)
@@ -48,6 +45,7 @@ class Database(object):
 
         self._models = OrderedDict()
         for model in models:
+            #assert inspect.isclass(model)
             logger.debug( "Database: adding model to database: %s", model.name )
             self._models[model.name.lower()] = model
 
