@@ -197,11 +197,11 @@ class Manager(object):
 
     def get(self, *pk, **kw):
         """
-        perform a query that returns an instance of a model
+        perform a query that returns a single instance of a model
 
         :param pk: optional primary key
         :type pk: value or ``tuple`` if multi-pk
-        :param kw: optional field_name=value
+        :param kw: optional ``field_name=value``
         :rtype: single :class:`alkali.model.Model` instance
         :raises KeyError: if 0 or more than 1 instance returned
 
@@ -211,6 +211,7 @@ class Manager(object):
             m = MyModel.objects.get(pk=1)
 
             m = MyModel.objects.get(some_field='a unique value')
+            m = MyModel.objects.get(field1='a unique', field2='value')
         """
         if len(pk):
             kw['pk'] = pk[0]
@@ -221,30 +222,31 @@ class Manager(object):
             raise KeyError("got no results")
 
         if len(results) > 1:
-            raise KeyError("got more than 1 result")
+            raise KeyError("got more than 1 result (%d)" % len(results) )
 
         return results[0]
 
     def filter(self, **kw):
         """
-        return a :class:`alkali.query.Query`, aka a subset of model instances
+        see :func:`alkali.query.Query.filter` for documentation
 
-        see :class:`alkali.query.Query` for documentation
+        :rtype: :class:`alkali.query.Query`
         """
         return Query(self).filter(**kw)
 
     def order_by(self, **kw):
         """
-        return a :class:`alkali.query.Query` that has been sorted by given fields
+        see :func:`alkali.query.Query.order_by` for documentation
 
-        see :class:`alkali.query.Query` for documentation
+        :rtype: :class:`alkali.query.Query`
         """
         return Query(self).order_by(**kw)
 
     def all(self):
         """
-        return a full :class:`alkali.query.Query`, aka list of all model instances
+        return a ``Query`` object that contains all instances in
+        unsorted order
 
-        see :class:`alkali.query.Query` for documentation
+        :rtype: :class:`alkali.query.Query`
         """
         return Query(self)

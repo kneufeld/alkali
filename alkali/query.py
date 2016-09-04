@@ -62,7 +62,7 @@ class Query(object):
 
     def filter(self, **kw):
         """
-        based on **kw, return a subset of instances
+        based on \*\*kw, return a subset of instances
         """
 
         #logger.debug( "%s: query: %s", self.name, str(kw) )
