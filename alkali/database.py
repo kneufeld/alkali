@@ -78,9 +78,11 @@ class Database(object):
         self._root_dir = os.path.expanduser(self._root_dir)
         self._root_dir = os.path.abspath(self._root_dir)
 
+
     def __del__(self):
         if self._save_on_exit:
             self.store()
+
 
     @property
     def models(self):
@@ -88,6 +90,7 @@ class Database(object):
         **property**: return ``list`` of models in the database
         """
         return self._models.values()
+
 
     def get_model(self, model_name):
         """
@@ -101,6 +104,7 @@ class Database(object):
             pass
 
         return None
+
 
     def get_filename(self, model, storage=None):
         """
@@ -129,65 +133,61 @@ class Database(object):
         # if filename is absolute, then self._root_dir is gets filtered out
         return os.path.join( self._root_dir, filename )
 
-    def get_storage(self, model, default=None, filename=None):
+
+    def get_storage(self, model, storage=None):
         """
-        get the storage class for the specified model. allow models to
-        specify their own storage or use database default.
+        get the storage class for the specified model
+
+        precedence is:
+
+        #. model defined storage class
+        #. storage class defined in call
+        #. storage class default of database
 
         :param model: the model name or model class
-        :param default: override database default storage class
-        :param filename: override database default filename
+        :param storage: override database default storage class
+        :rtype: :class:`alkali.storage.Storage` (not an instance)
         """
-        # FIXME this should return a class not instance
-
         if isinstance(model, types.StringTypes):
             model = self.get_model(model)
 
-        storage = model.Meta.storage or default or self._storage_type
-
-        if inspect.isclass(storage):
-            filename = filename or self.get_filename(model, storage)
-            storage = storage(filename)
-
+        storage = model.Meta.storage or storage or self._storage_type
         return storage
 
-    def store(self, filename=None, storage=None, force=False):
+
+    def store(self, storage=None, force=False):
         """
         write all model data to disk
 
-        :param filename: override model filename
         :param storage: override model storage class
         :param force: force store even if :class:`alkali.manager.Manager`
             thinks data is clean
         """
-        # FIXME can't specify filename if more than one model in database
-
         logger.debug( "Database: storing models" )
-
-        # make sure storage is an instantiated class
-        assert storage is None or not inspect.isclass(storage)
 
         for model in self.models:
             logger.debug( "Database: storing model: %s", model.name )
 
-            storage = storage or self.get_storage(model, filename=filename)
+            filename = self.get_filename(model)
+            storage = storage or self.get_storage(model)
+            storage = storage(filename)
+
             model.objects.store(storage, force=force)
 
-    def load(self, filename=None, storage=None):
+
+    def load(self, storage=None):
         """
         load all model data from disk
 
-        :param filename: override model filename
         :param storage: override model storage class
         """
-        # FIXME can't specify filename if more than one model in database
         logger.debug( "Database: loading models" )
-
-        # make sure storage is an instantiated class
-        assert storage is None or not inspect.isclass(storage)
 
         for model in self.models:
             logger.debug( "Database: loading model: %s", model.name )
 
-            storage = storage or self.get_storage(model, filename=filename)
+            filename = self.get_filename(model)
+            storage = storage or self.get_storage(model)
+            storage = storage(filename)
+
             model.objects.load(storage)

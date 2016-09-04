@@ -85,7 +85,7 @@ class TestDatabase( unittest.TestCase ):
         model = MyModel()
         db = Database( models=[model], storage=JSONStorage, root_dir=curr_dir)
 
-        self.assertEqual( FooStorage, type(db.get_storage(model)) )
+        self.assertEqual( FooStorage, db.get_storage(model) )
 
     def test_get_models(self):
         db = Database( models=[MyModel] )
@@ -142,9 +142,8 @@ class TestDatabase( unittest.TestCase ):
             str_type = fields.StringField()
             dt_type  = fields.DateTimeField()
 
-        with open( tfile.name, 'r') as f:
-            data = f.read()
-        self.assertFalse( data )
+        # make sure we're starting with an empty file
+        self.assertFalse( open( tfile.name, 'r').read() )
 
         db = Database( models=[MyModel], save_on_exit=True )
 
@@ -153,8 +152,6 @@ class TestDatabase( unittest.TestCase ):
         m.save()
         self.assertEqual( 1, len(MyModel.objects) )
 
-        del db
+        del db # save_on_exit is true
 
-        with open( tfile.name, 'r') as f:
-            data = f.read()
-        self.assertTrue( data )
+        self.assertTrue( open( tfile.name, 'r').read() )
