@@ -72,8 +72,11 @@ class Database(object):
             self._models[model.name.lower()] = model
 
         self._storage_type = kw.pop('storage', JSONStorage)
-        self._root_dir = kw.pop('root_dir', '.')
         self._save_on_exit = kw.pop('save_on_exit', False)
+
+        self._root_dir = kw.pop('root_dir', '.')
+        self._root_dir = os.path.expanduser(self._root_dir)
+        self._root_dir = os.path.abspath(self._root_dir)
 
     def __del__(self):
         if self._save_on_exit:
@@ -117,10 +120,13 @@ class Database(object):
 
         filename = model.Meta.filename
 
-        if not filename:
+        if filename:
+            filename = os.path.expanduser(filename)
+        else:
             storage = storage or self.get_storage(model)
             filename = "{}.{}".format(model.name, storage.extension)
 
+        # if filename is absolute, then self._root_dir is gets filtered out
         return os.path.join( self._root_dir, filename )
 
     def get_storage(self, model, default=None, filename=None):

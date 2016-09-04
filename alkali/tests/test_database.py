@@ -26,7 +26,7 @@ class TestDatabase( unittest.TestCase ):
         "test default values"
         db = Database()
         self.assertEqual( JSONStorage, db._storage_type )
-        self.assertEqual( '.', db._root_dir )
+        self.assertEqual( os.getcwd(), db._root_dir )
 
     def test_2a(self):
         "test setting values"
@@ -62,6 +62,10 @@ class TestDatabase( unittest.TestCase ):
         db = Database( models=[model], storage=JSONStorage, root_dir=curr_dir)
 
         self.assertEqual( os.path.join(curr_dir,'foo.bar'), db.get_filename(model) )
+
+        # make sure we don't prepend curr_dir if we give full path
+        MyModel.Meta.filename = '/path/foo.bar'
+        self.assertEqual( os.path.join('/path','foo.bar'), db.get_filename(model) )
 
     def test_5(self):
         "test overriding storage"
