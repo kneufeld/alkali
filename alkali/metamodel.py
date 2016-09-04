@@ -10,11 +10,20 @@ from .fields import Field
 # so you can inherit from it
 class MetaModel(type):
     """
-    base class for Models. this complicated metaclass is required to convert
-    a stylized class into a useful concrete one.
+    *do not use this class directly*
 
-    it converts Field() variables into their base types as attributes on the
-    instantiated class.
+    *code reviews of this class are vey welcome*
+
+    base class for :class:`alkali.model.Model`. this complicated
+    metaclass is required to convert a stylized class into a useful
+    concrete one.
+
+    it converts :class:`alkali.fields.Field` variables into their base
+    itypes as attributes on the nstantiated class.
+
+    **Meta**: adds a ``Meta`` class if not already defined in ``Model`` derived class
+
+    **objects**: :class:`alkali.manager.Manager`
     """
 
     # __new__ is the method called before __init__
