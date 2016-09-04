@@ -24,6 +24,8 @@ class TestQuery( unittest.TestCase ):
         q = Query(MyModel.objects)
         self.assertTrue( verifyObject(IQuery, q) )
 
+        self.assertTrue( q.name )
+
 
     def test_2(self):
         "make sure Manager is returning a query object"
@@ -218,3 +220,21 @@ class TestQuery( unittest.TestCase ):
         self.assertEqual( instances, MyModel.objects.all().order_by('str_type','dt_type').instances )
 
         self.assertEqual( instances, MyModel.objects.all().order_by('pk').instances )
+
+    def test_40(self):
+        "test limit"
+
+        now = tznow()
+        instances = [ MyModel(int_type=i, str_type='string %d' % i, dt_type=now ) for i in range(3)]
+
+        for inst in instances:
+            inst.save()
+
+        self.assertEqual( list, type(MyModel.objects.all().limit(0)) )
+        self.assertEqual( 3, len(MyModel.objects.all().limit(0)) )
+
+        self.assertEqual( 2, len(MyModel.objects.all().limit(2)) )
+        self.assertEqual( 2, len(MyModel.objects.all().limit(-2)) )
+
+        self.assertEqual( instances[:2], MyModel.objects.all().limit(2) )
+        self.assertEqual( instances[-2:], MyModel.objects.all().limit(-2) )
