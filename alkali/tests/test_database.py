@@ -61,6 +61,7 @@ class TestDatabase( unittest.TestCase ):
         model = MyModel()
         db = Database( models=[model], storage=JSONStorage, root_dir=curr_dir)
 
+        self.assertEqual( db.get_filename(model), db.get_filename('MyModel') )
         self.assertEqual( os.path.join(curr_dir,'foo.bar'), db.get_filename(model) )
 
         # make sure we don't prepend curr_dir if we give full path
@@ -85,6 +86,7 @@ class TestDatabase( unittest.TestCase ):
         model = MyModel()
         db = Database( models=[model], storage=JSONStorage, root_dir=curr_dir)
 
+        self.assertEqual( db.get_storage(model), db.get_storage('MyModel') )
         self.assertEqual( FooStorage, db.get_storage(model) )
 
     def test_get_models(self):
