@@ -18,7 +18,8 @@ def peek(peekorator, n=0, default=PeekoratorDefault()):
     :param peekorator: Peekorator to use
     :param n: Number of items to look ahead
     :type n: int
-    :param default: If the iterator is exhausted then a default is given, raise StopIteration if not given
+    :param default: If the iterator is exhausted then a default is
+        given, raise StopIteration if not given
     """
     try:
         return peekorator.__peek__(n=n)
@@ -54,7 +55,7 @@ class Peekorator(object):
         """
         Return the peeked element for the generator
 
-        :param n: Integer of how many iterations into the future to peek
+        :param n: how many iterations into the future to peek
         :type n: int
         """
         while n >= len(self._peek_buffer):
@@ -92,16 +93,21 @@ class Peekorator(object):
 
     def is_first(self):
         """
-        if you're about to get the first element or just got the first
-        element then return true
+        if you just got the first element then return True
+
+        :rtype: bool
         """
+        # before first call to next()
         if self._first is None:
-            return True # pre first call to next()
+            return True
+
         return self._first
 
     def is_last(self):
         """
-        return true if we'll get a StopIteration on the next() call
+        if you're about to get the last element then return True
+
+        :rtype: bool
         """
         try:
             self.peek()
