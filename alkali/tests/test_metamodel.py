@@ -4,7 +4,7 @@ import tempfile
 from zope.interface.verify import verifyObject, verifyClass
 import datetime as dt
 
-from alkali.database import IDatabase, Database
+from alkali.database import Database
 from alkali.model import IModel, Model
 from alkali.metamodel import MetaModel
 from alkali.storage import JSONStorage

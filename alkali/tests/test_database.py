@@ -1,11 +1,9 @@
 import os
 import unittest
 import tempfile
-from zope.interface.verify import verifyObject, verifyClass
-import datetime as dt
 
-from alkali.database import IDatabase, Database
-from alkali.model import IModel, Model
+from alkali.database import Database
+from alkali.model import Model
 from alkali.storage import JSONStorage, Storage
 from alkali import fields
 from alkali import tznow
@@ -16,11 +14,8 @@ curr_dir = os.path.dirname( os.path.abspath( __file__ ) )
 class TestDatabase( unittest.TestCase ):
 
     def test_1(self):
-        "verify class/instance implementation"
-        self.assertTrue( verifyClass(IDatabase, Database) )
-
-        db = Database()
-        self.assertTrue( verifyObject(IDatabase, db) )
+        "verify instantiation"
+        self.assertTrue( Database() )
 
     def test_2(self):
         "test default values"

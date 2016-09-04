@@ -22,7 +22,6 @@
     # db.store() is automatically called as db goes out of scope, save_on_exit==True
 """
 
-from zope.interface import Interface, Attribute, implements
 from collections import OrderedDict
 import types
 import inspect
@@ -33,9 +32,6 @@ from .storage import JSONStorage
 import logging
 logger = logging.getLogger(__name__)
 
-class IDatabase( Interface ):
-
-    models   = Attribute("the ``dict`` of models")
 
 class Database(object):
     """
@@ -52,7 +48,6 @@ class Database(object):
         automatically save all models before Database object is destroyed. call
         :func:`Database.store` explicitly if ``_save_on_exit`` is false.
     """
-    implements(IDatabase)
 
     def __init__( self, models=[], **kw ):
         """
