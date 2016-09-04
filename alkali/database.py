@@ -12,7 +12,7 @@
     db = Database(models=[MyModel], storage=JSONStorage, root_dir='/tmp', save_on_exit=True)
 
     m = MyModel(id=1,title='old title')
-    m.save()                      # adds model MyModel.objects
+    m.save()                      # adds model instance to MyModel.objects
     db.store()                    # creates /tmp/MyModel.json
 
     db.load()                     # read /tmp/MyModel.json

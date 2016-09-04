@@ -1,13 +1,12 @@
 """
+from https://gist.github.com/dmckeone/7518335, slightly modified by Kurt Neufeld
+
 Generic Peekorator, modeled after next(), for "looking into the future" of a generator/iterator.
 
-ACKNOWLEDGEMENTS
------------------
-"plof" for the name: http://stackoverflow.com/a/10576559/589362
-Ned Batchelder for the buffered __peek__: http://stackoverflow.com/a/1517965/589362
+Acknowledgements:
 
-from: https://gist.github.com/dmckeone/7518335
-slightly modified by Kurt Neufeld
+* "plof" for the name: http://stackoverflow.com/a/10576559/589362
+* Ned Batchelder for the buffered __peek__: http://stackoverflow.com/a/1517965/589362
 """
 
 class PeekoratorDefault(object): pass
@@ -38,6 +37,9 @@ class Peekorator(object):
     """
 
     def __init__(self, generator):
+        """
+        :param generator: a generator or iterator that will be iterated over
+        """
         # a generator is an iterator
         import collections
         if not isinstance( generator, collections.Iterator ):
