@@ -62,7 +62,7 @@ class Database(object):
 
         self._models = OrderedDict()
         for model in models:
-            #assert inspect.isclass(model)
+            assert inspect.isclass(model)
             logger.debug( "Database: adding model to database: %s", model.name )
             self._models[model.name.lower()] = model
 

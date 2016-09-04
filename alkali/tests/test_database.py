@@ -27,7 +27,7 @@ class TestDatabase( unittest.TestCase ):
         "test setting values"
         class Foo(object): pass
 
-        model = MyModel()
+        model = MyModel
         db = Database( models=[model], storage=Foo, root_dir='/foo')
         self.assertTrue( model in db.models )
         self.assertEqual( Foo, db._storage_type )
@@ -36,7 +36,7 @@ class TestDatabase( unittest.TestCase ):
     def test_3(self):
         "test filenames"
 
-        model = MyModel()
+        model = MyModel
         db = Database( models=[model], storage=JSONStorage, root_dir=curr_dir)
 
         self.assertEqual( os.path.join(curr_dir,'MyModel.json'), db.get_filename(model) )
@@ -53,7 +53,7 @@ class TestDatabase( unittest.TestCase ):
             str_type = fields.StringField()
             date_type  = fields.DateTimeField()
 
-        model = MyModel()
+        model = MyModel
         db = Database( models=[model], storage=JSONStorage, root_dir=curr_dir)
 
         self.assertEqual( db.get_filename(model), db.get_filename('MyModel') )
@@ -78,7 +78,7 @@ class TestDatabase( unittest.TestCase ):
             str_type = fields.StringField()
             date_type  = fields.DateTimeField()
 
-        model = MyModel()
+        model = MyModel
         db = Database( models=[model], storage=JSONStorage, root_dir=curr_dir)
 
         self.assertEqual( db.get_storage(model), db.get_storage('MyModel') )
