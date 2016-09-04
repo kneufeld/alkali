@@ -20,8 +20,7 @@ class Manager(object):
 
     def __init__( self, model_class ):
         """
-        :param model_class: the model that we should store
-        :type model_class: :class:`alkali.model.Model` class
+        :param Model model_class: the model that we should store (not an instance)
         """
         assert inspect.isclass(model_class)
         self._model_class = model_class
@@ -87,8 +86,7 @@ class Manager(object):
         """
         yield model instances in key order
 
-        :param elements: our instances
-        :type elements: :class:`Manager.instances`
+        :param Manager.instances elements: our instances
         :param kw:
             * reverse: return in reverse order
         :rtype: ``generator``
@@ -102,8 +100,7 @@ class Manager(object):
         """
         take ownership (add to our ``dict``) of given model instance
 
-        :param instance:
-        :type instance: :class:`alkali.model.Model` instance
+        :param Model instance:
         :param dirty: don't mark us as dirty if False, used during loading
         """
         #logger.debug( "saving model instance: %s", str(instance.pk) )
@@ -135,8 +132,7 @@ class Manager(object):
         """
         remove an instance from our models by calling ``del`` on it
 
-        :param instance:
-        :type instance: :class:`alkali.model.Model`
+        :param Model instance:
         """
         # TODO should probably take an pk instead of an instance
         logger.debug( "deleting model instance: %s", str(instance.pk) )
@@ -152,9 +148,8 @@ class Manager(object):
         """
         save all our instances to storage
 
-        :param storage:
-        :type storage: :class:`alkali.storage.Storage` instance
-        :param force: force save even if we're not dirty
+        :param Storage storage: an instance
+        :param bool force: force save even if we're not dirty
         """
         assert not inspect.isclass(storage)
 
@@ -176,10 +171,9 @@ class Manager(object):
         """
         load all our instances from storage
 
-        raises ``KeyError`` if there are duplicate primary keys
+        :param Storage storage: an instance
+        :raises KeyError: if there are duplicate primary keys
 
-        :param storage:
-        :type storage: :class:`alkali.storage.Storage` instance
         """
         assert not inspect.isclass(storage)
         storage = IStorage(storage)
@@ -205,12 +199,11 @@ class Manager(object):
         """
         perform a query that returns an instance of a model
 
-        raises ``KeyError`` if 0 or more than 1 instance returned
-
         :param pk: optional primary key
         :type pk: value or ``tuple`` if multi-pk
         :param kw: optional field_name=value
         :rtype: single :class:`alkali.model.Model` instance
+        :raises KeyError: if 0 or more than 1 instance returned
 
         ::
 
