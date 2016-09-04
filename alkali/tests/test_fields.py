@@ -24,7 +24,7 @@ class TestField( unittest.TestCase ):
 
     def test_2(self):
         "Field is a meta class, it has no value. make sure of that"
-        f = IntField( 1 )
+        f = IntField()
         with self.assertRaises(AttributeError):
             f.value
         with self.assertRaises(AttributeError):
@@ -32,10 +32,10 @@ class TestField( unittest.TestCase ):
 
     def test_4(self):
         "test primary key setting"
-        f = IntField( 1 )
+        f = IntField()
         self.assertEqual( False, f.primary_key )
 
-        f = IntField( 1, primary_key=True )
+        f = IntField( primary_key=True )
         self.assertEqual( True, f.primary_key )
 
     def test_5(self):

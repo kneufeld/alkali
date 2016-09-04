@@ -35,7 +35,7 @@ class Field(object):
 
     _counter = itertools.count() # keeps track of declaration order in the Models
 
-    def __init__(self, field_type, *args, **kw):
+    def __init__(self, field_type, **kw):
         """
         :param field_type: the type this field should hold
         :type field_type: str/int/float/etc
@@ -71,7 +71,7 @@ class Field(object):
             return None
 
         if type(value) is not self._field_type:
-            return self.field_type(value)
+            return self._field_type(value)
 
         return value
 
@@ -85,14 +85,14 @@ class Field(object):
 
 class IntField(Field):
 
-    def __init__(self, *args, **kw):
-        super(IntField, self).__init__(int, *args, **kw)
+    def __init__(self, **kw):
+        super(IntField, self).__init__(int, **kw)
 
 
 class FloatField(Field):
 
-    def __init__(self, *args, **kw):
-        super(FloatField, self).__init__(float, *args, **kw)
+    def __init__(self, **kw):
+        super(FloatField, self).__init__(float, **kw)
 
 
 class StringField(Field):
@@ -100,8 +100,8 @@ class StringField(Field):
     holds a unicode string
     """
 
-    def __init__(self, *args, **kw):
-        super(StringField, self).__init__(unicode, *args, **kw)
+    def __init__(self, **kw):
+        super(StringField, self).__init__(unicode, **kw)
 
     def cast(self, value):
         if value is None:
@@ -118,8 +118,8 @@ class StringField(Field):
 
 class DateTimeField(Field):
 
-    def __init__(self, *args, **kw):
-        super(DateTimeField, self).__init__(dt.datetime, *args, **kw)
+    def __init__(self, **kw):
+        super(DateTimeField, self).__init__(dt.datetime, **kw)
 
     def cast(self, value):
         """
@@ -161,8 +161,8 @@ class DateTimeField(Field):
 
 class SetField(Field):
 
-    def __init__(self, *args, **kw):
-        super(SetField, self).__init__(set, *args, **kw)
+    def __init__(self, **kw):
+        super(SetField, self).__init__(set, **kw)
 
     def cast(self, value):
         return value
