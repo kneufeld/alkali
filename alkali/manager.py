@@ -234,13 +234,13 @@ class Manager(object):
         """
         return Query(self).filter(**kw)
 
-    def order_by(self, **kw):
+    def order_by(self, *args):
         """
         see :func:`alkali.query.Query.order_by` for documentation
 
         :rtype: :class:`alkali.query.Query`
         """
-        return Query(self).order_by(**kw)
+        return Query(self).order_by(*args)
 
     def all(self):
         """

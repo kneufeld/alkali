@@ -16,6 +16,9 @@ from . import EmptyModel, MyModel
 
 class TestManager( unittest.TestCase ):
 
+    def tearDown(self):
+        MyModel.objects.clear()
+
     def test_1(self):
         "verify class/instance implementation"
         self.assertTrue( verifyClass(IManager, Manager) )
@@ -175,3 +178,10 @@ class TestManager( unittest.TestCase ):
 
         man = Manager(MyModel)
         self.assertRaises( KeyError, man.load, JSONStorage(tfile.name) )
+
+    def test_11(self):
+        for i in range(10):
+            MyModel(int_type=i, str_type='number %d' % i).save()
+
+        self.assertEqual( 0, MyModel.objects.order_by('int_type')[0].int_type )
+        self.assertEqual( 9, MyModel.objects.order_by('-int_type')[0].int_type )
