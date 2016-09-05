@@ -15,20 +15,25 @@ around your editor. Anyhow, one of jrnl's killer features is that it
 writes out plain text files. That means you can just edit your journal
 file and use the whole host of Unix command line tools on it.
 
+I use jrnl at work and at home. It's really annoying to have two journals,
+it seems like the good info was always in the other one. We have a pretty
+draconian firewall at work so that means no Dropbox and no ssh. Thankfully,
+*POST*\s still work.
+
 Anyhow, I wanted jrnl to be able to sync its entries with a website. So
 I started hacking away and before you know it I was completely rewriting
-it. But jrnl's main data structure was a list of Entry objects. This
-totally worked but it was a bit cumbersome, more so when trying to sync
-with a remote server.
+jrnl. But jrnl's main data structure was a list of Entry objects. This
+worked, but was a bit cumbersome. It was very cumbersome when trying to
+sync with a remote server.
 
 So I decided that jrnl really needed to be a wrapper around a
 *database*. So I started looking at some different Python databases and
-a few looked promising but after playing with them I found them all to
+a few looked promising, but after playing with them I found them all to
 be lacking in some fashion or another.
 
 And that's how alkali_ was born.
 
-ps. my version of jrnl will hopefully be released not too long after alkali.
+PS. my version of jrnl will hopefully be released not too long after alkali.
 
 .. _jrnl: https://github.com/maebert/jrnl
 .. _alkali: https://github.com/kneufeld/alkali
@@ -51,8 +56,8 @@ sections are about models_ and queries_.
 Goals
 -----
 
-Since my ultimate goal was jrnl with webserver syncing, everything in alkali had
-to support that.
+Since my ultimate goal was a backwards compatible jrnl with webserver
+syncing, everything in alkali had to support that.
 
 So here is the list of non-negotiable features that alkali had to support:
 
