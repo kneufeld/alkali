@@ -114,7 +114,7 @@ setup(
 
     extras_require = {
         'dev': open('req_tests.txt').readlines(),
-        'dev': open('req_docs.txt').readlines(),
+        'docs': open('req_docs.txt').readlines(),
     },
 
     classifiers=[
