@@ -1,16 +1,9 @@
-import os
 import unittest
-import tempfile
-from zope.interface.verify import verifyObject, verifyClass
-import datetime as dt
 
-from alkali.model import Model
-from alkali.query import IQuery, Query
-from alkali.storage import JSONStorage
-from alkali import fields
+from alkali.query import Query
 from alkali import tznow, fromts
 
-from . import EmptyModel, MyModel, MyMulti
+from . import MyModel, MyMulti
 
 class TestQuery( unittest.TestCase ):
 
@@ -19,11 +12,7 @@ class TestQuery( unittest.TestCase ):
 
     def test_1(self):
         "verify class/instance implementation"
-        self.assertTrue( verifyClass(IQuery, Query) )
-
         q = Query(MyModel.objects)
-        self.assertTrue( verifyObject(IQuery, q) )
-
         self.assertTrue( q.name )
 
 

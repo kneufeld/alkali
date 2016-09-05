@@ -1,4 +1,3 @@
-from zope.interface import Interface, Attribute, implementer
 import copy
 import types
 import operator
@@ -8,12 +7,6 @@ import re
 import logging
 logger = logging.getLogger(__name__)
 
-class IQuery( Interface ):
-
-    def filter(**kw):
-        "return a query object with multiple objects"
-
-@implementer(IQuery)
 class Query(object):
     """
     this class performs queries on manager instances
