@@ -46,7 +46,7 @@ class Manager(object):
     def name(self):
         """
         **property**: pretty version of our class name, based on our model
-            eg. *EntryManager*
+            eg. *MyModelManager*
         """
         return "{}Manager".format(self._model_class.__name__)
 

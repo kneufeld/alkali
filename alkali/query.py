@@ -1,3 +1,28 @@
+# -*- coding: utf-8 -*-
+
+"""
+::
+
+    from alkali import Database, Model
+
+    class MyModel( Model ):
+        id = fields.IntField(primary_key=True)
+        title = fields.StringField()
+
+    db = Database(models=[MyModel], storage=JSONStorage, root_dir='/tmp', save_on_exit=True)
+
+    # create 10 instances and save them
+    for i in range(10):
+        MyModel(id=i, title='number %d' % i).save()
+
+    assert MyModel.objects.count == 10
+    assert MyModel.objects.filter(id__gt=5).count == 4
+    assert MyModel.objects.filter(id__gt=5, id__le=7).count == 2
+    assert MyModel.objects.get(pk=1).title == 'number 1'
+    assert MyModel.objects.order_by('id')[0].id == 0
+    assert MyModel.objects.order_by('-id')[0].id == 9
+"""
+
 import copy
 import types
 import operator
@@ -11,9 +36,21 @@ class Query(object):
     """
     this class performs queries on manager instances
     returns lists of model instances
+
+    this class is one of the main reasons to use alkali
+
+    the Django docs at https://docs.djangoproject.com/en/1.10/topics/db/queries/
+    will be fairly relevant to alkali, except for anything related to
+    foreign or many2many fields.
     """
 
     def __init__( self, manager):
+        """
+        this is an internal class so you shouldn't have to create it directly. create
+        via Manager. ``MyModel.objects.filter()``
+
+        :param Manager manager:
+        """
         self.manager = manager
 
         # shallow copy, new list but same objects
@@ -30,32 +67,73 @@ class Query(object):
 
     @property
     def name(self):
+        """
+        **property**: pretty version of our class name, based on our model
+            eg. *MyModelQuery*
+        """
         return "{}Query".format(self.model_class.name)
 
     @property
     def count(self):
+        """
+        **property**: number of model instances we are currently tracking
+        """
         return len(self)
 
     @property
     def instances(self):
+        """
+        **property**: return our model instances as a list. useful for
+        iteration (in a loop) otherwise just index us via ``Query()[n]``
+
+        :rtype: ``list``
+        """
         return self._instances
 
     @property
     def fields(self):
-        "helper to get dict of model fields"
+        """
+        **property**: helper function to get dict of model fields
+
+        :rtype: ``dict``
+        """
         return self.model_class.Meta.fields
 
     @property
     def model_class(self):
+        """
+        **property**: return our managers model class
+        """
         return self.manager._model_class
 
     @property
     def field_names(self):
+        """
+        **property**: return our model field names
+
+        :rtype: ``list`` of ``str``
+        """
         return self.fields.keys()
 
     def filter(self, **kw):
         """
-        based on \*\*kw, return a subset of instances
+        :param kw: ``field_name__op=value``, note: ``field_name`` can be a ``property``
+        :rtype: Query
+
+        perform a query, keeping model instances that pass the criteria specified
+        in the ``kw`` parameter.
+
+        see example code above. see Django page for very through docs on
+        this functionality. basically, its field_name '__' operation = value.
+
+        major enhancement to Django is the ability to compare ``sets``
+
+        ::
+
+            man = MyModel.objects
+            man.filter( f__in=['foo','bar'] ) # field f value is 'foo' or 'bar'
+            man.filter( myset__rin='foo' ) # 'foo' is in field/property myset
+
         """
 
         #logger.debug( "%s: query: %s", self.name, str(kw) )
@@ -114,10 +192,13 @@ class Query(object):
 
     def order_by(self, *args):
         """
-        change order of self.instances, args should be field names
-        with optional '-' to indicate reverse order
+        change order of self.instances
 
-        warning: because this isn't a real database and we don't have
+        :param str args: field names, prefixed with optional '-' to
+            indicate reverse order
+        :rtype: Query
+
+        **warning**: because this isn't a real database and we don't have
         grouping, passing in multiple fields will very possibly sort
         on the last field only. python sorting is stable however, so a
         multiple field sort may work as intended.
@@ -141,7 +222,11 @@ class Query(object):
         return first(+) or last(-) n elements
 
         this has to be the last call during a query since it returns a
-        list of instances and not a Query
+        list of instances and not a Query. passing in 0 is a no-op and
+        returns all instances
+
+        :param int n: non-zero integer
+        :rtype: ``list``
         """
         if n > 0:
             return self._instances[:n]
