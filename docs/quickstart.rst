@@ -117,7 +117,7 @@ Database
 ::
 
     self._db = Database( models=[Entry], save_on_exit=save_on_exit )
-    self.db.load()
+    self._db.load()
 
 Create a ``Database`` object. The only required parameter is ``models``,
 a ``list`` of ``Model`` classes that comprise the database.
@@ -134,3 +134,24 @@ Meta
 
 You can set the ``Model.Meta.filename`` at definition time or set it later at runtime.
 
+By Our Powers Combined
+----------------------
+
+So lets make an entry and save it to the database.
+
+::
+
+    from alkali import Database, tznow
+
+    db = Database(models=[Entry], save_on_exit=True)
+
+    e = Entry(date=tznow(), title="my first entry", body="alkali is pretty good")
+    e.save()    # adds model instance to Entry.objects
+
+    db.store()  # saved to ./Entry.json because those are the defaults
+
+    e = Entry.objects.get( title="my first entry" )
+    e.body = "alkali is the bestest"
+
+    # updated entry will be saved when database goes out of scope
+    # because save_on_exit is True
