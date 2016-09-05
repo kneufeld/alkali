@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 alkali |version|
-================
+****************
 
 Alkali, or AlkaliDB, is a database engine.
 
@@ -19,17 +19,17 @@ So alkali is basically the opposite of an *ACID* database. Except
 *Durable*. If alkali is not durable then we want to hear about it as
 soon as possible.
 
-So knowing this, why would you use alkali? If you need a simple
-database-like library and especially if you want to control the on-disk
-format of your database then alkali just might be for you. If a *list* of
-*dict* is a main data structure in your program then make programming
-fun again with alkali.
+So knowing this, why would you use alkali?
+
+* If you need a simple database-like library
+* You'd like a database but must control the on-disk format
+* If a *list* of *dict* is a main data structure in your program
+* You often search/filter your data
+* You like Django and/or SqlAlchemy but don't need anything that heavy
 
 Plus alkali is really easy to use, if you've ever used the Django ORM or
 SQlAlchemy then alkali's API will feel very familiar. Alkali's API was
-based off of Django.
-
-Contents:
+based off of Django's.
 
 .. toctree::
    :maxdepth: 1

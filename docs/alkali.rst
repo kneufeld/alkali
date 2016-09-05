@@ -1,16 +1,6 @@
 alkali package
 ==============
 
-Subpackages
------------
-
-.. toctree::
-
-   alkali.tests
-
-Submodules
-----------
-
 alkali.database module
 ----------------------
 
@@ -71,15 +61,6 @@ alkali.storage module
 ---------------------
 
 .. automodule:: alkali.storage
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: alkali
     :members:
     :undoc-members:
     :show-inheritance:
