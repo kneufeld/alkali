@@ -3,6 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. _README:
+
 alkali |version|
 ****************
 
@@ -34,6 +36,8 @@ based off of Django's.
 .. toctree::
    :maxdepth: 1
 
+   history
+   quickstart
    alkali
 
 Indices and tables
