@@ -10,7 +10,17 @@ class IModel( Interface ):
 
 class Model(object):
     """
-    main class for any database. this holds the actual data of the database.
+    main class for the database.
+
+    the definition of this class defines a table schema but instances of
+    this class hold a row.
+
+    model fields are available as attributes. eg. ``m.my_field = 'foo'``
+
+    the Django docs at https://docs.djangoproject.com/en/1.10/topics/db/models/
+    will be fairly relevant to alkali
+
+    see :mod:`alkali.database` for some example code
     """
     __metaclass__ = MetaModel
     implements(IModel)
@@ -35,7 +45,7 @@ class Model(object):
         for name, value in kw.items():
             setattr(obj, name, value)
 
-        setattr( obj, '_modified', False )
+        setattr( obj, '_dirty', False )
 
         return obj
 
@@ -49,12 +59,13 @@ class Model(object):
             if hasattr(self,attr):
                 curr_val = getattr(self,attr)
                 if curr_val != val:
-                    self.__dict__['_modified'] = True
+                    self.__dict__['_dirty'] = True
             self.__dict__[attr] = self.meta.fields[attr].cast(val)
         else:
             self.__dict__[attr] = val
 
     def __eq__(self, other):
+        # this is obviously a very shallow comparison
         return self.pk == other.pk
 
     def __ne__(self, other):
@@ -62,19 +73,33 @@ class Model(object):
 
     @property
     def dirty(self):
-        return self._modified
+        """
+        **property**: return True if our fields have changed since creation
+        """
+        return self._dirty
 
     @property
     def meta(self):
+        """
+        **property**: return this class's ``Meta`` class
+
+        :rtype: ``Meta``
+        """
         return self.__class__.Meta
 
     # this property exists on the instance
     @property
     def name(self):
+        """
+        **property**: shortcut to our class name
+        """
         return self.__class__.__name__
 
     @property
     def schema(self):
+        """
+        **property**: a string that quickly shows the fields and types
+        """
         def fmt(name, field):
             return "{}:{}".format(name, field.field_type.__name__)
 
@@ -84,7 +109,12 @@ class Model(object):
 
     @property
     def pk(self):
-        """return the primary key value or a tuple of them"""
+        """
+        **property**: returns this models primary key. If the model is
+        comprised of serveral primary keys then return a tuple of them.
+
+        :rtype: :class:`alkali.fields.Field` or tuple-of-Field
+        """
         pks = map( lambda name: getattr(self, name), self.meta.pk_fields )
 
         if len(pks) == 1:
@@ -94,13 +124,30 @@ class Model(object):
 
     @property
     def dict(self):
+        """
+        **property**: returns a dict of all the fields, the fields are
+        json consumable
+
+        :rtype: ``dict``
+        """
         return { name: field.dumps( getattr(self,name) )
                 for name, field in self.meta.fields.items() }
 
     @property
     def json(self):
+        """
+        **property**: returns json that holds all the fields
+
+        :rtype: ``str``
+        """
         return json.dumps(self.dict)
 
     def save(self):
+        """
+        add ourselves to our :class:`alkali.manager.Manager` and mark
+        ourselves as no longer dirty.
+
+        it's up to our ``Manager`` to persistently save us
+        """
         self.__class__.objects.save(self)
-        self._modified = False
+        self._dirty = False
