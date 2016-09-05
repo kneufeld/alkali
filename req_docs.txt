@@ -9,3 +9,6 @@ pytz==2016.6.1
 repoze.sphinx.autointerface==0.8
 snowballstemmer==1.2.1
 Sphinx==1.4.6
+python-dateutil==2.5.3
+six==1.10.0
+zope.interface==4.2.0
