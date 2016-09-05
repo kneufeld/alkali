@@ -16,7 +16,7 @@ import os
 import sys
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
-pkg_name = os.path.basename( base_dir )
+pkg_name = 'alkali'
 
 # trying to make this setup.py as generic as possible
 import importlib
