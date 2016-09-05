@@ -9,8 +9,9 @@ install:
   - pip install -r req_docs.txt
 
 script:
-  - py.test
+  - py.test --cov
   - make html
 
 after_success:
+  - coveralls
   - codecov
