@@ -3,7 +3,7 @@ import unittest
 import tempfile
 from zope.interface.verify import verifyObject, verifyClass
 
-from alkali.storage import IStorage, Storage, JSONStorage
+from alkali.storage import IStorage, Storage, FileStorage, JSONStorage
 from . import MyModel
 
 class TestStorage( unittest.TestCase ):
@@ -12,19 +12,17 @@ class TestStorage( unittest.TestCase ):
         "verify class/instance implementation"
         self.assertTrue( verifyClass(IStorage, JSONStorage) )
 
-        for storage in [JSONStorage]:
+        for storage in [FileStorage,JSONStorage]:
             self.assertTrue( verifyClass(IStorage, storage) )
-            s = storage('')
-            self.assertTrue( verifyObject(IStorage, s) )
+            self.assertTrue( verifyObject(IStorage, storage('') ) )
 
     def test_2(self):
         "write should handle empty dicts vs None"
         tfile = tempfile.NamedTemporaryFile()
-        storage = JSONStorage( tfile.name )
 
-        self.assertTrue( storage.write( iter([]) ) )
-
-        self.assertFalse( Storage(tfile.name)._write( None ) )
+        for storage in [FileStorage,JSONStorage]:
+            self.assertTrue( storage(tfile.name).write( iter([]) ) )
+            self.assertFalse( storage(tfile.name).write( None ) )
 
     def test_3(self):
         "test simple reading and writing"
@@ -49,12 +47,13 @@ class TestStorage( unittest.TestCase ):
         self.assertEqual( 'json', JSONStorage.extension )
 
     def test_5(self):
-        "test plain Storage class"
+        "test plain FileStorage class"
         tfile = tempfile.NamedTemporaryFile()
-        storage = Storage( tfile.name )
+        storage = FileStorage( tfile.name )
 
         models = [ MyModel() ]
 
-        self.assertTrue( storage._write( models ) )
+        # TODO test that we can recover original object data
+        self.assertTrue( storage.write( models ) )
         self.assertTrue( open( tfile.name, 'r').read() )
-        self.assertTrue( storage._read() )
+        self.assertTrue( storage.read(MyModel) )
