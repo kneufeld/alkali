@@ -26,13 +26,12 @@ class Model(object):
     implements(IModel)
 
     def __new__(cls, *args, **kw):
-        """
-        return a new instance of Model (or derived type)
+        # return a new instance of Model (or derived type)
+        #
+        # MetaModel.__call__ calls this method and passes in our fields.
+        # we need to add the fields before Model.__init__ is called so
+        # that they exist and can be referenced
 
-        MetaModel.__call__ calls this method and passes in our fields.
-        we need to add the fields before Model.__init__ is called so
-        that they exist and can be referenced
-        """
         # obj is a instance of Model (or a derived class)
         obj = super(Model,cls).__new__(cls)
 
