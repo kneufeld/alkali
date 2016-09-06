@@ -27,6 +27,9 @@ class Storage(object):
     helper base class for the Storage object hierarchy
     """
 
+    def __init__(self, *args, **kw ):
+        pass
+
     @property
     def name(self):
         return self.__class__.__name__
@@ -69,18 +72,22 @@ class FileStorage(Storage):
 
         return True
 
+    def write(self, iterator):
+        return self._write(iterator)
+
 
 class JSONStorage(FileStorage):
     """
     save models in json format
     """
     implements(IStorage)
-
     extension = 'json'
 
     def read(self, model_class):
-        with open( self.filename, 'r' ) as f:
-            data = f.read()
+        data = super(JSONStorage,self).read(model_class)
+
+        if not data:
+            return
 
         for elem in json.loads(data):
             yield elem
