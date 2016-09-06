@@ -144,7 +144,7 @@ class Manager(object):
             pass
 
 
-    def store(self, storage, force=False, *args, **kw):
+    def store(self, storage, force=False):
         """
         save all our instances to storage
 
@@ -160,7 +160,8 @@ class Manager(object):
             logger.debug( "%s: has dirty records, saving", self.name )
             logger.debug( "%s: storing models via storage class: %s", self.name, storage.name )
 
-            storage.write( Manager.sorter(self._instances) )
+            gen = Manager.sorter(self._instances)
+            storage.write(gen)
         else:
             logger.debug( "%s: has no dirty records, not saving", self.name )
 
