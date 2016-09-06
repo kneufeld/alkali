@@ -101,7 +101,7 @@ class Database(object):
         return None
 
 
-    def get_filename(self, model, storage=None):
+    def get_filename(self, model):
         """
         get the filename for the specified model. allow models to
         specify their own filename or generate one based on storage
@@ -119,17 +119,15 @@ class Database(object):
 
         filename = model.Meta.filename
 
-        if filename:
-            filename = os.path.expanduser(filename)
-        else:
-            storage = storage or self.get_storage(model)
+        if not filename:
+            storage = self.get_storage(model)
             filename = "{}.{}".format(model.name, storage.extension)
 
         # if filename is absolute, then self._root_dir is gets filtered out
         return os.path.join( self._root_dir, filename )
 
 
-    def get_storage(self, model, storage=None):
+    def get_storage(self, model):
         """
         get the storage class for the specified model
 
@@ -146,26 +144,32 @@ class Database(object):
         if isinstance(model, types.StringTypes):
             model = self.get_model(model)
 
-        storage = model.Meta.storage or storage or self._storage_type
+        storage = model.Meta.storage or self._storage_type
         return storage
 
 
     def store(self, storage=None, force=False):
         """
-        write all model data to disk
+        persistantly store all model data
 
-        :param storage: override model storage class
-        :param force: force store even if :class:`alkali.manager.Manager`
+        :param IStorage storage: override model storage class
+        :param bool force: force store even if :class:`alkali.manager.Manager`
             thinks data is clean
         """
         logger.debug( "Database: storing models" )
 
+        # you can't save more than one model with a single storage
+        # instance because the file will get over written
+        assert storage is None or inspect.isclass(storage)
+
         for model in self.models:
             logger.debug( "Database: storing model: %s", model.name )
 
-            filename = self.get_filename(model)
             storage = storage or self.get_storage(model)
-            storage = storage(filename)
+
+            if inspect.isclass(storage):
+                filename = self.get_filename(model)
+                storage = storage(filename)
 
             model.objects.store(storage, force=force)
 
@@ -178,11 +182,17 @@ class Database(object):
         """
         logger.debug( "Database: loading models" )
 
+        # you can't load more than one model with a single storage
+        # instance since only one file will get read
+        assert storage is None or inspect.isclass(storage)
+
         for model in self.models:
             logger.debug( "Database: loading model: %s", model.name )
 
-            filename = self.get_filename(model)
             storage = storage or self.get_storage(model)
-            storage = storage(filename)
+
+            if inspect.isclass(storage):
+                filename = self.get_filename(model)
+                storage = storage(filename)
 
             model.objects.load(storage)

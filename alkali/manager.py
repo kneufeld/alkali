@@ -144,7 +144,7 @@ class Manager(object):
             pass
 
 
-    def store(self, storage, force=False):
+    def store(self, storage, force=False, *args, **kw):
         """
         save all our instances to storage
 
