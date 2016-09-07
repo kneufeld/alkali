@@ -58,7 +58,7 @@ class FileStorage(Storage):
         with open( self.filename, 'r' ) as f:
             return f.read()
 
-    def write(self, iterator):
+    def _write(self, iterator):
         """
         helper function that does just writes a file if
         data is not None
