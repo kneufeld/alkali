@@ -7,102 +7,35 @@ dicts then you should come take a look. alkali's main goal is to allow
 the developer to easily control the on disk format.
 """
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
-
 import os
 import sys
+from setuptools import setup
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 pkg_name = 'alkali'
 
+# adapted from: http://code.activestate.com/recipes/82234-importing-a-dynamically-generated-module/
+def pseudo_import( pkg_name ):
+    """
+    return a new module that contains the variables of pkg_name.__init__
+    """
+    init = os.path.join( pkg_name, '__init__.py' )
+
+    # remove imports and 'from foo import'
+    lines = open(init,'r').readlines()
+    lines = filter( lambda l: not l.startswith('from'), lines)
+    lines = filter( lambda l: not l.startswith('import'), lines)
+
+    code = '\n'.join(lines)
+
+    import imp
+    module = imp.new_module(pkg_name)
+
+    exec code in module.__dict__
+    return module
+
 # trying to make this setup.py as generic as possible
-import importlib
-module = importlib.import_module( pkg_name )
-
-
-def get_changelog(filename="CHANGELOG.md"):
-    changelog = {}
-    current_version = None
-
-    with open(os.path.join(base_dir, filename)) as changelog_file:
-        for line in changelog_file.readlines():
-
-            if line.startswith("* __"):
-                parts = line.strip("* ").split(" ", 1)
-
-                if len(parts) == 2:
-                    current_version, changes = parts[0].strip("_\n"), parts[1]
-                    changelog[current_version] = [changes.strip()]
-                else:
-                    current_version = parts[0].strip("_\n")
-                    changelog[current_version] = []
-
-            elif line.strip() and current_version and not line.startswith("#"):
-                changelog[current_version].append(line.strip(" *\n"))
-
-    return changelog
-
-def dist_pypi():
-    os.system("python setup.py sdist upload")
-    sys.exit()
-
-def dist_github():
-    """Creates a release on github"""
-    import requests
-    import keyring
-    import getpass
-
-    version = module.__version__
-    version_tuple = version.split(".")
-
-    print("preparing release {}...".format(version))
-
-    # TODO convert this to a function
-    changes_since_last_version = ["* __{}__: {}".format(key, "\n".join(changes)) for key, changes in get_changelog().items() if key.startswith("{}.{}".format(*version_tuple))]
-    changes_since_last_version = "\n".join(sorted(changes_since_last_version, reverse=True))
-
-    payload = {
-        "tag_name"         : version,
-        "target_commitish" : "master",
-        "name"             : version,
-        "body"             : "changes in version {}.{} : \n\n{}".format(version_tuple[0], version_tuple[1], changes_since_last_version)
-    }
-
-    username = keyring.get_password("github", "__default_user") or raw_input("Github username: ")
-    password = keyring.get_password("github", username) or getpass.getpass()
-    url = "https://api.github.com/repos/{}/{}/releases".format(username,pkg_name)
-    auth = (username, password)
-
-    otp = raw_input("One Time Token: ")
-
-    response = requests.post(url, headers={"X-GitHub-OTP": otp}, json=payload, auth=auth)
-    if response.status_code in (403, 404):
-        print("Authentication error.")
-    else:
-        keyring.set_password("github", "__default_user", username)
-        keyring.set_password("github", username, password)
-
-        if response.status_code > 299:
-            if  "message" in response.json():
-                print("error: {}".format(response.json()['message']))
-
-                for error_dict in response.json().get('errors', []):
-                    print("*", error_dict)
-            else:
-                print("Unkown error")
-                print(response.text)
-        else:
-            print("release created")
-    sys.exit()
-
-if sys.argv[-1] == 'publish':
-    dist_pypi()
-
-if sys.argv[-1] == 'github_release':
-    dist_github()
+module = pseudo_import(pkg_name)
 
 conditional_dependencies = {}
 
@@ -114,7 +47,7 @@ setup(
 
     # use via: pip install -e .[docs]
     extras_require = {
-        'dev': open('req_tests.txt').readlines(),
+        'dev' : open('req_tests.txt').readlines(),
         'docs': open('req_docs.txt').readlines(),
     },
 

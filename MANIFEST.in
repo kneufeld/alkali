@@ -1,0 +1,3 @@
+include requirements.txt
+include req_docs.txt
+include req_tests.txt
