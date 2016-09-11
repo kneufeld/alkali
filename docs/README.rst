@@ -8,7 +8,7 @@
 alkali |version|
 ****************
 
-Alkali, or AlkaliDB, is a database engine.
+Alkali, or AlkaliDB, is a database engine. Code can be found on github_.
 
 If you know anything about databases then you know that any real
 database is *ACID* (Atomic, Consistent, Isolation, Durable). If you know
@@ -32,6 +32,8 @@ So knowing this, why would you use alkali?
 Plus alkali is really easy to use, if you've ever used the Django ORM or
 SQlAlchemy then alkali's API will feel very familiar. Alkali's API was
 based off of Django's.
+
+.. _github: https://github.com/kneufeld/alkali
 
 .. toctree::
    :maxdepth: 1
