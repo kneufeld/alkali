@@ -10,15 +10,15 @@ just maybe, it's not so bad if you know how it got to where it is.
 Jrnl
 ----
 
-There's a great package called jrnl_, it's a journal writing wrapper
-around your editor. Anyhow, one of jrnl's killer features is that it
-writes out plain text files. That means you can just edit your journal
-file and use the whole host of Unix command line tools on it.
+There's a great app called jrnl_, it's a journal writing wrapper around
+your editor. One of jrnl's killer features is that it writes out plain
+text files, that means you can edit your journal file with your editor
+of choice and use the whole host of Unix command line tools on it.
 
-I use jrnl at work and at home. It's really annoying to have two journals,
-it seems like the good info was always in the other one. We have a pretty
-draconian firewall at work so that means no Dropbox and no ssh. Thankfully,
-*POST*\s still work.
+Jrnl is so great I use it at work and at home. Howerver, it's really
+annoying to have two journals, it seems like the good info was always in
+the other one. We have a pretty draconian firewall at work so that means
+no Dropbox and no ssh. Thankfully, *POST*\s still work.
 
 Anyhow, I wanted jrnl to be able to sync its entries with a website. So
 I started hacking away and before you know it I was completely rewriting
@@ -45,9 +45,10 @@ I've used Django_ in the past and found its ORM (Object Relational Mapper) to
 be very easy to use. So I decided that I'd write a light weight database using
 the same syntax as Django.
 
-This worked surprisingly well. So if you're ever in doubt about alkali, read the fantastic
-Django docs and they'll probably point you in the correct direction. The two relevant
-sections are about models_ and queries_.
+This worked surprisingly well. So if you're ever in doubt about alkali,
+read the fantastic Django docs and they'll probably point you in the
+correct direction. The two relevant sections are about models_ and
+queries_.
 
 .. _Django: https://www.djangoproject.com
 .. _models: https://docs.djangoproject.com/en/1.10/topics/db/models/
