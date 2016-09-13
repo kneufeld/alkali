@@ -104,7 +104,7 @@ class Query(object):
         """
         **property**: return our managers model class
         """
-        return self.manager._model_class
+        return self.manager.model_class
 
     @property
     def field_names(self):

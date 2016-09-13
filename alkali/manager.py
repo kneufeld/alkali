@@ -1,4 +1,4 @@
-from zope.interface import Interface, Attribute, implements
+from zope.interface import Interface, implements
 import inspect
 
 from .query import Query
@@ -34,6 +34,10 @@ class Manager(object):
 
     def __len__(self):
         return len(self._instances)
+
+    @property
+    def model_class(self):
+        return self._model_class
 
     @property
     def count(self):

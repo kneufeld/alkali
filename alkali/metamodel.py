@@ -1,5 +1,4 @@
 from collections import OrderedDict
-import copy
 
 from .fields import Field
 
@@ -71,7 +70,7 @@ class MetaModel(type):
         def _get_field_order(attrs):
             fields = _get_fields(attrs)
             fields.sort(key=lambda e: e[1]._order)
-            return [k for k,v in fields]
+            return [k for k, _ in fields]
 
         class Object(object): pass
 
