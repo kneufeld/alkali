@@ -142,7 +142,7 @@ class Query(object):
             try:
                 field, oper = field.split('__')
                 oper = oper or 'eq'
-            except ValueError:
+            except ValueError: # no __ in field name
                 field = field
                 oper = 'eq'
 
@@ -209,6 +209,9 @@ class Query(object):
                 return True, field[1:]
             else:
                 return False, field
+
+        if args == ('pk'):
+            args = self.model_class.Meta.pk_fields
 
         for field in args:
             reverse, field = _order_by( field )

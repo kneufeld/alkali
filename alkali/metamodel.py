@@ -68,6 +68,9 @@ class MetaModel(type):
             return [(k,v) for k,v in attrs.items() if isinstance(v,Field)]
 
         def _get_field_order(attrs):
+            """
+            returns field names in the order they were defined in the class
+            """
             fields = _get_fields(attrs)
             fields.sort(key=lambda e: e[1]._order)
             return [k for k, _ in fields]
@@ -101,7 +104,7 @@ class MetaModel(type):
     # creates a new instance of derived model
     def __call__(self, *args, **kw):
         kw_fields=OrderedDict()
-        for name,_ in self.Meta.fields.items():
+        for name in self.Meta.fields:
             kw_fields[name] = kw.pop(name, None)
         kw['kw_fields'] = kw_fields
 

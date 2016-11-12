@@ -86,17 +86,16 @@ class Manager(object):
 
 
     @staticmethod
-    def sorter(elements, **kw ):
+    def sorter(elements, reverse=False ):
         """
-        yield model instances in key order
+        yield model instances in primary key order
 
         :param Manager.instances elements: our instances
         :param kw:
             * reverse: return in reverse order
         :rtype: ``generator``
         """
-        keys = sorted( elements.keys(), **kw )
-        for key in keys:
+        for key in sorted( elements.keys(), reverse=reverse ):
             yield elements[key]
 
 
