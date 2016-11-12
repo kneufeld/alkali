@@ -10,10 +10,10 @@ alkali |version|
 
 Alkali, or AlkaliDB, is a database engine. Code can be found on github_.
 
-If you know anything about databases then you know that any real
-database is *ACID* (Atomic, Consistent, Isolation, Durable). If you know
-anything about chemistry then you know that an alkaline substance is the
-opposite of an acidic one.
+If you know anything about databases then you know that any real database
+is *ACID* (Atomic, Consistent, Isolation, Durable). If you know anything
+about chemistry then you know that an alkaline substance is the opposite
+of an acidic one.
 
 I think you can see where this is going.
 
