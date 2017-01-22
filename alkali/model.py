@@ -2,6 +2,7 @@ from zope.interface import Interface, Attribute, implements
 import json
 
 from .metamodel import MetaModel
+from . import fields
 
 class IModel( Interface ):
 
@@ -55,11 +56,7 @@ class Model(object):
         # if we're setting a field value and that value is different
         # than current value, mark self as modified
         if attr in self.meta.fields:
-            if hasattr(self,attr):
-                curr_val = getattr(self,attr)
-                if curr_val != val:
-                    self.__dict__['_dirty'] = True
-            self.__dict__[attr] = self.meta.fields[attr].cast(val)
+            self.__assign_field( attr, val)
         else:
             self.__dict__[attr] = val
 
@@ -69,6 +66,33 @@ class Model(object):
 
     def __ne__(self, other):
         return not self.__eq__(other)
+
+    def __assign_field(self, attr, val):
+        if hasattr(self, attr):
+            curr_val = getattr(self, attr)
+
+            if curr_val != val:
+                self.__dict__['_dirty'] = True
+
+        field_type =  self.meta.fields[attr]
+
+        if isinstance( field_type, fields.ForeignKey):
+            other_pk =  [field for name,field in self.meta.fields.items() if field.primary_key][0]
+            if isinstance(val, field_type.foreign_model):
+                pass
+            elif isinstance(val, other_pk.field_type):
+                val = field_type.foreign_model.objects.get(pk=val)
+                assert val
+            else:
+                raise RuntimeError( "assigning unknown type/val: %s" % str(val) )
+
+            # THINK should this block be in ForeignKey.cast() ?
+            self.__dict__[attr] = val
+            return
+
+
+        self.__dict__[attr] = field_type.cast(val)
+
 
     @property
     def dirty(self):
@@ -150,3 +174,4 @@ class Model(object):
         """
         self.__class__.objects.save(self)
         self._dirty = False
+        return self

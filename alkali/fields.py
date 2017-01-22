@@ -29,7 +29,8 @@ class Field(object):
     base class for all field types. it tries to hold all the functionality
     so derived classes only need to override methods in special circumstances.
 
-    **Note**: the Field does not hold a value, only meta information about a value
+    **Note**: the Field does not hold a value, only meta information about a
+    value. The Model holds the value and is set via Model.__setattr__
     """
     implements(IField)
 
@@ -83,6 +84,7 @@ class Field(object):
     def loads(cls, value):
         return value
 
+
 class IntField(Field):
 
     def __init__(self, **kw):
@@ -115,6 +117,7 @@ class StringField(Field):
                 return self.field_type( value.decode('utf-8') )
 
         return value
+
 
 class DateTimeField(Field):
 
@@ -159,10 +162,45 @@ class DateTimeField(Field):
 
         return value
 
+
 class SetField(Field):
 
     def __init__(self, **kw):
         super(SetField, self).__init__(set, **kw)
+
+    def cast(self, value):
+        return value
+
+
+class ForeignKey(Field):
+
+    def __init__(self, foreign_model, **kw):
+        """
+        :param foreign_model: the type this field should hold
+        :type foreign_model:class:`Model`
+        :param kw:
+            * primary_key: is this field a primary key of parent model
+        """
+        from .model import Model
+        from .metamodel import MetaModel
+
+        if isinstance(foreign_model, types.StringTypes):
+            # TODO treat foreign_model as model name and lookup in database
+            pass
+
+        # a Model is an instance of MetaModel so type(Model) == MetaModel
+        # an instance of a Model is of course a Model. type(Model()) == Model
+        self.foreign_model = foreign_model
+        assert isinstance(self.foreign_model, MetaModel), "foreign_model isn't a Model"
+
+        # you can only call properties on an instance, not a class
+        # "calling" a class.property returns the property object
+        meta = foreign_model.Meta
+        other_pk =  [field for name,field in meta.fields.items() if field.primary_key]
+        assert len(other_pk) == 1, "compound foreign key not currently allowed"
+        other_pk = other_pk[0]
+
+        super(ForeignKey, self).__init__(self.foreign_model, **kw)
 
     def cast(self, value):
         return value

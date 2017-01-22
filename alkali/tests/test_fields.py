@@ -8,7 +8,12 @@ import datetime as dt
 
 from alkali.fields import IField, Field, IntField, StringField
 from alkali.fields import DateTimeField, FloatField, SetField
+from alkali.fields import ForeignKey
 from alkali import tznow, tzadd
+from alkali.model import Model
+
+from alkali.tests import MyModel, MyMulti, MyDepModel
+
 
 class TestField( unittest.TestCase ):
 
@@ -86,3 +91,25 @@ class TestField( unittest.TestCase ):
 
         v = f.loads('null')
         self.assertIsNone(v)
+
+    def test_10(self):
+        "test foreign keys, link to multi pk model"
+        with self.assertRaises(AssertionError):
+            class MyDepModelMulti(Model):
+                pk      = IntField(primary_key=True)
+                foreign = ForeignKey(MyMulti)
+
+    def test_11(self):
+        """
+        test foreign keys
+        note: just being able to define MyDepModel runs lots of code
+        """
+        m = MyModel(int_type=1).save()
+        d = MyDepModel(pk=1, foreign=m)
+        self.assertEqual( id(m), id(d.foreign) )
+
+        d = MyDepModel(pk=1, foreign=1) # foreign key value
+        self.assertEqual( id(m), id(d.foreign) )
+
+        d.foreign.str_type = "hello world"
+        self.assertEqual( "hello world", m.str_type )
