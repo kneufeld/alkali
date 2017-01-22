@@ -75,24 +75,7 @@ class Model(object):
                 self.__dict__['_dirty'] = True
 
         field_type =  self.meta.fields[attr]
-
-        if isinstance( field_type, fields.ForeignKey):
-            other_pk =  [field for name,field in self.meta.fields.items() if field.primary_key][0]
-            if isinstance(val, field_type.foreign_model):
-                pass
-            elif isinstance(val, other_pk.field_type):
-                val = field_type.foreign_model.objects.get(pk=val)
-                assert val
-            else:
-                raise RuntimeError( "assigning unknown type/val: %s" % str(val) )
-
-            # THINK should this block be in ForeignKey.cast() ?
-            self.__dict__[attr] = val
-            return
-
-
         self.__dict__[attr] = field_type.cast(val)
-
 
     @property
     def dirty(self):

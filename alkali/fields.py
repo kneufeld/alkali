@@ -192,15 +192,25 @@ class ForeignKey(Field):
         # an instance of a Model is of course a Model. type(Model()) == Model
         self.foreign_model = foreign_model
         assert isinstance(self.foreign_model, MetaModel), "foreign_model isn't a Model"
-
-        # you can only call properties on an instance, not a class
-        # "calling" a class.property returns the property object
-        meta = foreign_model.Meta
-        other_pk =  [field for name,field in meta.fields.items() if field.primary_key]
-        assert len(other_pk) == 1, "compound foreign key not currently allowed"
-        other_pk = other_pk[0]
+        assert self.foreign_pk
 
         super(ForeignKey, self).__init__(self.foreign_model, **kw)
 
+    @property
+    def foreign_pk(self):
+        # you can only call properties on an instance, not a class
+        # "calling" a class.property returns the property object
+        meta = self.foreign_model.Meta
+        pk =  [field for name,field in meta.fields.items() if field.primary_key]
+        assert len(pk) == 1, "compound foreign key not currently allowed"
+        return pk[0]
+
     def cast(self, value):
+        if isinstance(value, self.foreign_model):
+            pass
+        elif isinstance(value, self.foreign_pk.field_type):
+            value = self.foreign_model.objects.get(pk=value)
+        else:
+            raise RuntimeError( "assigning unknown type/value: %s %s" % (type(value), str(value)) )
+
         return value
