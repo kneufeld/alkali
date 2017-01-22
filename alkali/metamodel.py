@@ -1,6 +1,7 @@
 from collections import OrderedDict
 
-from .fields import Field
+from .relmanager import RelManager
+from .fields import Field, ForeignKey
 
 # from: http://stackoverflow.com/questions/12006267/how-do-django-models-work
 # from: lib/python2.7/site-packages/django/db/models/base.py
@@ -45,6 +46,7 @@ class MetaModel(type):
         new_class = super_new(meta_class, name, bases, {})
         new_class._add_meta( attrs )
         new_class._add_manager()
+        new_class._add_foreign_sets() # must come after _add_manager
 
         # put the rest of the attributes (methods and properties)
         # defined in the Model derived class into the "new" Model
@@ -56,6 +58,22 @@ class MetaModel(type):
     def _add_manager( new_class ):
         from .manager import Manager
         setattr( new_class, 'objects', Manager(new_class) )
+
+    def _add_foreign_sets( new_class ):
+        """
+        if this class has foreign keys then we need to add the
+        reverse lookup into the *other* model
+        """
+        for name, field in new_class.Meta.fields.items():
+            if not isinstance(field, ForeignKey):
+                continue
+
+            foreign_model = field.foreign_model
+            lookup = property(
+                    lambda fm_instance: RelManager(fm_instance, new_class, name)
+                    )
+            set_name = "{}_set".format(new_class.__name__).lower()
+            setattr( foreign_model, set_name, lookup )
 
     # this attribute exists on the class
     @property
@@ -100,6 +118,8 @@ class MetaModel(type):
         # you can set a property on a class but it will only be called on an instance
         # I'd prefer this to be a read-only property but I guess that can't happen
         meta.pk_fields = [name for name,field in meta.fields.items() if field.primary_key]
+
+        assert 'pk' not in meta.fields, "illegal field name: 'pk'"
 
     # creates a new instance of derived model
     def __call__(self, *args, **kw):

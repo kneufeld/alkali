@@ -53,6 +53,7 @@ class Model(object):
         return "<{}: {}>".format(self.name, self.pk)
 
     def __setattr__(self, attr, val):
+        # THINK what happens if we assign to pk
         # if we're setting a field value and that value is different
         # than current value, mark self as modified
         if attr in self.meta.fields:
@@ -62,7 +63,7 @@ class Model(object):
 
     def __eq__(self, other):
         # this is obviously a very shallow comparison
-        return self.pk == other.pk
+        return type(self) == type(other) and self.pk == other.pk
 
     def __ne__(self, other):
         return not self.__eq__(other)
@@ -74,7 +75,7 @@ class Model(object):
             if curr_val != val:
                 self.__dict__['_dirty'] = True
 
-        field_type =  self.meta.fields[attr]
+        field_type = self.meta.fields[attr]         # eg. IntField
         self.__dict__[attr] = field_type.cast(val)
 
     @property
@@ -127,6 +128,11 @@ class Model(object):
             return pks[0]
 
         return tuple(pks)
+
+    @pk.setter
+    def pk(self, val):
+        # FIXME figure out how to do this properly
+        raise RuntimeError("assigning to pk")
 
     @property
     def dict(self):

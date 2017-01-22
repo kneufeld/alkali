@@ -17,6 +17,11 @@ from alkali.tests import MyModel, MyMulti, MyDepModel
 
 class TestField( unittest.TestCase ):
 
+    def tearDown(self):
+        MyModel.objects.clear()
+        MyMulti.objects.clear()
+        MyDepModel.objects.clear()
+
     def test_1(self):
         "verify class/instance implementation"
         self.assertTrue( verifyClass(IField, Field) )
@@ -105,7 +110,7 @@ class TestField( unittest.TestCase ):
         note: just being able to define MyDepModel runs lots of code
         """
         m = MyModel(int_type=1).save()
-        d = MyDepModel(pk=1, foreign=m)
+        d = MyDepModel(pk1=1, foreign=m)
         self.assertEqual( id(m), id(d.foreign) )
 
         d = MyDepModel(pk=1, foreign=1) # foreign key value
@@ -113,3 +118,32 @@ class TestField( unittest.TestCase ):
 
         d.foreign.str_type = "hello world"
         self.assertEqual( "hello world", m.str_type )
+
+    def test_12(self):
+        "test save"
+        m = MyModel(int_type=1).save()
+        d = MyDepModel(pk1=1, foreign=m).save()
+
+    def test_13(self):
+        """
+        test queries
+        """
+        m = MyModel(int_type=1).save()
+        d = MyDepModel(pk1=10, foreign=m).save()
+
+        self.assertEqual( m, d.foreign )
+
+        # filters on MyDepModel "obviously" return MyDepModel even if
+        # we're comparing with foreign keys
+        self.assertEqual( d, MyDepModel.objects.get(foreign=m) )
+        self.assertEqual( d, MyDepModel.objects.filter(foreign=m)[0] )
+
+    def test_15(self):
+        """
+        test *_set on foreign model
+        """
+        m = MyModel(int_type=1).save()
+        d = MyDepModel(pk1=10, foreign=m).save()
+
+        self.assertTrue( hasattr( m, 'mydepmodel_set') )
+        self.assertTrue( d in m.mydepmodel_set.all() )

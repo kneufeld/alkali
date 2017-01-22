@@ -65,6 +65,9 @@ class Query(object):
     def __getitem__(self, i):
         return self._instances[i]
 
+    def __str__(self):
+        return ", ".join([str(q) for q in self])
+
     @property
     def name(self):
         """
