@@ -1,8 +1,6 @@
 import os
 import unittest
-import tempfile
 from zope.interface.verify import verifyObject, verifyClass
-import datetime as dt
 
 from alkali.model import IModel, Model
 from alkali import fields

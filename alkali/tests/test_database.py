@@ -49,7 +49,7 @@ class TestDatabase( unittest.TestCase ):
             class Meta:
                 filename = 'foo.bar'
 
-            int_type = fields.IntField()
+            int_type = fields.IntField(primary_key=True)
             str_type = fields.StringField()
             date_type  = fields.DateTimeField()
 
@@ -73,7 +73,7 @@ class TestDatabase( unittest.TestCase ):
             class Meta:
                 storage = FooStorage
 
-            int_type = fields.IntField()
+            int_type = fields.IntField(primary_key=True)
             str_type = fields.StringField()
             date_type  = fields.DateTimeField()
 
@@ -158,3 +158,32 @@ class TestDatabase( unittest.TestCase ):
         del db # save_on_exit is true
 
         self.assertTrue( open( tfile.name, 'r').read() )
+
+    def test_no_primary_key(self):
+        tfile = tempfile.NamedTemporaryFile()
+
+        class MyModel2( Model ):
+            class Meta:
+                filename = tfile.name
+
+            int_type = fields.IntField(primary_key=True)
+
+        db = Database( models=[MyModel2] )
+
+        for i in range(3):
+            MyModel2(int_type=i).save()
+
+        db.store()
+        self.assertTrue( os.path.getsize(tfile.name) )
+
+        # need to add a auto increment for when there is no pk
+        # and/or assert when model doesn't have pk
+        # all records read/write to None/'' when there is no pk
+        #print "fread",open(tfile.name,'r').read()
+
+        db = Database( models=[MyModel2] )
+        db.load()
+
+        # not sure if this is a valid test, MyModel.objects is still around
+        model = db.get_model('MyModel2')
+        self.assertEqual( 3, len(model.objects) )

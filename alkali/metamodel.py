@@ -115,11 +115,17 @@ class MetaModel(type):
             meta.fields[field] = attrs.pop(field)
             delattr( meta.fields[field], '_order' )
 
+        # make sure 'pk' isn't a field name, etc
+        for d in dir(new_class):
+            assert d not in meta.fields
+
         # you can set a property on a class but it will only be called on an instance
         # I'd prefer this to be a read-only property but I guess that can't happen
         meta.pk_fields = [name for name,field in meta.fields.items() if field.primary_key]
 
-        assert 'pk' not in meta.fields, "illegal field name: 'pk'"
+        if len(meta.fields):
+            assert len(meta.pk_fields) > 0, "no primary_key defined in fields"
+
 
     # creates a new instance of derived model
     def __call__(self, *args, **kw):

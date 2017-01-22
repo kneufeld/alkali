@@ -98,11 +98,16 @@ class TestField( unittest.TestCase ):
         self.assertIsNone(v)
 
     def test_10(self):
-        "test foreign keys, link to multi pk model"
+        "test foreign keys, link to multi pk model not supported"
         with self.assertRaises(AssertionError):
             class MyDepModelMulti(Model):
-                pk      = IntField(primary_key=True)
+                pk1      = IntField(primary_key=True)
                 foreign = ForeignKey(MyMulti)
+
+        with self.assertRaises(AssertionError):
+            class MyDepModel(Model):
+                pk      = IntField(primary_key=True)
+                foreign = ForeignKey(MyModel)
 
     def test_11(self):
         """
