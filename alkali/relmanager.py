@@ -73,7 +73,14 @@ class RelManager(object):
         self._instances = {}
 
     def add(self, instance):
-        pass
+        assert isinstance(instance, self.child_class)
+        setattr(instance, self.child_field, self)
+        return instance
+
+    def create(self, **kw):
+        assert self.child_field not in kw
+        child = self.child_class(**kw)
+        return self.add(child)
 
     def remove(self, instance):
         """
