@@ -187,3 +187,22 @@ class TestDatabase( unittest.TestCase ):
         # not sure if this is a valid test, MyModel.objects is still around
         model = db.get_model('MyModel2')
         self.assertEqual( 3, len(model.objects) )
+
+    def test_two_models(self):
+
+        class FooStorage(Storage):
+            pass
+
+        class MyModel2(Model):
+            class Meta:
+                storage = FooStorage
+
+            pk1     = fields.IntField(primary_key=True)
+
+        # MyModel.Meta.storage = JSONStorage
+        # MyModel2.Meta.storage = FooStorage
+
+        db = Database(models=[MyModel, MyModel2])
+
+        self.assertEqual( JSONStorage, db.get_storage(MyModel) )
+        self.assertEqual( FooStorage, db.get_storage(MyModel2) )

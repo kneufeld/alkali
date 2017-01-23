@@ -148,7 +148,7 @@ class Database(object):
         return storage
 
 
-    def store(self, storage=None, force=False):
+    def store(self, _storage=None, force=False):
         """
         persistantly store all model data
 
@@ -160,12 +160,12 @@ class Database(object):
 
         # you can't save more than one model with a single storage
         # instance because the file will get over written
-        assert storage is None or inspect.isclass(storage)
+        assert _storage is None or inspect.isclass(_storage)
 
         for model in self.models:
             logger.debug( "Database: storing model: %s", model.name )
 
-            storage = storage or self.get_storage(model)
+            storage = _storage or self.get_storage(model)
 
             if inspect.isclass(storage):
                 filename = self.get_filename(model)
@@ -174,7 +174,7 @@ class Database(object):
             model.objects.store(storage, force=force)
 
 
-    def load(self, storage=None):
+    def load(self, _storage=None):
         """
         load all model data from disk
 
@@ -184,12 +184,13 @@ class Database(object):
 
         # you can't load more than one model with a single storage
         # instance since only one file will get read
-        assert storage is None or inspect.isclass(storage)
+        assert _storage is None or inspect.isclass(_storage)
 
         for model in self.models:
             logger.debug( "Database: loading model: %s", model.name )
 
-            storage = storage or self.get_storage(model)
+            storage = _storage or self.get_storage(model)
+            logger.debug( "Database: using storage: %s", storage.__name__ )
 
             if inspect.isclass(storage):
                 filename = self.get_filename(model)
