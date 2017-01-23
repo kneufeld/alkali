@@ -57,6 +57,14 @@ alkali.query module
     :undoc-members:
     :show-inheritance:
 
+alkali.relmanager module
+------------------------
+
+.. automodule:: alkali.relmanager
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 alkali.storage module
 ---------------------
 

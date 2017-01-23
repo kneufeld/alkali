@@ -12,16 +12,18 @@ class IRelManager( Interface ):
 
 class RelManager(object):
     """
-    the ``RelManager`` class manages queries/connections between two
+    This is an internal class that a user of alkali unlikely to use directly.
+
+    The ``RelManager`` class manages queries/connections between two
     models that have a :class:`alkali.fields.ForeignKey` (or equivalent) field.
     """
     implements(IRelManager)
 
     def __init__( self, foreign, child_class, child_field ):
         """
-        :param Model foreign: the model that is pointed at
-        :param Model child_class: the model that contains the ForeignKey
-        :param Model child_field: the field name that points to ForeignKey
+        :param Model foregin: instance of the model that is pointed at
+        :param Model child_class: the model class that contains the ForeignKey
+        :param str child_field: the field name that points to ForeignKey
         """
         assert not inspect.isclass(foreign)
         assert inspect.isclass(child_class)
@@ -61,7 +63,7 @@ class RelManager(object):
         dirty if we previously had model instances.
 
         **Note**: this does not affect on-disk files until
-        :func:`Manager.save` is called.
+        :func:`alkali.manager.Manager.save` is called.
         """
         return
         # THINK when foreign is deleted should we delete
@@ -95,6 +97,11 @@ class RelManager(object):
 
 
     def all(self):
+        """
+        get all objects that point to this instance
+
+        :rtype: :class:`alkali.query.Query`
+        """
         return self.child_class.objects.filter(**{self.child_field: self.foreign})
 
 
@@ -102,11 +109,9 @@ class RelManager(object):
         """
         perform a query that returns a single instance of a model
 
-        :param pk: optional primary key
-        :type pk: value or ``tuple`` if multi-pk
         :param kw: optional ``field_name=value``
         :rtype: single :class:`alkali.model.Model` instance
-        :raises KeyError: if 0 or more than 1 instance returned
+        :raises KeyError: if number of results != 1
 
         ::
 

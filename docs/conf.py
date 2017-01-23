@@ -67,7 +67,7 @@ master_doc = 'README'
 
 # General information about the project.
 project = u'alkali'
-copyright = u'2016, Kurt Neufeld'
+copyright = u'2017, Kurt Neufeld'
 author = u'Kurt Neufeld'
 
 # The version info for the project you're documenting, acts as replacement for

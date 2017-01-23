@@ -173,15 +173,18 @@ class SetField(Field):
 
 
 class ForeignKey(Field):
+    """
+    A ForeignKey is a special type of field. Instead of holding a value
+    it points to an exising record in another Model.
+    """
 
     def __init__(self, foreign_model, **kw):
         """
-        :param foreign_model: the type this field should hold
-        :type foreign_model:class:`Model`
+        :param foreign_model: the Model that this field is referencing
+        :type foreign_model: :class:`alkali.model.Model`
         :param kw:
             * primary_key: is this field a primary key of parent model
         """
-        from .model import Model
         from .metamodel import MetaModel
 
         if isinstance(foreign_model, types.StringTypes):
