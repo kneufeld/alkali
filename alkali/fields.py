@@ -209,6 +209,9 @@ class ForeignKey(Field):
         return pk[0]
 
     def cast(self, value):
+        if value is None:
+            return None
+
         if isinstance(value, self.foreign_model):
             pass
         elif isinstance(value, self.foreign_pk.field_type):

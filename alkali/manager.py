@@ -108,7 +108,7 @@ class Manager(object):
         """
         #logger.debug( "saving model instance: %s", str(instance.pk) )
 
-        assert instance.pk is not None
+        assert instance.pk is not None, "{} has None for pk".format(self.name)
         self._instances[ instance.pk ] = instance
 
         # self._dirty is required because think what would happen

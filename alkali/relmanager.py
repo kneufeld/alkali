@@ -2,7 +2,6 @@ from zope.interface import Interface, implements
 import inspect
 
 from .query import Query
-from .storage import IStorage
 
 import logging
 logger = logging.getLogger(__name__)
@@ -105,7 +104,7 @@ class RelManager(object):
         return self.child_class.objects.filter(**{self.child_field: self.foreign})
 
 
-    def get(self, *pk, **kw):
+    def get(self, **kw):
         """
         perform a query that returns a single instance of a model
 
@@ -121,10 +120,7 @@ class RelManager(object):
             m = MyModel.objects.get(some_field='a unique value')
             m = MyModel.objects.get(field1='a unique', field2='value')
         """
-        if len(pk):
-            kw['pk'] = pk[0]
-
-        results = Query(self).filter(**kw).instances
+        results = self.child_class.objects.get(**kw)
 
         if len(results) == 0:
             raise KeyError("got no results")
@@ -133,12 +129,3 @@ class RelManager(object):
             raise KeyError("got more than 1 result (%d)" % len(results) )
 
         return results[0]
-
-
-    def filter(self, **kw):
-        """
-        see :func:`alkali.query.Query.filter` for documentation
-
-        :rtype: :class:`alkali.query.Query`
-        """
-        return Query(self).filter(**kw)
