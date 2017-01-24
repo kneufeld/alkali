@@ -20,7 +20,3 @@ class MyMulti(Model):
     pk1 = fields.IntField(primary_key=True)
     pk2 = fields.IntField(primary_key=True)
     other = fields.StringField()
-
-class MyDepModel(Model):
-    pk1     = fields.IntField(primary_key=True)
-    foreign = fields.ForeignKey(MyModel)

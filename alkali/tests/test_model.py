@@ -96,8 +96,12 @@ class TestModel( unittest.TestCase ):
 
     def test_7(self):
         "find the primary key"
-        m=MyModel()
+        m=MyModel(int_type=1)
+        self.assertEqual( 1, m.int_type )
         self.assertEqual( m.int_type, m.pk )
+
+        n=MyModel(int_type=2)
+        #print id(m.meta.fields['int_type']), id(n.meta.fields['int_type'])
 
     def test_8(self):
         "find the filename and str"
