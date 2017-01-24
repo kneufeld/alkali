@@ -34,13 +34,18 @@ class memoized_property(object):
     def __get__(self, inst, type=None):
         if inst is None:
             return self
-        if self.__get is None:
-            raise AttributeError, "unreadable attribute"
 
-        if not hasattr(inst, self._attr_name):
+        try:
+            return getattr(inst, self._attr_name)
+        except AttributeError:
+            if self.__get is None:
+                raise AttributeError, "unreadable attribute"
+
             result = self.__get(inst)
             setattr(inst, self._attr_name, result)
-        return getattr(inst, self._attr_name)
+
+        return result
+
 
     def __set__(self, inst, value):
         if self.__set is None:
