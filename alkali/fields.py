@@ -32,6 +32,11 @@ class Field(object):
     base class for all field types. it tries to hold all the functionality
     so derived classes only need to override methods in special circumstances.
 
+    Field objects are instantiated during model creation. ``i = IntField()``
+
+    All Model instances share the same instantiated Field objects in their
+    Meta class. ie: ``id(MyModel().Meta.fields['i']) == id(MyModel().Meta.fields['i'])``
+
     **Note**: the Field does not hold a value, only meta information about a
     value. The Model holds the value and is set via Model.__setattr__
     """
@@ -198,9 +203,11 @@ class ForeignKey(Field):
             # TODO treat foreign_model as model name and lookup in database
             pass
 
-        # a Model is an instance of MetaModel so type(Model) == MetaModel
-        # an instance of a Model is of course a Model. type(Model()) == Model
         self.foreign_model = foreign_model
+
+        # a Model is an instance of MetaModel so type(foreign_model) == MetaModel
+        # an instance of a Model is of course a Model. type(Model()) == Model
+        # I don't really this
         assert isinstance(self.foreign_model, MetaModel), "foreign_model isn't a Model"
         assert self.foreign_pk
 
