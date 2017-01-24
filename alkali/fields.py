@@ -74,17 +74,23 @@ class Field(object):
         if value is None:
             return None
 
-        if type(value) is not self._field_type:
+        if not isinstance(value, self._field_type):
             return self._field_type(value)
 
         return value
 
-    @classmethod
-    def dumps(cls, value):
+    def dumps(self, value):
+        """
+        by not changing value, it means that json.dumps can properly
+        encode type(value)
+        """
         return value
 
-    @classmethod
-    def loads(cls, value):
+    def loads(self, value):
+        """
+        by not changing value, it means that json.loads can properly
+        decode value into correct type
+        """
         return value
 
 
@@ -138,20 +144,18 @@ class DateTimeField(Field):
             if value == 'now':
                 value = tznow()
             else:
-                return DateTimeField.loads(value)
+                return self.loads(value)
 
         if type(value) is not self.field_type:
             value = self.field_type(value)
 
         return tzadd( value )
 
-    @classmethod
     def dumps(cls, value):
         if value is None:
             return 'null'
         return value.isoformat()
 
-    @classmethod
     def loads(cls, value):
         if value is None or value == 'null':
             return None
