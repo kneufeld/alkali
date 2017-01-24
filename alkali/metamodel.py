@@ -26,10 +26,10 @@ class MetaModel(type):
     **objects**: :class:`alkali.manager.Manager`
     """
 
+    # this called once per Model _definition_
     # __new__ is the method called before __init__
     # meta_class is _this_ class, aka: MetaModel
-    # this makes a new MetaModel instance, I'm not sure why we want to
-    # do that
+    # this makes a new MetaModel instance
     def __new__(meta_class, name, bases, attrs):
         #print "__new__ cls:",type(meta_class),meta_class,name
         super_new = super(MetaModel, meta_class).__new__
@@ -132,7 +132,8 @@ class MetaModel(type):
             assert len(meta.pk_fields) > 0, "no primary_key defined in fields"
 
 
-    # creates a new instance of derived model
+    # creates a new instance of derived model, this is called each
+    # time a Model instance is created
     def __call__(self, *args, **kw):
         kw_fields=OrderedDict()
         for name in self.Meta.fields:
