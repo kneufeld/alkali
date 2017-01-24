@@ -197,29 +197,27 @@ class ForeignKey(Field):
         :param kw:
             * primary_key: is this field a primary key of parent model
         """
-        from .metamodel import MetaModel
+        from .model import Model
 
-        if isinstance(foreign_model, types.StringTypes):
-            # TODO treat foreign_model as model name and lookup in database
-            pass
+        # TODO treat foreign_model as model name and lookup in database
+        # if isinstance(foreign_model, types.StringTypes):
+        #     pass
 
         self.foreign_model = foreign_model
 
         # a Model is an instance of MetaModel so type(foreign_model) == MetaModel
         # an instance of a Model is of course a Model. type(Model()) == Model
-        # I don't really this
-        assert isinstance(self.foreign_model, MetaModel), "foreign_model isn't a Model"
-        assert self.pk_field # do a check for appropriate primary key
+        assert issubclass(self.foreign_model, Model), "foreign_model isn't a Model"
+
+        # test for appropriate primary key
+        assert len(self.foreign_model.Meta.pk_fields) == 1, \
+                "compound foreign key is not currently allowed"
 
         super(ForeignKey, self).__init__(self.foreign_model, **kw)
 
     @property
     def pk_field(self):
-        # you can only call properties on an instance, not a class
-        # "calling" a class.property returns the property object
-        meta = self.foreign_model.Meta
-        pks =  [field for name,field in meta.fields.items() if field.primary_key]
-        assert len(pks) == 1, "compound foreign key not currently allowed"
+        pks = self.foreign_model.Meta.pk_field_types
         return pks[0]
 
     def cast(self, value):
@@ -231,11 +229,11 @@ class ForeignKey(Field):
         elif isinstance(value, self.pk_field.field_type):
             try:
                 value = self.foreign_model.objects.get(pk=value)
-            except KeyError:
-                logger.error( "foreign key object is gone: %s:%s", self.foreign_model.name, value)
+            except KeyError: # THINK raise DoesNotExist exception like django
+                logger.error( "ForeignKey instance is gone: %s:%s", self.foreign_model.name, value)
                 value = None
         else:
-            # use foreign model primary key field to cast the value
+            # use foreign model's primary key type to cast the value
             value = self.pk_field.cast(value)
 
         return value
@@ -249,5 +247,9 @@ class ForeignKey(Field):
         return self.pk_field.dumps( value.pk )
 
     # def loads() is not required because the Storage loader is probably
-    # reading json strings and then using the Modle.__init__() to feed
+    # reading json strings and then using the Model.__init__() to feed
     # it key-value pairs. ie: we don't know that it's a ForeignKey on disk.
+
+# TODO class OneToOneField
+
+# TODO class ManyToManyField
