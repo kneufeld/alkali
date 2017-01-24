@@ -1,5 +1,6 @@
 from zope.interface import Interface, implements
 import inspect
+import copy
 
 from .query import Query
 from .storage import IStorage
@@ -71,7 +72,7 @@ class Manager(object):
 
         :rtype: ``list``
         """
-        return [elem for elem in Manager.sorter(self._instances)]
+        return copy.copy( self._instances.values() )
 
     @property
     def dirty(self):

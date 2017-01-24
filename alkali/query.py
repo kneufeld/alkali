@@ -23,7 +23,6 @@
     assert MyModel.objects.order_by('-id')[0].id == 9
 """
 
-import copy
 import types
 import operator
 import collections
@@ -52,9 +51,7 @@ class Query(object):
         :param Manager manager:
         """
         self.manager = manager
-
-        # shallow copy, new list but same objects
-        self._instances = copy.copy( manager.instances )
+        self._instances = manager.instances
 
     def __len__(self):
         return len(self._instances)

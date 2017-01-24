@@ -2,7 +2,6 @@ from zope.interface import Interface, Attribute, implements
 import json
 
 from .metamodel import MetaModel
-from . import fields
 
 class IModel( Interface ):
 
