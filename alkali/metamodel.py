@@ -141,8 +141,3 @@ class MetaModel(type):
 
         # this calls Model.__new__ and then Model.__init__
         return type.__call__(self, **kw)
-
-    # this attribute exists on the class
-    @property
-    def name(new_class):
-        return new_class.__name__

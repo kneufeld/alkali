@@ -27,7 +27,6 @@ class TestModel( unittest.TestCase ):
         m = EmptyModel(foo='bar')
         self.assertEqual( 'bar', m.foo )
         self.assertEqual( "EmptyModel", m.name )
-        self.assertEqual( "EmptyModel", EmptyModel.name )
 
         self.assertTrue( EmptyModel.objects != MyModel.objects )
 

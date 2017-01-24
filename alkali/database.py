@@ -64,7 +64,7 @@ class Database(object):
         for model in models:
             assert inspect.isclass(model)
             logger.debug( "Database: adding model to database: %s", model.name )
-            self._models[model.name.lower()] = model
+            self._models[model.__name__.lower()] = model
 
         self._storage_type = kw.pop('storage', JSONStorage)
         self._save_on_exit = kw.pop('save_on_exit', False)
@@ -121,7 +121,7 @@ class Database(object):
 
         if not filename:
             storage = self.get_storage(model)
-            filename = "{}.{}".format(model.name, storage.extension)
+            filename = "{}.{}".format(model.__name__, storage.extension)
 
         # if filename is absolute, then self._root_dir is gets filtered out
         return os.path.join( self._root_dir, filename )

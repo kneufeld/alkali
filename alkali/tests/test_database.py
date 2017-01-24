@@ -36,10 +36,8 @@ class TestDatabase( unittest.TestCase ):
     def test_3(self):
         "test filenames"
 
-        model = MyModel
-        db = Database( models=[model], storage=JSONStorage, root_dir=curr_dir)
-
-        self.assertEqual( os.path.join(curr_dir,'MyModel.json'), db.get_filename(model) )
+        db = Database( models=[MyModel], storage=JSONStorage, root_dir=curr_dir)
+        self.assertEqual( os.path.join(curr_dir,'MyModel.json'), db.get_filename(MyModel) )
 
     def test_4(self):
         "test overriding filenames"
