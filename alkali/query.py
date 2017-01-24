@@ -123,21 +123,20 @@ class Query(object):
         perform a query, keeping model instances that pass the criteria specified
         in the ``kw`` parameter.
 
-        see example code above. see Django page for very through docs on
+        see example code above. see Django page for very thorough docs on
         this functionality. basically, its field_name '__' operation = value.
 
         major enhancement to Django is the ability to compare ``sets``
 
         ::
 
-            man = MyModel.objects
-            man.filter( f__in=['foo','bar'] ) # field f value is 'foo' or 'bar'
-            man.filter( myset__rin='foo' ) # 'foo' is in field/property myset
+            # field/property f is 'foo' or 'bar'
+            MyModel.objects.filter( f__in=['foo','bar'] )
+
+            # 'foo' is in field/property myset
+            MyModel.objects.filter( myset__rin='foo' )
 
         """
-
-        #logger.debug( "%s: query: %s", self.name, str(kw) )
-
         for field, query in kw.items():
             try:
                 field, oper = field.split('__')
