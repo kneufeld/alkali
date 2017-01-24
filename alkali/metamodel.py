@@ -75,10 +75,6 @@ class MetaModel(type):
             set_name = "{}_set".format(new_class.__name__).lower()
             setattr( foreign_model, set_name, lookup )
 
-    # this attribute exists on the class
-    @property
-    def name(new_class):
-        return new_class.__name__
 
     def _add_meta( new_class, attrs ):
 
@@ -136,3 +132,8 @@ class MetaModel(type):
 
         # this calls Model.__new__ and then Model.__init__
         return type.__call__(self, **kw)
+
+    # this attribute exists on the class
+    @property
+    def name(new_class):
+        return new_class.__name__
