@@ -239,3 +239,15 @@ class ForeignKey(Field):
             value = self.pk_field.cast(value)
 
         return value
+
+    def dumps(self, value):
+        from .model import Model
+
+        if not isinstance(value, Model):
+            raise RuntimeError("ForeignKey value is not a Model")
+
+        return self.pk_field.dumps( value.pk )
+
+    # def loads() is not required because the Storage loader is probably
+    # reading json strings and then using the Modle.__init__() to feed
+    # it key-value pairs. ie: we don't know that it's a ForeignKey on disk.

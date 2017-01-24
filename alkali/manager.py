@@ -3,6 +3,7 @@ import inspect
 
 from .query import Query
 from .storage import IStorage
+from . import fields
 
 import logging
 logger = logging.getLogger(__name__)
@@ -190,7 +191,14 @@ class Manager(object):
                 elem = self._model_class( **elem )
 
             if elem.pk in self._instances:
-                raise KeyError( 'pk collision detected during load: %s' % str(elem.pk) )
+                raise KeyError( '%s: pk collision detected during load: %s' % (self._model_class.__name__, str(elem.pk)) )
+
+            if elem.pk is None:
+                if isinstance(elem.meta.pk_field_types[0], fields.ForeignKey):
+                    logger.warn( "%s: not adding to list" % self._model_class.__name__ )
+                    continue
+                else:
+                    raise KeyError( '%s: pk was None during load' % (self._model_class.__name__) )
 
             # this adds elem to our internal list
             self.save(elem, dirty=False)
