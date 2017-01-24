@@ -79,6 +79,10 @@ class MetaModel(type):
             setattr( field.foreign_model, set_name, rel_manager )
 
     def _add_meta( new_class, attrs ):
+        # TODO memoize a Meta class for each Model type, all instances
+        # of model then don't have to do all this parsing. THINK does
+        # each model need a copy/instance of Meta? Thinking about filenames
+        # here
 
         def _get_fields( attrs ):
             return [(k,v) for k,v in attrs.items() if isinstance(v,Field)]
@@ -106,8 +110,10 @@ class MetaModel(type):
             meta.ordering = _get_field_order(attrs)
 
         # don't let user miss a field if they've defined Meta.ordering
-        assert len(meta.ordering) == len(_get_fields(attrs)), "missing/extra fields defined in Meta.ordering"
+        assert len(meta.ordering) == len(_get_fields(attrs)), \
+            "missing/extra fields defined in Meta.ordering"
 
+        # meta.ordering contains field names, attrs contains Field types
         meta.fields = OrderedDict()
         for field in meta.ordering:
             meta.fields[field] = attrs.pop(field)

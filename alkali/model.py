@@ -71,9 +71,7 @@ class Model(object):
     def __assign_field(self, attr, val):
         if hasattr(self, attr):
             curr_val = getattr(self, attr)
-
-            if curr_val != val:
-                self.__dict__['_dirty'] = True
+            self.__dict__['_dirty'] = curr_val != val
 
         field_type = self.meta.fields[attr]         # eg. IntField
         self.__dict__[attr] = field_type.cast(val)
@@ -117,7 +115,7 @@ class Model(object):
     @property
     def pk(self):
         """
-        **property**: returns this models primary key. If the model is
+        **property**: returns this models primary key value. If the model is
         comprised of serveral primary keys then return a tuple of them.
 
         :rtype: :class:`alkali.fields.Field` or tuple-of-Field
@@ -142,7 +140,7 @@ class Model(object):
 
         :rtype: ``dict``
         """
-        return { name: field.dumps( getattr(self,name) )
+        return { name: field.dumps( getattr(self, name) )
                 for name, field in self.meta.fields.items() }
 
     @property
