@@ -34,7 +34,9 @@ class RelManager(object):
 
     def __repr__(self):
         return "RelManager<{} <- {}.{}>".format(
-                self._foreign.__class__.__name__, self._child_class.__name__, self._child_field)
+                self._foreign.__class__.__name__,
+                self._child_class.__name__,
+                self._child_field )
 
     @property
     def foreign(self):
@@ -55,7 +57,6 @@ class RelManager(object):
         """
         return str(self)
 
-
     def clear(self):
         """
         remove all instances of our models. we'll be marked as
@@ -72,15 +73,16 @@ class RelManager(object):
         self._dirty = len(self) > 0
         self._instances = {}
 
-    def add(self, instance):
-        assert isinstance(instance, self.child_class)
-        setattr(instance, self.child_field, self)
-        return instance
+    def add(self, child):
+        assert isinstance(child, self.child_class)
+        setattr(child, self.child_field, self.foreign)
+        return child
 
     def create(self, **kw):
-        assert self.child_field not in kw
+        assert self.child_field not in kw, "can't pass in foreign key value to create"
         child = self.child_class(**kw)
-        return self.add(child)
+        child = self.add(child)
+        return child
 
     def remove(self, instance):
         """
@@ -101,10 +103,10 @@ class RelManager(object):
         except KeyError:
             pass
 
-
     def all(self):
         """
         get all objects that point to this instance
+        see :func:`alkali.manager.Manager.all` for syntax
 
         :rtype: :class:`alkali.query.Query`
         """
@@ -113,26 +115,9 @@ class RelManager(object):
 
     def get(self, **kw):
         """
-        perform a query that returns a single instance of a model
+        get a single object that refers to this instance
+        see :func:`alkali.manager.Manager.get` for syntax
 
-        :param kw: optional ``field_name=value``
-        :rtype: single :class:`alkali.model.Model` instance
-        :raises KeyError: if number of results != 1
-
-        ::
-
-            m = MyModel.objects.get(1)      # equiv to
-            m = MyModel.objects.get(pk=1)
-
-            m = MyModel.objects.get(some_field='a unique value')
-            m = MyModel.objects.get(field1='a unique', field2='value')
+        :rtype: :class:`alkali.model.Model`
         """
-        results = self.child_class.objects.get(**kw)
-
-        if len(results) == 0:
-            raise KeyError("got no results")
-
-        if len(results) > 1:
-            raise KeyError("got more than 1 result (%d)" % len(results) )
-
-        return results[0]
+        return self.child_class.objects.get(**kw)
