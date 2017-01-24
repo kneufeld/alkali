@@ -209,18 +209,18 @@ class ForeignKey(Field):
         # an instance of a Model is of course a Model. type(Model()) == Model
         # I don't really this
         assert isinstance(self.foreign_model, MetaModel), "foreign_model isn't a Model"
-        assert self.foreign_pk
+        assert self.pk_field # do a check for appropriate primary key
 
         super(ForeignKey, self).__init__(self.foreign_model, **kw)
 
     @property
-    def foreign_pk(self):
+    def pk_field(self):
         # you can only call properties on an instance, not a class
         # "calling" a class.property returns the property object
         meta = self.foreign_model.Meta
-        pk =  [field for name,field in meta.fields.items() if field.primary_key]
-        assert len(pk) == 1, "compound foreign key not currently allowed"
-        return pk[0]
+        pks =  [field for name,field in meta.fields.items() if field.primary_key]
+        assert len(pks) == 1, "compound foreign key not currently allowed"
+        return pks[0]
 
     def cast(self, value):
         if value is None:
@@ -228,13 +228,14 @@ class ForeignKey(Field):
 
         if isinstance(value, self.foreign_model):
             pass
-        elif isinstance(value, self.foreign_pk.field_type):
+        elif isinstance(value, self.pk_field.field_type):
             try:
                 value = self.foreign_model.objects.get(pk=value)
             except KeyError:
                 logger.error( "foreign key object is gone: %s:%s", self.foreign_model.name, value)
                 value = None
         else:
-            raise RuntimeError( "assigning unknown type/value: %s %s" % (type(value), str(value)) )
+            # use foreign model primary key field to cast the value
+            value = self.pk_field.cast(value)
 
         return value
