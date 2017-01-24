@@ -21,3 +21,17 @@ tests and whatnot.
 In that case run: `pip install -e .[dev]`
 
 If you want to be able to build the docs then also run `pip install -e .[docs]`
+
+Testing
+-------
+
+During development `pytest` was the runner of choice but any unit test runner
+should work.
+
+Examples:
+
+* `pytest` run all tests
+* `pytest -s` to see stdout (any print statements)
+* `pytest --cov` to see test coverage
+* `pytest -k test_1` to run all tests named *test_1*
+* `pytest -k test_1 alkali/tests/test_fields.py` to run test_1 in test_fields.py
