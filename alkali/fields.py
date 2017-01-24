@@ -6,6 +6,9 @@ import types
 
 from .utils import tzadd, tznow
 
+import logging
+logger = logging.getLogger(__name__)
+
 class IField( Interface ):
 
     field_type = Attribute("the type of the field: str/int/float/etc")
@@ -215,7 +218,11 @@ class ForeignKey(Field):
         if isinstance(value, self.foreign_model):
             pass
         elif isinstance(value, self.foreign_pk.field_type):
-            value = self.foreign_model.objects.get(pk=value)
+            try:
+                value = self.foreign_model.objects.get(pk=value)
+            except KeyError:
+                logger.error( "foreign key object is gone: %s:%s", self.foreign_model.name, value)
+                value = None
         else:
             raise RuntimeError( "assigning unknown type/value: %s %s" % (type(value), str(value)) )
 
