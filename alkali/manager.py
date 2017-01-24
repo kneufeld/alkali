@@ -166,6 +166,8 @@ class Manager(object):
 
             gen = Manager.sorter(self._instances)
             storage.write(gen)
+
+            logger.debug( "%s: finished storing %d records", self.name, len(self) )
         else:
             logger.debug( "%s: has no dirty records, not saving", self.name )
 
@@ -204,7 +206,7 @@ class Manager(object):
             self.save(elem, dirty=False)
 
         self._dirty = False
-        logger.debug( "%s: finished loading", self.name )
+        logger.debug( "%s: finished loading %d records", self.name, len(self) )
 
 
     def get(self, *pk, **kw):
@@ -231,7 +233,7 @@ class Manager(object):
         results = Query(self).filter(**kw).instances
 
         if len(results) == 0:
-            raise KeyError("got no results")
+            raise KeyError("%s: no results for: %s" % (self.model_class.name, str(kw)) )
 
         if len(results) > 1:
             raise KeyError("got more than 1 result (%d)" % len(results) )
