@@ -46,7 +46,7 @@ class MetaModel(type):
         new_class = super_new(meta_class, name, bases, {})
         new_class._add_meta( attrs )
         new_class._add_manager()
-        new_class._add_foreign_sets() # must come after _add_manager
+        new_class._add_relmanagers()
 
         # put the rest of the attributes (methods and properties)
         # defined in the Model derived class into the "new" Model
@@ -59,7 +59,7 @@ class MetaModel(type):
         from .manager import Manager
         setattr( new_class, 'objects', Manager(new_class) )
 
-    def _add_foreign_sets( new_class ):
+    def _add_relmanagers( new_class ):
         """
         if this class has foreign keys then we need to add the
         reverse lookup into the *other* model
@@ -68,13 +68,15 @@ class MetaModel(type):
             if not isinstance(field, ForeignKey):
                 continue
 
-            foreign_model = field.foreign_model
-            lookup = property(
-                    lambda fm_instance: RelManager(fm_instance, new_class, name)
+            # note the name=name in the lambda, this is vital to capture
+            # the current value of name and not the last of the loop
+            # more info: http://stackoverflow.com/questions/2295290
+            rel_manager = property(
+                    lambda fm_instance, name=name: RelManager(fm_instance, new_class, name)
                     )
             set_name = "{}_set".format(new_class.__name__).lower()
-            setattr( foreign_model, set_name, lookup )
 
+            setattr( field.foreign_model, set_name, rel_manager )
 
     def _add_meta( new_class, attrs ):
 
