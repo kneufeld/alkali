@@ -126,6 +126,7 @@ class MetaModel(type):
         # you can set a property on a class but it will only be called on an instance
         # I'd prefer this to be a read-only property but I guess that can't happen
         meta.pk_fields = [name for name,field in meta.fields.items() if field.primary_key]
+        meta.pk_field_types = [field for _,field in meta.fields.items() if field.primary_key]
 
         if len(meta.fields):
             assert len(meta.pk_fields) > 0, "no primary_key defined in fields"
