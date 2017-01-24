@@ -112,7 +112,7 @@ class Model(object):
         fields = ", ".join( name_type )
         return "<{} {}>".format(self.name, fields)
 
-    @memoized_property
+    @property
     def pk(self):
         """
         **property**: returns this models primary key value. If the model is

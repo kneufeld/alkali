@@ -42,6 +42,8 @@ class TestManager( unittest.TestCase ):
 
         # successful save
         m1.int_type = 1
+        self.assertEqual( 1, m1.int_type )
+        self.assertEqual( 1, m1.pk )
         man.save(m1)
         self.assertEqual( 1, len(man) )
         self.assertEqual( 1, man.count )
