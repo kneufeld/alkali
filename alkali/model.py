@@ -1,6 +1,7 @@
 from zope.interface import Interface, Attribute, implements
 import json
 
+from .memoized_property import memoized_property
 from .metamodel import MetaModel
 
 class IModel( Interface ):
@@ -111,7 +112,7 @@ class Model(object):
         fields = ", ".join( name_type )
         return "<{} {}>".format(self.name, fields)
 
-    @property
+    @memoized_property
     def pk(self):
         """
         **property**: returns this models primary key value. If the model is
@@ -126,10 +127,10 @@ class Model(object):
 
         return tuple(pks)
 
-    @pk.setter
-    def pk(self, val):
-        # FIXME figure out how to do this properly
-        raise RuntimeError("assigning to pk")
+    # @pk.setter
+    # def pk(self, val):
+    #     # FIXME figure out how to do this properly
+    #     raise RuntimeError("assigning to pk")
 
     @property
     def dict(self):
