@@ -24,6 +24,9 @@ soon as possible.
 So knowing this, why would you use alkali?
 
 * If you need a simple, stand alone, database-like library
+* If you need a document store
+* Minimal disk io
+* *"Advanced"* features like foreign keys
 * You'd like a database but must control the on-disk format
 * If a *list* of *dict* is a main data structure in your program
 * You often search/filter your data
