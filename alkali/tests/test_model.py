@@ -45,6 +45,15 @@ class TestModel( unittest.TestCase ):
         self.assertEqual( None, m.str_type )
         self.assertEqual( None, m.dt_type )
 
+    def test_3a(self):
+        "test that memoized_property works"
+        m = MyModel()
+        self.assertEqual( None, m.pk )
+        self.assertEqual( None, m.pk )
+        m.int_type = 1
+        self.assertEqual( 1, m.pk )
+        self.assertEqual( 1, m.pk )
+
     def test_4(self):
         "set fields in init"
         now = tznow()

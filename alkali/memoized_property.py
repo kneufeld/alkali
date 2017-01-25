@@ -28,6 +28,7 @@ class memoized_property(object):
         self.__set = fset
         self.__del = fdel
         self.__doc__ = doc
+
         if fget is not None:
             self._attr_name = '___'+fget.func_name
 
@@ -38,10 +39,14 @@ class memoized_property(object):
         try:
             return getattr(inst, self._attr_name)
         except AttributeError:
-            if self.__get is None:
-                raise AttributeError, "unreadable attribute"
+            pass
 
-            result = self.__get(inst)
+        if self.__get is None:
+            raise AttributeError, "unreadable attribute"
+
+        result = self.__get(inst)
+
+        if result is not None:
             setattr(inst, self._attr_name, result)
 
         return result
