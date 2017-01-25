@@ -69,15 +69,27 @@ class Model(object):
         return not self.__eq__(other)
 
     def __assign_field(self, attr, val):
-        # THINK what happens if we assign to pk
         # if we're setting a field value and that value is different
         # than current value, mark self as modified
+
+        field_type = self.Meta.fields[attr]  # eg. IntField
+        val = field_type.cast(val)           # make sure val is correct type
+
         if hasattr(self, attr):
             curr_val = getattr(self, attr)
             self.__dict__['_dirty'] = curr_val != val
 
-        field_type = self.Meta.fields[attr]         # eg. IntField
-        self.__dict__[attr] = field_type.cast(val)
+            # do not let user change pk after it has been set
+            if attr in self.Meta.pk_fields:
+                if curr_val is not None and curr_val != val:
+                    raise RuntimeError("trying to change set pk value: {} to {}".format(self, val))
+        else:
+            # we don't have this attr during object creation
+            curr_val = None
+
+        self.__dict__[attr] = val # actually set the value
+
+        signals.field_update.send(self.__class__, field=attr, old_val=curr_val, new_val=val)
 
     @property
     def dirty(self):

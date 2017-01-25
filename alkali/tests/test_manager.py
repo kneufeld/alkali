@@ -44,6 +44,7 @@ class TestManager( unittest.TestCase ):
         m1.int_type = 1
         self.assertEqual( 1, m1.int_type )
         self.assertEqual( 1, m1.pk )
+
         man.save(m1)
         self.assertEqual( 1, len(man) )
         self.assertEqual( 1, man.count )
@@ -52,10 +53,14 @@ class TestManager( unittest.TestCase ):
         man.save(m1)
         self.assertEqual( 1, len(man) )
 
-        # different primary key, new len
-        m1.int_type = 2
-        man.save(m1)
-        self.assertEqual( 2, len(man) )
+    def test_2a(self):
+        "changing primary key is not allowed"
+
+        m1 = MyModel()
+        m1.int_type = 1
+
+        with self.assertRaises( RuntimeError ):
+            m1.int_type = 2
 
     def test_3(self):
         "test deleting"
