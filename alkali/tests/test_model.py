@@ -28,6 +28,7 @@ class TestModel( unittest.TestCase ):
         self.assertEqual( 'bar', m.foo )
 
         self.assertTrue( EmptyModel.objects != MyModel.objects )
+        self.assertTrue( EmptyModel.objects is not MyModel.objects )
 
 
     def test_2(self):
@@ -39,6 +40,10 @@ class TestModel( unittest.TestCase ):
         m = MyModel()
         self.assertEqual( 3, len(m.Meta.fields) )
         self.assertEqual( 3, len(MyModel.Meta.fields) )
+
+        self.assertEqual( None, m.int_type )
+        self.assertEqual( None, m.str_type )
+        self.assertEqual( None, m.dt_type )
 
     def test_4(self):
         "set fields in init"
