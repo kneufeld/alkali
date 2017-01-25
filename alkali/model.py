@@ -3,6 +3,7 @@ import json
 
 from .memoized_property import memoized_property
 from .metamodel import MetaModel
+from . import signals
 
 class IModel( Interface ):
 
@@ -47,15 +48,14 @@ class Model(object):
 
         setattr( obj, '_dirty', False )
 
+        signals.creation.send(cls, instance=obj)
+
         return obj
 
     def __repr__(self):
         return "<{}: {}>".format(self.__class__.__name__, self.pk)
 
     def __setattr__(self, attr, val):
-        # THINK what happens if we assign to pk
-        # if we're setting a field value and that value is different
-        # than current value, mark self as modified
         if attr in self.Meta.fields:
             self.__assign_field( attr, val)
         else:
@@ -69,6 +69,9 @@ class Model(object):
         return not self.__eq__(other)
 
     def __assign_field(self, attr, val):
+        # THINK what happens if we assign to pk
+        # if we're setting a field value and that value is different
+        # than current value, mark self as modified
         if hasattr(self, attr):
             curr_val = getattr(self, attr)
             self.__dict__['_dirty'] = curr_val != val

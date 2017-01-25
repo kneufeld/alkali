@@ -5,6 +5,7 @@ import copy
 from .query import Query
 from .storage import IStorage
 from . import fields
+from . import signals
 
 import logging
 logger = logging.getLogger(__name__)
@@ -110,9 +111,12 @@ class Manager(object):
         :param dirty: don't mark us as dirty if False, used during loading
         """
         #logger.debug( "saving model instance: %s", str(instance.pk) )
+        signals.pre_save.send(self.model_class, instance=instance )
 
-        assert instance.pk is not None, "{} has None for pk".format(self._name)
+        assert instance.pk is not None, "{}.save(): instance '{}' has None for pk".format(self._name, instance)
         self._instances[ instance.pk ] = instance
+
+        signals.post_save.send(self.model_class, instance=instance )
 
         # self._dirty is required because think what would happen
         # if we add a clean model instance
@@ -141,11 +145,15 @@ class Manager(object):
         :param Model instance:
         """
         # TODO should probably take an pk instead of an instance
-        logger.debug( "deleting model instance: %s", str(instance.pk) )
+        # logger.debug( "deleting model instance: %s", str(instance.pk) )
+
+        signals.pre_delete.send(self.model_class, instance=instance)
 
         try:
             del self._instances[ instance.pk ]
             self._dirty = True
+
+            signals.post_delete.send(self.model_class, instance=instance)
         except KeyError:
             pass
 
@@ -163,6 +171,8 @@ class Manager(object):
             self._dirty = True
 
         if self.dirty:
+            signals.pre_store.send(self.model_class, storage=storage)
+
             logger.debug( "%s: has dirty records, saving", self._name )
             logger.debug( "%s: storing models via storage class: %s", self._name, storage._name )
 
@@ -170,6 +180,7 @@ class Manager(object):
             storage.write(gen)
 
             logger.debug( "%s: finished storing %d records", self._name, len(self) )
+            signals.post_store.send(self.model_class, storage=storage)
         else:
             logger.debug( "%s: has no dirty records, not saving", self._name )
 

@@ -2,6 +2,7 @@ from collections import OrderedDict
 
 from .relmanager import RelManager
 from .fields import Field, ForeignKey
+from . import signals
 
 # from: http://stackoverflow.com/questions/12006267/how-do-django-models-work
 # from: lib/python2.7/site-packages/django/db/models/base.py
@@ -52,6 +53,8 @@ class MetaModel(type):
         # defined in the Model derived class into the "new" Model
         for name, attr in attrs.items():
             setattr(new_class, name, attr)
+
+        signals.model_creation.send(meta_class, model=new_class)
 
         return new_class
 
