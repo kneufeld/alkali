@@ -26,7 +26,7 @@ class TestModel( unittest.TestCase ):
 
         m = EmptyModel(foo='bar')
         self.assertEqual( 'bar', m.foo )
-        self.assertEqual( "EmptyModel", m.name )
+        self.assertEqual( "EmptyModel", m._name )
 
         self.assertTrue( EmptyModel.objects != MyModel.objects )
 
@@ -105,7 +105,7 @@ class TestModel( unittest.TestCase ):
     def test_8(self):
         "find the filename and str"
         m=MyModel()
-        self.assertTrue( m.name in str(m) )
+        self.assertTrue( m._name in str(m) )
 
     def test_9(self):
         "test dict"

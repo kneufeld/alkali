@@ -32,7 +32,7 @@ class Manager(object):
         self.clear()
 
     def __repr__(self):
-        return "<{}: {}>".format(self.name, len(self))
+        return "<{}: {}>".format(self._name, len(self))
 
     def __len__(self):
         return len(self._instances)
@@ -49,7 +49,7 @@ class Manager(object):
         return len(self)
 
     @property
-    def name(self):
+    def _name(self):
         """
         **property**: pretty version of our class name, based on our model
             eg. *MyModelManager*
@@ -111,7 +111,7 @@ class Manager(object):
         """
         #logger.debug( "saving model instance: %s", str(instance.pk) )
 
-        assert instance.pk is not None, "{} has None for pk".format(self.name)
+        assert instance.pk is not None, "{} has None for pk".format(self._name)
         self._instances[ instance.pk ] = instance
 
         # self._dirty is required because think what would happen
@@ -128,7 +128,7 @@ class Manager(object):
         **Note**: this does not affect on-disk files until
         :func:`Manager.save` is called.
         """
-        logger.debug( "%s: clearing all models", self.name )
+        logger.debug( "%s: clearing all models", self._name )
 
         self._dirty = len(self) > 0
         self._instances = {}
@@ -163,15 +163,15 @@ class Manager(object):
             self._dirty = True
 
         if self.dirty:
-            logger.debug( "%s: has dirty records, saving", self.name )
-            logger.debug( "%s: storing models via storage class: %s", self.name, storage.name )
+            logger.debug( "%s: has dirty records, saving", self._name )
+            logger.debug( "%s: storing models via storage class: %s", self._name, storage._name )
 
             gen = Manager.sorter(self._instances)
             storage.write(gen)
 
-            logger.debug( "%s: finished storing %d records", self.name, len(self) )
+            logger.debug( "%s: finished storing %d records", self._name, len(self) )
         else:
-            logger.debug( "%s: has no dirty records, not saving", self.name )
+            logger.debug( "%s: has no dirty records, not saving", self._name )
 
         self._dirty = False
 
@@ -186,7 +186,7 @@ class Manager(object):
         """
         assert not inspect.isclass(storage)
         storage = IStorage(storage)
-        logger.debug( "%s: loading models via storage class: %s", self.name, storage.name )
+        logger.debug( "%s: loading models via storage class: %s", self._name, storage._name )
 
         self.clear()
 
@@ -208,7 +208,7 @@ class Manager(object):
             self.save(elem, dirty=False)
 
         self._dirty = False
-        logger.debug( "%s: finished loading %d records", self.name, len(self) )
+        logger.debug( "%s: finished loading %d records", self._name, len(self) )
 
 
     def get(self, *pk, **kw):
@@ -239,7 +239,7 @@ class Manager(object):
         results = Query(self).filter(**kw).instances
 
         if len(results) == 0:
-            raise KeyError("%s: no results for: %s" % (self.model_class.name, str(kw)) )
+            raise KeyError("%s: no results for: %s" % (self.model_class._name, str(kw)) )
 
         if len(results) > 1:
             raise KeyError("got more than 1 result (%d)" % len(results) )

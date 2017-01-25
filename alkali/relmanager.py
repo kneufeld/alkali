@@ -51,7 +51,7 @@ class RelManager(object):
         return self._child_field
 
     @property
-    def name(self):
+    def _name(self):
         """
         **property**: easy to call version of str(self)
         """
@@ -68,7 +68,7 @@ class RelManager(object):
         return
         # THINK when foreign is deleted should we delete
         # child instances?
-        logger.debug( "%s: clearing all models", self.name )
+        logger.debug( "%s: clearing all models", self._name )
 
         self._dirty = len(self) > 0
         self._instances = {}

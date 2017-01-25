@@ -31,7 +31,7 @@ class Storage(object):
         pass
 
     @property
-    def name(self):
+    def _name(self):
         return self.__class__.__name__
 
 

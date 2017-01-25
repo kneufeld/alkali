@@ -25,7 +25,7 @@ class TestManager( unittest.TestCase ):
 
         man = Manager(MyModel)
         self.assertTrue( verifyObject(IManager, man) )
-        self.assertEqual( "MyModelManager", man.name )
+        self.assertEqual( "MyModelManager", man._name )
 
         self.assertTrue( repr(man) )
         self.assertTrue( str(man) )

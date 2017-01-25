@@ -66,12 +66,12 @@ class Query(object):
         return ", ".join([str(q) for q in self])
 
     @property
-    def name(self):
+    def _name(self):
         """
         **property**: pretty version of our class name, based on our model
             eg. *MyModelQuery*
         """
-        return "{}Query".format(self.model_class.name)
+        return "{}Query".format(self.model_class._name)
 
     @property
     def count(self):

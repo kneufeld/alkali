@@ -63,7 +63,7 @@ class Database(object):
         self._models = OrderedDict()
         for model in models:
             assert inspect.isclass(model)
-            logger.debug( "Database: adding model to database: %s", model.name )
+            logger.debug( "Database: adding model to database: %s", model.__name__ )
             self._models[model.__name__.lower()] = model
 
         self._storage_type = kw.pop('storage', JSONStorage)
@@ -163,7 +163,7 @@ class Database(object):
         assert _storage is None or inspect.isclass(_storage)
 
         for model in self.models:
-            logger.debug( "Database: storing model: %s", model.name )
+            logger.debug( "Database: storing model: %s", model.__name__ )
 
             storage = _storage or self.get_storage(model)
 
@@ -187,7 +187,7 @@ class Database(object):
         assert _storage is None or inspect.isclass(_storage)
 
         for model in self.models:
-            logger.debug( "Database: loading model: %s", model.name )
+            logger.debug( "Database: loading model: %s", model.__name__ )
 
             storage = _storage or self.get_storage(model)
             logger.debug( "Database: using storage: %s", storage.__name__ )

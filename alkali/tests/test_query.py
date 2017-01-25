@@ -13,7 +13,7 @@ class TestQuery( unittest.TestCase ):
     def test_1(self):
         "verify class/instance implementation"
         q = Query(MyModel.objects)
-        self.assertTrue( q.name )
+        self.assertTrue( q._name )
 
 
     def test_2(self):
