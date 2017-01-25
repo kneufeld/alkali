@@ -56,7 +56,7 @@ class Model(object):
         # THINK what happens if we assign to pk
         # if we're setting a field value and that value is different
         # than current value, mark self as modified
-        if attr in self.meta.fields:
+        if attr in self.Meta.fields:
             self.__assign_field( attr, val)
         else:
             self.__dict__[attr] = val
@@ -73,7 +73,7 @@ class Model(object):
             curr_val = getattr(self, attr)
             self.__dict__['_dirty'] = curr_val != val
 
-        field_type = self.meta.fields[attr]         # eg. IntField
+        field_type = self.Meta.fields[attr]         # eg. IntField
         self.__dict__[attr] = field_type.cast(val)
 
     @property
@@ -84,7 +84,7 @@ class Model(object):
         return self._dirty
 
     @property
-    def meta(self):
+    def Meta(self):
         """
         **property**: return this class's ``Meta`` class
 
@@ -108,7 +108,7 @@ class Model(object):
         def fmt(name, field):
             return "{}:{}".format(name, field.field_type.__name__)
 
-        name_type = [ fmt(n,f) for n,f in self.meta.fields.items() ]
+        name_type = [ fmt(n,f) for n,f in self.Meta.fields.items() ]
         fields = ", ".join( name_type )
         return "<{} {}>".format(self._name, fields)
 
@@ -120,7 +120,7 @@ class Model(object):
 
         :rtype: :class:`alkali.fields.Field` or tuple-of-Field
         """
-        pks = map( lambda name: getattr(self, name), self.meta.pk_fields )
+        pks = map( lambda name: getattr(self, name), self.Meta.pk_fields )
 
         if len(pks) == 1:
             return pks[0]
@@ -141,7 +141,7 @@ class Model(object):
         :rtype: ``dict``
         """
         return { name: field.dumps( getattr(self, name) )
-                for name, field in self.meta.fields.items() }
+                for name, field in self.Meta.fields.items() }
 
     @property
     def json(self):

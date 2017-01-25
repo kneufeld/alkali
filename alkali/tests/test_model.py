@@ -38,7 +38,7 @@ class TestModel( unittest.TestCase ):
     def test_3(self):
         "lets make some fields"
         m = MyModel()
-        self.assertEqual( 3, len(m.meta.fields) )
+        self.assertEqual( 3, len(m.Meta.fields) )
         self.assertEqual( 3, len(MyModel.Meta.fields) )
 
     def test_4(self):
@@ -100,7 +100,7 @@ class TestModel( unittest.TestCase ):
         self.assertEqual( m.int_type, m.pk )
 
         n=MyModel(int_type=2)
-        #print id(m.meta.fields['int_type']), id(n.meta.fields['int_type'])
+        #print id(m.Meta.fields['int_type']), id(n.Meta.fields['int_type'])
 
     def test_8(self):
         "find the filename and str"

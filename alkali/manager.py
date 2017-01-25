@@ -198,7 +198,7 @@ class Manager(object):
                 raise KeyError( '%s: pk collision detected during load: %s' % (self._model_class.__name__, str(elem.pk)) )
 
             if elem.pk is None:
-                if isinstance(elem.meta.pk_field_types[0], fields.ForeignKey):
+                if isinstance(elem.Meta.pk_field_types[0], fields.ForeignKey):
                     logger.warn( "%s: not adding to list" % self._model_class.__name__ )
                     continue
                 else:

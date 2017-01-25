@@ -38,8 +38,8 @@ class TestRelManager( unittest.TestCase ):
         a = AuxInfo(entry=e, entry2=e2).save()
 
         # print e.auxinfo_set
-        # print a.meta.fields
-        # print a.meta.pk_fields
+        # print a.Meta.fields
+        # print a.Meta.pk_fields
         # print "pk",a.pk
 
         self.assertEqual(e, e.auxinfo_set.foreign)
