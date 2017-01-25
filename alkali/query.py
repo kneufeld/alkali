@@ -66,14 +66,6 @@ class Query(object):
         return ", ".join([str(q) for q in self])
 
     @property
-    def _name(self):
-        """
-        **property**: pretty version of our class name, based on our model
-            eg. *MyModelQuery*
-        """
-        return "{}Query".format(self.model_class._name)
-
-    @property
     def count(self):
         """
         **property**: number of model instances we are currently tracking

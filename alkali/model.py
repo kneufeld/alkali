@@ -50,7 +50,7 @@ class Model(object):
         return obj
 
     def __repr__(self):
-        return "<{}: {}>".format(self._name, self.pk)
+        return "<{}: {}>".format(self.__class__.__name__, self.pk)
 
     def __setattr__(self, attr, val):
         # THINK what happens if we assign to pk
@@ -92,14 +92,6 @@ class Model(object):
         """
         return self.__class__.Meta
 
-    # this property exists on the instance
-    @property
-    def _name(self):
-        """
-        **property**: shortcut to our class name
-        """
-        return self.__class__.__name__
-
     @property
     def schema(self):
         """
@@ -110,7 +102,7 @@ class Model(object):
 
         name_type = [ fmt(n,f) for n,f in self.Meta.fields.items() ]
         fields = ", ".join( name_type )
-        return "<{} {}>".format(self._name, fields)
+        return "<{}: {}>".format(self.__class__.__name__, fields)
 
     @property
     def pk(self):

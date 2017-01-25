@@ -13,8 +13,6 @@ class TestQuery( unittest.TestCase ):
     def test_1(self):
         "verify class/instance implementation"
         q = Query(MyModel.objects)
-        self.assertTrue( q._name )
-
 
     def test_2(self):
         "make sure Manager is returning a query object"
