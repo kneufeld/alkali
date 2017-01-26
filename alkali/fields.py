@@ -58,6 +58,9 @@ class Field(object):
 
         self._primary_key = kw.pop('primary_key', False)
 
+        # don't allow unhandeled kw args
+        assert len(kw) == 0
+
     def __str__(self):
         return "<{}>".format(self.__class__.__name__)
 
@@ -79,6 +82,7 @@ class Field(object):
         if value is None:
             return None
 
+        # simple cast, eg. int(value)
         if not isinstance(value, self._field_type):
             return self._field_type(value)
 

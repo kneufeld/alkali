@@ -146,6 +146,12 @@ class TestField( unittest.TestCase ):
         self.assertEqual( d, MyDepModel.objects.get(foreign=m) )
         self.assertEqual( d, MyDepModel.objects.filter(foreign=m)[0] )
 
+    def test_14(self):
+        "test extra kw params to field raise assertion"
+        with self.assertRaises(AssertionError):
+            f = IntField(some_keyword=True)
+
+
     def test_15(self):
         """
         test *_set on foreign model
