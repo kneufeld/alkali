@@ -39,11 +39,11 @@ class Model(object):
 
         meta_fields = obj.Meta.fields # local cache
         kw_fields = kw.pop('kw_fields')
-        for name, value in kw_fields.items():
+        for name, value in kw_fields.iteritems():
             value = meta_fields[name].cast(value)
             setattr(obj, name, value)
 
-        for name, value in kw.items():
+        for name, value in kw.iteritems():
             setattr(obj, name, value)
 
         setattr( obj, '_dirty', False )
@@ -115,7 +115,7 @@ class Model(object):
         def fmt(name, field):
             return "{}:{}".format(name, field.field_type.__name__)
 
-        name_type = [ fmt(n,f) for n,f in self.Meta.fields.items() ]
+        name_type = [ fmt(n,f) for n,f in self.Meta.fields.iteritems() ]
         fields = ", ".join( name_type )
         return "<{}: {}>".format(self.__class__.__name__, fields)
 
@@ -143,7 +143,7 @@ class Model(object):
         :rtype: ``dict``
         """
         return { name: field.dumps( getattr(self, name) )
-                for name, field in self.Meta.fields.items() }
+                for name, field in self.Meta.fields.iteritems() }
 
     @property
     def json(self):

@@ -129,7 +129,7 @@ class Query(object):
             MyModel.objects.filter( myset__rin='foo' )
 
         """
-        for field, query in kw.items():
+        for field, query in kw.iteritems():
             try:
                 field, oper = field.split('__')
                 oper = oper or 'eq'

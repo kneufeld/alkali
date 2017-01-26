@@ -99,7 +99,7 @@ class Manager(object):
             * reverse: return in reverse order
         :rtype: ``generator``
         """
-        for key in sorted( elements.keys(), reverse=reverse ):
+        for key in sorted( elements.iterkeys(), reverse=reverse ):
             yield elements[key]
 
 
