@@ -105,7 +105,9 @@ class Manager(object):
 
     def save(self, instance, dirty=True):
         """
-        take ownership (add to our ``dict``) of given model instance
+        Copy instance into our collection. We make a copy so that caller
+        can't change its object and affect our version without calling
+        save() again.
 
         :param Model instance:
         :param dirty: don't mark us as dirty if False, used during loading
@@ -114,9 +116,11 @@ class Manager(object):
         signals.pre_save.send(self.model_class, instance=instance )
 
         assert instance.pk is not None, "{}.save(): instance '{}' has None for pk".format(self._name, instance)
-        self._instances[ instance.pk ] = instance
+        self._instances[instance.pk] = copy.copy(instance)
 
-        signals.post_save.send(self.model_class, instance=instance )
+        # THINK may be mistake to send the actual object out via the signal but probably
+        # what any reciever actually wants
+        signals.post_save.send( self.model_class, instance=self._instances[instance.pk] )
 
         # self._dirty is required because think what would happen
         # if we add a clean model instance
@@ -242,9 +246,9 @@ class Manager(object):
         """
         if len(pk) == 1:
             pk = self.model_class.Meta.pk_field_types[0].cast(pk[0])
-            return self._instances[pk]
+            return copy.copy( self._instances[pk] )
         elif len(pk):
-            # FIXME this needs to may to all pk fields
+            # FIXME this needs to handle a multiple pk field
             kw['pk'] = pk[0]
 
         results = Query(self).filter(**kw).instances

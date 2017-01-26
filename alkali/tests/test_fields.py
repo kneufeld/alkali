@@ -118,14 +118,26 @@ class TestField( unittest.TestCase ):
         note: just being able to define MyDepModel runs lots of code
         """
         m = MyModel(int_type=1).save()
-        d = MyDepModel(pk1=1, foreign=m)
-        self.assertEqual( id(m), id(d.foreign) )
+        self.assertFalse( m.mydepmodel_set.all() )
 
-        d = MyDepModel(pk=1, foreign=1) # foreign key value
-        self.assertEqual( id(m), id(d.foreign) )
+        d = MyDepModel(pk1=1, foreign=m)
+        self.assertTrue( isinstance(d.foreign, MyModel) )
+        self.assertNotEqual( id(m), id(d.foreign) ) # d.foreign gets a copy of the object
+
+        d = MyDepModel(pk1=1, foreign=1) # foreign key value
+        self.assertTrue( isinstance(d.foreign, MyModel) )
+        self.assertNotEqual( id(m), id(d.foreign) )
 
         d.foreign.str_type = "hello world"
-        self.assertEqual( "hello world", m.str_type )
+        self.assertNotEqual( "hello world", m.str_type )
+
+        # after locally storing a version of m, modify and save and get it back
+        m2 = d.foreign
+        m2.str_type = "hello world"
+        m2.save()
+        self.assertEqual( "hello world", d.foreign.str_type )
+
+        self.assertNotEqual( m.str_type, m2.str_type )
 
     def test_12(self):
         "test save"

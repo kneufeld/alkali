@@ -52,6 +52,12 @@ class Model(object):
 
         return obj
 
+    # called via copy.copy() module, when getting from manager
+    def __copy__(self):
+        new = type(self)()
+        new.__dict__.update(self.__dict__)
+        return new
+
     def __repr__(self):
         return "<{}: {}>".format(self.__class__.__name__, self.pk)
 

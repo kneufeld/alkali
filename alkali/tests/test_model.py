@@ -198,3 +198,23 @@ class TestModel( unittest.TestCase ):
 
         self.assertEqual( ['pk1','pk2'], MyMulti.Meta.pk_fields )
         self.assertEqual( (100,200), m.pk )
+
+    def test_20(self):
+        "test that get() object doesn't affect saved object"
+
+        m1 = MyModel(int_type=1)
+        m1.save()
+
+        c = MyModel.objects.get(1)
+        self.assertEqual(m1.pk, c.pk)
+
+        c.str_type = "new value"
+        self.assertTrue(c.dirty)
+        self.assertFalse(m1.dirty)
+        self.assertNotEqual(m1.str_type, c.str_type)
+        self.assertEqual(m1.int_type, c.int_type)
+
+        # c is now the "true" object in its manager
+        c.save()
+        self.assertNotEqual( id(c), id(MyModel.objects._instances[c.int_type]) )
+        self.assertNotEqual( id(c), id(m1) )
