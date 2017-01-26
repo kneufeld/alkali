@@ -99,6 +99,7 @@ class TestModel( unittest.TestCase ):
         "test dirty flag"
 
         m = MyModel()
+        self.assertFalse( m.dirty )
 
         m.int_type = 1
         self.assertTrue( m.dirty )

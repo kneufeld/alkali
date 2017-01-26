@@ -56,11 +56,10 @@ class TestQuery( unittest.TestCase ):
         self.assertEqual( m, q[0] )
 
     def test_15(self):
-        "make sure query objects are 'updated' when manager objects changes"
+        "make sure query objects are not 'updated' when manager objects changes"
 
         now = tznow()
-        m = MyModel(int_type=3, str_type='string', dt_type=now )
-        m.save()
+        m = MyModel(int_type=3, str_type='string', dt_type=now ).save()
 
         man = MyModel.objects
         q = Query(man)
@@ -69,7 +68,7 @@ class TestQuery( unittest.TestCase ):
         self.assertEqual( m.str_type, mq.str_type )
 
         m.str_type = 'new string'
-        self.assertEqual( m.str_type, mq.str_type )
+        self.assertNotEqual( m.str_type, mq.str_type )
 
     def test_20(self):
         "test filter function"

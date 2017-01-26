@@ -156,15 +156,16 @@ class TestManager( unittest.TestCase ):
 
         man = MyModel.objects
 
-        m=MyModel(int_type=3)
-        m.save()
+        m = MyModel(int_type=3).save()
+        self.assertFalse( m.dirty )
         self.assertTrue( man.dirty )
 
         man._dirty = False
         self.assertFalse( man.dirty )
 
         m.str_type = 'foo'
-        self.assertTrue( man.dirty )
+        self.assertTrue( m.dirty )
+        self.assertFalse( man.dirty )
 
     def test_9(self):
         "verify some simple queries"
