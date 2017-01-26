@@ -190,8 +190,10 @@ class SetField(Field):
 
 class ForeignKey(Field):
     """
-    A ForeignKey is a special type of field. Instead of holding a value
-    it points to an exising record in another Model.
+    A ForeignKey is a special type of field. It stores the same value
+    as a primary key in another field. When the model gets/sets a
+    ForeignKey the appropriate lookup is done in the remote manager
+    to return the remote instance.
     """
 
     def __init__(self, foreign_model, **kw):
@@ -221,6 +223,7 @@ class ForeignKey(Field):
 
     @property
     def pk_field(self):
+        ":rtype: :func:`IField.field_type`, eg: IntField"
         pks = self.foreign_model.Meta.pk_field_types
         return pks[0]
 
@@ -229,15 +232,10 @@ class ForeignKey(Field):
             return None
 
         if isinstance(value, self.foreign_model):
-            pass
+            value = value.pk
         elif isinstance(value, self.pk_field.field_type):
-            try:
-                value = self.foreign_model.objects.get(pk=value)
-            except KeyError: # THINK raise DoesNotExist exception like django
-                logger.error( "ForeignKey instance is gone: %s:%s", self.foreign_model.name, value)
-                value = None
+            pass
         else:
-            # use foreign model's primary key type to cast the value
             value = self.pk_field.cast(value)
 
         return value

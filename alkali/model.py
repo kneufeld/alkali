@@ -3,6 +3,7 @@ import json
 
 from .memoized_property import memoized_property
 from .metamodel import MetaModel
+from . import fields
 from . import signals
 
 class IModel( Interface ):
@@ -37,10 +38,9 @@ class Model(object):
         # obj is a instance of Model (or a derived class)
         obj = super(Model,cls).__new__(cls)
 
-        meta_fields = obj.Meta.fields # local cache
         kw_fields = kw.pop('kw_fields')
         for name, value in kw_fields.iteritems():
-            value = meta_fields[name].cast(value)
+            value = obj.Meta.fields[name].cast(value)
             setattr(obj, name, value)
 
         for name, value in kw.iteritems():
@@ -61,18 +61,28 @@ class Model(object):
     def __repr__(self):
         return "<{}: {}>".format(self.__class__.__name__, self.pk)
 
-    def __setattr__(self, attr, val):
-        if attr in self.Meta.fields:
-            self.__assign_field( attr, val)
-        else:
-            self.__dict__[attr] = val
-
     def __eq__(self, other):
         # this is obviously a very shallow comparison
         return type(self) == type(other) and self.pk == other.pk
 
     def __ne__(self, other):
         return not self.__eq__(other)
+
+    def __getattribute__(self, attr):
+        # lookup and return foreign object if attr is a ForeignKey
+        meta = super(Model,self).__getattribute__('Meta')
+        if attr in meta.fields:
+            field_type = meta.fields[attr]
+            if isinstance(field_type, fields.ForeignKey):
+                return field_type.foreign_model.objects.get( self.__dict__[attr] )
+
+        return super(Model,self).__getattribute__(attr)
+
+    def __setattr__(self, attr, val):
+        if attr in self.Meta.fields:
+            self.__assign_field( attr, val)
+        else:
+            self.__dict__[attr] = val
 
     def __assign_field(self, attr, val):
         # if we're setting a field value and that value is different
@@ -83,12 +93,13 @@ class Model(object):
 
         if hasattr(self, attr):
             curr_val = getattr(self, attr)
-            self.__dict__['_dirty'] = curr_val != val
 
             # do not let user change pk after it has been set
             if attr in self.Meta.pk_fields:
                 if curr_val is not None and curr_val != val:
                     raise RuntimeError("trying to change set pk value: {} to {}".format(self, val))
+
+            self.__dict__['_dirty'] = curr_val != val
         else:
             # we don't have this attr during object creation
             curr_val = None
