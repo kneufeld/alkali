@@ -4,16 +4,7 @@ from alkali.model import Model
 from alkali.relmanager import RelManager
 from alkali import fields
 
-class Entry(Model):
-    date  = fields.DateTimeField(primary_key = True)
-
-class Entry2(Model):
-    date  = fields.DateTimeField(primary_key = True)
-
-class AuxInfo(Model):
-    entry     = fields.ForeignKey(Entry, primary_key=True)
-    entry2    = fields.ForeignKey(Entry2)
-    mime_type = fields.StringField()
+from . import Entry, Entry2, AuxInfo
 
 class TestRelManager( unittest.TestCase ):
 

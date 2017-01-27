@@ -3,9 +3,8 @@ import unittest
 import tempfile
 from zope.interface.verify import verifyObject, verifyClass
 
-from alkali.storage import IStorage, Storage, FileStorage, JSONStorage
-from . import MyModel
-from .test_fields import MyDepModel
+from alkali.storage import IStorage, FileStorage, JSONStorage
+from . import MyModel, MyDepModel
 
 class TestStorage( unittest.TestCase ):
 

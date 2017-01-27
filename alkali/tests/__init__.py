@@ -20,3 +20,18 @@ class MyMulti(Model):
     pk1 = fields.IntField(primary_key=True)
     pk2 = fields.IntField(primary_key=True)
     other = fields.StringField()
+
+class MyDepModel(Model):
+    pk1     = fields.IntField(primary_key=True)
+    foreign = fields.ForeignKey(MyModel)
+
+class Entry(Model):
+    date  = fields.DateTimeField(primary_key = True)
+
+class Entry2(Model):
+    date  = fields.DateTimeField(primary_key = True)
+
+class AuxInfo(Model):
+    entry     = fields.ForeignKey(Entry, primary_key=True)
+    entry2    = fields.ForeignKey(Entry2)
+    mime_type = fields.StringField()

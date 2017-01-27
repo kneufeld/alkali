@@ -12,11 +12,7 @@ from alkali.fields import ForeignKey
 from alkali import tznow, tzadd
 from alkali.model import Model
 
-from alkali.tests import MyModel, MyMulti
-
-class MyDepModel(Model):
-    pk1     = IntField(primary_key=True)
-    foreign = ForeignKey(MyModel)
+from . import MyModel, MyMulti, MyDepModel
 
 class TestField( unittest.TestCase ):
 

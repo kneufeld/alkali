@@ -177,7 +177,7 @@ class TestManager( unittest.TestCase ):
         self.assertEqual( MyModel, type(MyModel.objects.get(1)) )
 
     def test_10(self):
-        "test that bad data throws a pk error"
+        "test that duplicate pk throws an error"
 
         tfile = tempfile.NamedTemporaryFile()
 
