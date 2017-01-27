@@ -243,21 +243,24 @@ class Manager(object):
             m = MyModel.objects.get(some_field='a unique value')
             m = MyModel.objects.get(field1='a unique', field2='value')
         """
-        if len(pk) == 1:
-            results = self.model_class.Meta.pk_field_types[0].cast(pk[0])
-            return copy.copy( self._instances[pk] )
-        elif len(pk):
-            # FIXME this needs to handle a multiple pk field
+        # TODO use _instances keys for pk searches
+        # if len(pk) == 1:
+        #     results = self.model_class.Meta.pk_field_types[0].cast(pk[0])
+        #     return copy.copy( self._instances[pk] )
+
+        # FIXME need to support multi pk models
+        if len(pk):
             kw['pk'] = pk[0]
-        else:
 
         results = Query(self).filter(**kw).instances
 
         if len(results) == 0:
-            raise KeyError("%s: no results for: %s" % (self.model_class._name, str(kw)) )
+            raise KeyError("{}: no results for: {}".format(
+                self.model_class.__class__.__name__, str(kw)) )
 
         if len(results) > 1:
-            raise KeyError("got more than 1 result (%d)" % len(results) )
+            raise KeyError("{}: got {} results  for: {}".format(
+                self.model_class.__class__.__name__, len(results), str(kw)) )
 
         return results[0]
 
