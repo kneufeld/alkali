@@ -26,6 +26,7 @@
 import types
 import operator
 import collections
+import copy
 import re
 
 import logging
@@ -51,7 +52,7 @@ class Query(object):
         :param Manager manager:
         """
         self.manager = manager
-        self._instances = manager.instances
+        self._instances = manager._instances.values()
 
     def __len__(self):
         return len(self._instances)
@@ -80,7 +81,7 @@ class Query(object):
 
         :rtype: ``list``
         """
-        return self._instances
+        return copy.copy( map( copy.copy, self._instances ) )
 
     @property
     def fields(self):

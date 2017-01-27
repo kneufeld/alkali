@@ -73,7 +73,7 @@ class Manager(object):
 
         :rtype: ``list``
         """
-        return copy.copy( map( copy.copy, self._instances.values() ) )
+        return map( copy.copy, self._instances.itervalues() )
 
     @property
     def dirty(self):
@@ -85,7 +85,7 @@ class Manager(object):
         if self._dirty:
             return True
 
-        return any( map( lambda e: e.dirty, self.instances ) )
+        return any( map( lambda e: e.dirty, self._instances.itervalues() ) )
 
 
     @staticmethod
@@ -254,14 +254,11 @@ class Manager(object):
             m = MyModel.objects.get(some_field='a unique value')
             m = MyModel.objects.get(field1='a unique', field2='value')
         """
-        # TODO use _instances keys for pk searches
-        # if len(pk) == 1:
-        #     results = self.model_class.Meta.pk_field_types[0].cast(pk[0])
-        #     return copy.copy( self._instances[pk] )
-
-        # FIXME need to support multi pk models
-        if len(pk):
-            kw['pk'] = pk[0]
+        # FIXME need to support direct access multi pk models
+        # NOTE without this, direct access ForeignKeys are 100x slower
+        if len(pk) == 1:
+            pk = self.model_class.Meta.pk_fields.values()[0].cast(pk[0])
+            return copy.copy( self._instances[pk] )
 
         results = Query(self).filter(**kw).instances
 
