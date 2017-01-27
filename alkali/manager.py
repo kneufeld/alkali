@@ -114,7 +114,9 @@ class Manager(object):
         #logger.debug( "saving model instance: %s", str(instance.pk) )
         signals.pre_save.send(self.model_class, instance=instance )
 
-        assert instance.pk is not None, "{}.save(): instance '{}' has None for pk".format(self._name, instance)
+        assert instance.pk is not None, \
+                "{}.save(): instance '{}' has None for pk".format(self._name, instance)
+
         self._instances[instance.pk] = copy.copy(instance)
 
         # THINK may be mistake to send the actual object out via the signal but probably
@@ -205,21 +207,31 @@ class Manager(object):
         self.clear()
 
         for elem in storage.read( self._model_class ):
+            skip = False
+
             if isinstance(elem, dict):
                 elem = self._model_class( **elem )
 
             if elem.pk in self._instances:
-                raise KeyError( '%s: pk collision detected during load: %s' % (self._model_class.__name__, str(elem.pk)) )
+                raise KeyError( '%s: pk collision detected during load: %s' \
+                        % (self._model_class.__name__, str(elem.pk)) )
 
             if elem.pk is None:
-                if isinstance(elem.Meta.pk_field_types[0], fields.ForeignKey):
-                    logger.warn( "%s: not adding to list" % self._model_class.__name__ )
-                    continue
-                else:
-                    raise KeyError( '%s: pk was None during load' % (self._model_class.__name__) )
+                raise KeyError( '%s: pk was None during load' \
+                        % (self._model_class.__name__) )
+
+            # TODO add a field_type filter function to Meta
+            for fk in [n for n,f in elem.Meta.fields.items() if isinstance(f, fields.ForeignKey)]:
+                try:
+                    getattr(elem, fk) # this does a lookup on for foreign key object
+                except KeyError:
+                    logger.warn( "%s: not adding to list: %s" % (self._model_class.__name__, elem))
+
+                    skip = True
 
             # this adds elem to our internal list
-            self.save(elem, dirty=False)
+            if not skip:
+                self.save(elem, dirty=False)
 
         self._dirty = False
         logger.debug( "%s: finished loading %d records", self._name, len(self) )
@@ -256,11 +268,11 @@ class Manager(object):
 
         if len(results) == 0:
             raise KeyError("{}: no results for: {}".format(
-                self.model_class.__class__.__name__, str(kw)) )
+                self.model_class.__name__, str(kw)) )
 
         if len(results) > 1:
             raise KeyError("{}: got {} results  for: {}".format(
-                self.model_class.__class__.__name__, len(results), str(kw)) )
+                self.model_class.__name__, len(results), str(kw)) )
 
         return results[0]
 

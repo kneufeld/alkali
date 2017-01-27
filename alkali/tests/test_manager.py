@@ -12,12 +12,16 @@ from alkali.query import Query
 from alkali import fields
 from alkali import tznow
 
-from . import EmptyModel, MyModel
+from . import MyModel, MyDepModel
+
+import logging
+logging.getLogger('alkali.manager').addHandler(logging.NullHandler())
 
 class TestManager( unittest.TestCase ):
 
     def tearDown(self):
         MyModel.objects.clear()
+        MyDepModel.objects.clear()
 
     def test_1(self):
         "verify class/instance implementation"
@@ -199,6 +203,23 @@ class TestManager( unittest.TestCase ):
 
         man = Manager(MyModel)
         self.assertRaises( KeyError, man.load, JSONStorage(tfile.name) )
+
+    def test_10b(self):
+        "test that loading can continue if foreign model instance is missing"
+        tfile = tempfile.NamedTemporaryFile()
+
+        f = MyModel(int_type=1).save()
+        m = f.mydepmodel_set.create(pk1=1)
+
+        with open(tfile.name,'w') as f:
+            f.write( json.dumps([m.dict]) )
+
+        MyModel.objects.clear()
+
+        man = Manager(MyDepModel)
+        self.assertIsNone( man.load(JSONStorage(tfile.name)) )
+
+        self.assertEqual( 0, man.count )
 
     def test_11(self):
         for i in range(10):

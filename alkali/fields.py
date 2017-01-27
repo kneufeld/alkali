@@ -243,7 +243,7 @@ class ForeignKey(Field):
     def dumps(self, value):
         from .model import Model
 
-        if not isinstance(value, Model): # pragma: no cover
+        if not isinstance(value, Model):
             raise RuntimeError("ForeignKey value is not a Model")
 
         return self.pk_field.dumps( value.pk )

@@ -100,9 +100,10 @@ class TestField( unittest.TestCase ):
         "test foreign keys, link to multi pk model not supported"
         with self.assertRaises(AssertionError):
             class MyDepModelMulti(Model):
-                pk1      = IntField(primary_key=True)
+                pk1     = IntField(primary_key=True)
                 foreign = ForeignKey(MyMulti)
 
+        # can't name field pk
         with self.assertRaises(AssertionError):
             class MyDepModel(Model):
                 pk      = IntField(primary_key=True)
@@ -139,6 +140,23 @@ class TestField( unittest.TestCase ):
         "test save"
         m = MyModel(int_type=1).save()
         d = MyDepModel(pk1=1, foreign=m).save()
+
+    def test_12a(self):
+        "test that trying to save unset foreign key fails"
+
+        m = MyDepModel(pk1=1)
+        with self.assertRaises(RuntimeError):
+            m.dict
+
+        # FIXME this should probably happen
+        # with self.assertRaises(RuntimeError):
+        #     m.save()
+
+        f = MyModel(int_type=1).save()
+        m.foreign = f
+
+        self.assertTrue(m.dict)
+
 
     def test_13(self):
         """

@@ -74,9 +74,11 @@ class Model(object):
         if attr in meta.fields:
             field_type = meta.fields[attr]
             if isinstance(field_type, fields.ForeignKey):
-                return field_type.foreign_model.objects.get( self.__dict__[attr] )
+                foreign_pk = self.__dict__[attr]
+                if foreign_pk is not None:
+                    return field_type.foreign_model.objects.get( self.__dict__[attr] )
 
-        return super(Model,self).__getattribute__(attr)
+        return super(Model, self).__getattribute__(attr)
 
     def __setattr__(self, attr, val):
         if attr in self.Meta.fields:
