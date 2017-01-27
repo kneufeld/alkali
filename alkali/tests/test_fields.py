@@ -3,13 +3,11 @@
 import os
 import unittest
 import tempfile
-from zope.interface.verify import verifyObject, verifyClass
 import datetime as dt
 
-from alkali.fields import IField, Field, IntField, StringField
+from alkali.fields import IntField, StringField
 from alkali.fields import DateTimeField, FloatField, SetField
 from alkali.fields import ForeignKey
-from alkali import tznow, tzadd
 from alkali.model import Model
 
 from . import MyModel, MyMulti, MyDepModel
@@ -23,13 +21,13 @@ class TestField( unittest.TestCase ):
 
     def test_1(self):
         "verify class/instance implementation"
-        self.assertTrue( verifyClass(IField, Field) )
 
-        for field in [IntField, StringField, DateTimeField, FloatField, SetField]:
-            self.assertTrue( verifyClass(IField, field) )
+        for field in [IntField, StringField, DateTimeField, FloatField, SetField ]:
             f = field()
-            self.assertTrue( verifyObject(IField, f) )
             self.assertTrue( str(f) )
+
+        f = ForeignKey(MyModel)
+        self.assertTrue( str(f) )
 
     def test_2(self):
         "Field is a meta class, it has no value. make sure of that"

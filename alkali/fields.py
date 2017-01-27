@@ -1,4 +1,3 @@
-from zope.interface import Interface, Attribute, implements
 import datetime as dt
 import dateutil.parser
 import itertools
@@ -9,23 +8,6 @@ from .utils import tzadd, tznow
 import logging
 logger = logging.getLogger(__name__)
 
-class IField( Interface ):
-
-    field_type = Attribute("the type of the field: str/int/float/etc")
-
-    def dumps(value):
-        "method to serialize the value"
-
-    def loads(value):
-        "method to load the value"
-
-    def cast(value):
-        """
-        function that can potentially convert passed in value to correct type
-
-        :param value: value to convert
-        :rtype: :func:`IField.field_type`
-        """
 
 class Field(object):
     """
@@ -40,7 +22,6 @@ class Field(object):
     **Note**: the Field does not hold a value, only meta information about a
     value. The Model holds the value and is set via Model.__setattr__
     """
-    implements(IField)
 
     _counter = itertools.count() # keeps track of declaration order in the Models
 
