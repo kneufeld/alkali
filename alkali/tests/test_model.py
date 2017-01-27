@@ -30,6 +30,8 @@ class TestModel( unittest.TestCase ):
         self.assertTrue( EmptyModel.objects != MyModel.objects )
         self.assertTrue( EmptyModel.objects is not MyModel.objects )
 
+        self.assertTrue( EmptyModel.pk )
+
 
     def test_2(self):
         "empty fields by default"
