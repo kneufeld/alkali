@@ -220,8 +220,7 @@ class Manager(object):
                 raise KeyError( '%s: pk was None during load' \
                         % (self._model_class.__name__) )
 
-            # TODO add a field_type filter function to Meta
-            for fk in [n for n,f in elem.Meta.fields.items() if isinstance(f, fields.ForeignKey)]:
+            for fk in elem.Meta.field_filter(fields.ForeignKey):
                 try:
                     getattr(elem, fk) # this does a lookup on for foreign key object
                 except KeyError:

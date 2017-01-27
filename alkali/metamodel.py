@@ -97,7 +97,7 @@ class MetaModel(type):
         class Object(object): pass
 
         meta = attrs.pop( 'Meta', Object )
-        setattr( new_class, 'Meta', meta )
+        setattr( new_class, 'Meta', meta() )
 
         if not hasattr(meta, 'filename'):
             meta.filename = None
@@ -107,6 +107,9 @@ class MetaModel(type):
 
         if not hasattr(meta, 'ordering'):
             meta.ordering = _get_field_order(attrs)
+
+        meta.field_filter = lambda self, field_type: \
+                [n for n,f in self.fields.items() if isinstance(f, field_type)]
 
         # don't let user miss a field if they've defined Meta.ordering
         assert len(meta.ordering) == len(_get_fields(attrs)), \
