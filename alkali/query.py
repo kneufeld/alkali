@@ -63,7 +63,7 @@ class Query(object):
         return self._instances[i]
 
     def __str__(self):
-        return ", ".join([str(q) for q in self])
+        return "<Query: " + ", ".join([str(q) for q in self]) + ">"
 
     @property
     def count(self):
@@ -201,7 +201,7 @@ class Query(object):
             else:
                 return False, field
 
-        if args == ('pk'):
+        if args == ('pk',):
             args = self.model_class.Meta.pk_fields
 
         for field in args:

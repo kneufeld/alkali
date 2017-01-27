@@ -73,8 +73,7 @@ class Manager(object):
 
         :rtype: ``list``
         """
-        # shallow copy, new list but same objects
-        return copy.copy( self._instances.values() )
+        return copy.copy( map( copy.copy, self._instances.values() ) )
 
     @property
     def dirty(self):
@@ -245,11 +244,12 @@ class Manager(object):
             m = MyModel.objects.get(field1='a unique', field2='value')
         """
         if len(pk) == 1:
-            pk = self.model_class.Meta.pk_field_types[0].cast(pk[0])
+            results = self.model_class.Meta.pk_field_types[0].cast(pk[0])
             return copy.copy( self._instances[pk] )
         elif len(pk):
             # FIXME this needs to handle a multiple pk field
             kw['pk'] = pk[0]
+        else:
 
         results = Query(self).filter(**kw).instances
 

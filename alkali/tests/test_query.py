@@ -13,6 +13,7 @@ class TestQuery( unittest.TestCase ):
     def test_1(self):
         "verify class/instance implementation"
         q = Query(MyModel.objects)
+        self.assertTrue( str(q) )
 
     def test_2(self):
         "make sure Manager is returning a query object"
@@ -54,6 +55,16 @@ class TestQuery( unittest.TestCase ):
         self.assertEqual( 1, len(man) )
         self.assertEqual( 1, len(q) )
         self.assertEqual( m, q[0] )
+
+    def test_11(self):
+        "make sure query gets a copy of model instances"
+        m = MyModel(int_type=1).save()
+
+        man = MyModel.objects
+        q = Query(man)
+
+        self.assertEqual( man._instances[1].pk, q.instances[0].pk )
+        self.assertNotEqual( id(man._instances[1]), id(q.instances[0]) )
 
     def test_15(self):
         "make sure query objects are not 'updated' when manager objects changes"

@@ -92,7 +92,8 @@ class TestManager( unittest.TestCase ):
         self.assertDictEqual( m1.dict, m2.dict )
 
         # does not exist
-        self.assertRaises( KeyError, man.get, 2 )
+        self.assertRaises( KeyError, man.get, 200 )
+        #man.get( 200 )
 
         MyModel(int_type=2).save()
         self.assertRaises( KeyError, man.get, int_type__gt=0  )
@@ -193,3 +194,19 @@ class TestManager( unittest.TestCase ):
 
         self.assertEqual( 0, MyModel.objects.order_by('int_type')[0].int_type )
         self.assertEqual( 9, MyModel.objects.order_by('-int_type')[0].int_type )
+
+    def test_14(self):
+        "test that Manager.instances return a list not its dict"
+        self.assertTrue( isinstance(MyModel.objects.instances, list) )
+
+    def test_15(self):
+        "test that Manager.instances returns a copy of object"
+        m = MyModel(int_type=1).save()
+
+        # make sure ingoing model gets copied
+        self.assertNotEqual( id(m), id(MyModel.objects._instances[m.pk]) )
+
+        m1 = MyModel.objects.get(m.pk)
+        m2 = MyModel.objects.get(m.pk)
+        self.assertNotEqual( id(m1), id(m2) )
+

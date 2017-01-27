@@ -116,15 +116,6 @@ class Model(object):
         return self._dirty
 
     @property
-    def Meta(self):
-        """
-        **property**: return this class's ``Meta`` class
-
-        :rtype: ``Meta``
-        """
-        return self.__class__.Meta
-
-    @property
     def schema(self):
         """
         **property**: a string that quickly shows the fields and types

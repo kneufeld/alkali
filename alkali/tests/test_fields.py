@@ -173,3 +173,12 @@ class TestField( unittest.TestCase ):
 
         self.assertTrue( hasattr( m, 'mydepmodel_set') )
         self.assertTrue( d in m.mydepmodel_set.all() )
+
+    def test_16(self):
+        "test some foreignkey casting"
+        m = MyModel(int_type=1).save()
+        MyDepModel(pk1=10, foreign=m).save()
+        MyDepModel(pk1=11, foreign=1).save()
+        MyDepModel(pk1=12, foreign="1").save()
+
+        self.assertEqual( 3, m.mydepmodel_set.all().count )
