@@ -188,6 +188,18 @@ class TestManager( unittest.TestCase ):
         man = Manager(MyModel)
         self.assertRaises( KeyError, man.load, JSONStorage(tfile.name) )
 
+    def test_10a(self):
+        "test that empty pk throws an error"
+
+        tfile = tempfile.NamedTemporaryFile()
+
+        m = MyModel(str_type='string data')
+        with open(tfile.name,'w') as f:
+            f.write( json.dumps([m.dict,m.dict]) )
+
+        man = Manager(MyModel)
+        self.assertRaises( KeyError, man.load, JSONStorage(tfile.name) )
+
     def test_11(self):
         for i in range(10):
             MyModel(int_type=i, str_type='number %d' % i).save()
