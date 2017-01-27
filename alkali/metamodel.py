@@ -82,10 +82,6 @@ class MetaModel(type):
             setattr( field.foreign_model, set_name, rel_manager )
 
     def _add_meta( new_class, attrs ):
-        # TODO memoize a Meta class for each Model type, all instances
-        # of model then don't have to do all this parsing. THINK does
-        # each model need a copy/instance of Meta? Thinking about filenames
-        # here
 
         def _get_fields( attrs ):
             return [(k,v) for k,v in attrs.items() if isinstance(v,Field)]
@@ -128,8 +124,12 @@ class MetaModel(type):
 
         # you can set a property on a class but it will only be called on an instance
         # I'd prefer this to be a read-only property but I guess that can't happen
-        meta.pk_fields = [name for name,field in meta.fields.items() if field.primary_key]
-        meta.pk_field_types = [field for _,field in meta.fields.items() if field.primary_key]
+        #
+        # note: don't use a dict comprehension because interim dict will have keys
+        # inserted in random order
+        meta.pk_fields = OrderedDict(
+                [(name,field) for name,field in meta.fields.items() if field.primary_key]
+                )
 
         if len(meta.fields):
             assert len(meta.pk_fields) > 0, "no primary_key defined in fields"

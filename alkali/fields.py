@@ -205,7 +205,7 @@ class ForeignKey(Field):
     @property
     def pk_field(self):
         ":rtype: :func:`IField.field_type`, eg: IntField"
-        pks = self.foreign_model.Meta.pk_field_types
+        pks = self.foreign_model.Meta.pk_fields.values()
         return pks[0]
 
     def cast(self, value):

@@ -200,7 +200,7 @@ class TestModel( unittest.TestCase ):
         self.assertTrue( verifyObject(IModel, m) )
         self.assertTrue( m.schema )
 
-        self.assertEqual( ['pk1','pk2'], MyMulti.Meta.pk_fields )
+        self.assertEqual( ['pk1','pk2'], MyMulti.Meta.pk_fields.keys() )
         self.assertEqual( (100,200), m.pk )
 
     def test_20(self):

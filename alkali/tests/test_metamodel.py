@@ -54,4 +54,4 @@ class TestMetaModel( unittest.TestCase ):
         "verify meta.fields and meta.pk_fields"
 
         self.assertEqual( 3, len(MyModel.Meta.fields) )
-        self.assertEqual( 'int_type', MyModel.Meta.pk_fields[0] )
+        self.assertEqual( 'int_type', MyModel.Meta.pk_fields.keys()[0] )

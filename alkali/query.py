@@ -127,7 +127,6 @@ class Query(object):
 
             # 'foo' is in field/property myset
             MyModel.objects.filter( myset__rin='foo' )
-
         """
         for field, query in kw.iteritems():
             try:
@@ -202,7 +201,7 @@ class Query(object):
                 return False, field
 
         if args == ('pk',):
-            args = self.model_class.Meta.pk_fields
+            args = self.model_class.Meta.pk_fields.keys()
 
         for field in args:
             reverse, field = _order_by( field )
