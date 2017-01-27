@@ -50,22 +50,6 @@ class RelManager(object):
     def child_field(self):
         return self._child_field
 
-    def clear(self):
-        """
-        remove all instances of our models. we'll be marked as
-        dirty if we previously had model instances.
-
-        **Note**: this does not affect on-disk files until
-        :func:`alkali.manager.Manager.save` is called.
-        """
-        return
-        # THINK when foreign is deleted should we delete
-        # child instances?
-        logger.debug( "%s: clearing all models", self.__class__.__name__ )
-
-        self._dirty = len(self) > 0
-        self._instances = {}
-
     def add(self, child):
         assert isinstance(child, self.child_class)
         setattr(child, self.child_field, self.foreign)
@@ -76,25 +60,6 @@ class RelManager(object):
         child = self.child_class(**kw)
         child = self.add(child)
         return child
-
-    def remove(self, instance):
-        """
-        remove an instance from our models by calling ``del`` on it
-
-        :param Model instance:
-        """
-        return
-        # THINK when foreign is deleted should we delete
-        # child instances?
-
-        # TODO should probably take an pk instead of an instance
-        logger.debug( "deleting model instance: %s", str(instance.pk) )
-
-        try:
-            del self._instances[ instance.pk ]
-            self._dirty = True
-        except KeyError:
-            pass
 
     def all(self):
         """
