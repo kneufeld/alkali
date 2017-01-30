@@ -212,6 +212,23 @@ class Manager(object):
             if isinstance(elem, dict):
                 elem = self._model_class( **elem )
 
+            for fk in elem.Meta.field_filter(fields.ForeignKey):
+                try:
+                    getattr(elem, fk) # this does a lookup on for foreign key object
+                except KeyError:
+                    field_name = elem.Meta.pk_fields.keys()[0]
+                    pk_value = elem.__dict__[field_name]
+                    logger.warn( "%s: not adding to list: %s" % (self._model_class.__name__, pk_value))
+
+                    # FIXME auto lookup of foreign key only works when it's there
+                    self._dirty = True # on save this element will be effectively deleted
+                    skip = True
+                    break
+
+            # this adds elem to our internal list
+            if skip:
+                continue
+
             if elem.pk in self._instances:
                 raise KeyError( '%s: pk collision detected during load: %s' \
                         % (self._model_class.__name__, str(elem.pk)) )
@@ -220,17 +237,8 @@ class Manager(object):
                 raise KeyError( '%s: pk was None during load' \
                         % (self._model_class.__name__) )
 
-            for fk in elem.Meta.field_filter(fields.ForeignKey):
-                try:
-                    getattr(elem, fk) # this does a lookup on for foreign key object
-                except KeyError:
-                    logger.warn( "%s: not adding to list: %s" % (self._model_class.__name__, elem))
+            self.save(elem, dirty=False)
 
-                    skip = True
-
-            # this adds elem to our internal list
-            if not skip:
-                self.save(elem, dirty=False)
 
         self._dirty = False
         logger.debug( "%s: finished loading %d records", self._name, len(self) )
