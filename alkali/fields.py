@@ -31,6 +31,7 @@ class Field(object):
         :type field_type: str/int/float/etc
         :param kw:
             * primary_key: is this field a primary key of parent model
+            * indexed:     is this field indexed (not implemented yet)
         """
         self._order = Field._counter.next() # DO NOT TOUCH, deleted in MetaModel
 
@@ -38,9 +39,13 @@ class Field(object):
         self._field_type = field_type
 
         self._primary_key = kw.pop('primary_key', False)
+        self._indexed     = kw.pop('indexed', False)
 
-        # don't allow unhandeled kw args
-        assert len(kw) == 0
+        # nice and dynamic but more magic than is strictly required
+        # for prop in self.properties:
+        #     setattr(self.__class__, prop, property(fget=lambda self, prop=prop: getattr(self, '_'+prop)) )
+
+        assert len(kw) == 0, "unhandeled kwargs"
 
     def __str__(self):
         return "<{}>".format(self.__class__.__name__)
@@ -53,11 +58,25 @@ class Field(object):
         return self._field_type
 
     @property
+    def properties(self):
+        """
+        **property**: return list of possible Field properties
+        """
+        return ['primary_key', 'indexed']
+
+    @property
     def primary_key(self):
         """
         **property**: return true/false if this field is a primary key
         """
         return self._primary_key
+
+    @property
+    def indexed(self):
+        """
+        **property**: return true/false if this field is indexed (not implemented yet)
+        """
+        return self._indexed
 
     def cast(self, value):
         if value is None:
