@@ -140,11 +140,24 @@ class MetaModel(type):
 
     # creates a new instance of derived model, this is called each
     # time a Model instance is created
-    def __call__(self, *args, **kw):
-        kw_fields=OrderedDict()
-        for name in self.Meta.fields:
-            kw_fields[name] = kw.pop(name, None)
-        kw['kw_fields'] = kw_fields
+    def __call__(cls, *args, **kw):
+        obj = cls.__new__(cls, *args)
 
-        # this calls Model.__new__ and then Model.__init__
-        return type.__call__(self, **kw)
+        for name in cls.Meta.fields.iterkeys():
+            value = kw.pop(name, None)
+            value = obj.Meta.fields[name].cast(value)
+            setattr(obj, name, value)
+
+        # we want to remove items from as kw as we iterate so
+        # make a copy of the keys
+        for name in kw.keys():
+            value = kw.pop(name)
+            setattr(obj, name, value)
+
+        setattr( obj, '_dirty', False )
+
+        obj.__init__(*args, **kw)
+
+        signals.creation.send(cls, instance=obj)
+
+        return obj

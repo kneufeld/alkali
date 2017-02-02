@@ -28,30 +28,6 @@ class Model(object):
     __metaclass__ = MetaModel
     implements(IModel)
 
-    def __new__(cls, *args, **kw):
-        # return a new instance of Model (or derived type)
-        #
-        # MetaModel.__call__ calls this method and passes in our fields.
-        # we need to add the fields before Model.__init__ is called so
-        # that they exist and can be referenced
-
-        # obj is a instance of Model (or a derived class)
-        obj = super(Model,cls).__new__(cls)
-
-        kw_fields = kw.pop('kw_fields')
-        for name, value in kw_fields.iteritems():
-            value = obj.Meta.fields[name].cast(value)
-            setattr(obj, name, value)
-
-        for name, value in kw.iteritems():
-            setattr(obj, name, value)
-
-        setattr( obj, '_dirty', False )
-
-        signals.creation.send(cls, instance=obj)
-
-        return obj
-
     # called via copy.copy() module, when getting from manager
     def __copy__(self):
         new = type(self)()
