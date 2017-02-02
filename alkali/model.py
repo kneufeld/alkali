@@ -28,6 +28,14 @@ class Model(object):
     __metaclass__ = MetaModel
     implements(IModel)
 
+    def __init__(self, *args, **kw):
+        # MetaModel.__call__ has put fields in self,
+        # put any other keywords into self
+        for name, value in kw.iteritems():
+            setattr(self, name, value)
+
+        signals.creation.send(self.__class__, instance=self)
+
     # called via copy.copy() module, when getting from manager
     def __copy__(self):
         new = type(self)()

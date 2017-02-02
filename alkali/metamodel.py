@@ -143,21 +143,14 @@ class MetaModel(type):
     def __call__(cls, *args, **kw):
         obj = cls.__new__(cls, *args)
 
+        # put fields into model instance
         for name in cls.Meta.fields.iterkeys():
             value = kw.pop(name, None)
             value = obj.Meta.fields[name].cast(value)
             setattr(obj, name, value)
 
-        # we want to remove items from as kw as we iterate so
-        # make a copy of the keys
-        for name in kw.keys():
-            value = kw.pop(name)
-            setattr(obj, name, value)
-
         setattr( obj, '_dirty', False )
 
         obj.__init__(*args, **kw)
-
-        signals.creation.send(cls, instance=obj)
 
         return obj
