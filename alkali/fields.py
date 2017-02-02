@@ -227,6 +227,14 @@ class ForeignKey(Field):
         pks = self.foreign_model.Meta.pk_fields.values()
         return pks[0]
 
+    def lookup(self, pk):
+        """
+        given a pk, return foreign_model instance
+        """
+        if pk is None:
+            return None
+        return self.foreign_model.objects.get(pk)
+
     def cast(self, value):
         """
         return the pk value of the foreign model

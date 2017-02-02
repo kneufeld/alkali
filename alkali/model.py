@@ -59,8 +59,7 @@ class Model(object):
             field_type = meta.fields[attr]
             if isinstance(field_type, fields.ForeignKey):
                 foreign_pk = self.__dict__[attr]
-                if foreign_pk is not None:
-                    return field_type.foreign_model.objects.get( self.__dict__[attr] )
+                return field_type.lookup(foreign_pk)
 
         return super(Model, self).__getattribute__(attr)
 
