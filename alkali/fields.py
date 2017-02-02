@@ -184,9 +184,6 @@ class SetField(Field):
     def __init__(self, **kw):
         super(SetField, self).__init__(set, **kw)
 
-    def cast(self, value):
-        return value
-
 
 class ForeignKey(Field):
     """
