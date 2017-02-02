@@ -97,10 +97,10 @@ class TestManager( unittest.TestCase ):
 
         # does not exist
         self.assertRaises( KeyError, man.get, 200 )
-        #man.get( 200 )
 
         MyModel(int_type=2).save()
-        self.assertRaises( KeyError, man.get, int_type__gt=0  )
+        self.assertRaises( KeyError, man.get, int_type=200  )    # < 1
+        self.assertRaises( KeyError, man.get, int_type__gt=0  )  # > 1
 
     def test_5(self):
         "test saving actual model objects"

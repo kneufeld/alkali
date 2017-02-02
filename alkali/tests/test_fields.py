@@ -25,6 +25,7 @@ class TestField( unittest.TestCase ):
         for field in [IntField, StringField, DateTimeField, FloatField, SetField ]:
             f = field()
             self.assertTrue( str(f) )
+            self.assertTrue( f.properties )
 
         f = ForeignKey(MyModel)
         self.assertTrue( str(f) )
@@ -41,9 +42,11 @@ class TestField( unittest.TestCase ):
         "test primary key setting"
         f = IntField()
         self.assertEqual( False, f.primary_key )
+        self.assertEqual( False, f.indexed )
 
-        f = IntField( primary_key=True )
+        f = IntField( primary_key=True, indexed=True )
         self.assertEqual( True, f.primary_key )
+        self.assertEqual( True, f.indexed )
 
     def test_5(self):
         "test date setting"
