@@ -209,17 +209,19 @@ class ForeignKey(Field):
         return pks[0]
 
     def cast(self, value):
+        """
+        return the pk value of the foreign model
+        """
         if value is None:
             return None
 
         if isinstance(value, self.foreign_model):
-            value = value.pk
-        elif isinstance(value, self.pk_field.field_type):
-            pass
-        else:
-            value = self.pk_field.cast(value)
+            return value.pk
 
-        return value
+        if isinstance(value, self.pk_field.field_type):
+            return value
+
+        return self.pk_field.cast(value)
 
     def dumps(self, value):
         from .model import Model
