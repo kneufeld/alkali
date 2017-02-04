@@ -34,6 +34,8 @@ class Model(object):
         for name, value in kw.iteritems():
             setattr(self, name, value)
 
+        # note, this is called twice, once during initial object creation
+        # and then again when this object is copied during a save
         signals.creation.send(self.__class__, instance=self)
 
     # called via copy.copy() module, when getting from manager
