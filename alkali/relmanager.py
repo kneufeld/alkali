@@ -20,7 +20,7 @@ class RelManager(object):
 
     def __init__( self, foreign, child_class, child_field ):
         """
-        :param Model foregin: instance of the model that is pointed at
+        :param Model foreign: instance of the model that is pointed at
         :param Model child_class: the model class that contains the ForeignKey
         :param str child_field: the field name that points to ForeignKey
         """
@@ -69,7 +69,6 @@ class RelManager(object):
         :rtype: :class:`alkali.query.Query`
         """
         return self.child_class.objects.filter(**{self.child_field: self.foreign})
-
 
     def get(self, **kw):
         """

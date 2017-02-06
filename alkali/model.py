@@ -82,7 +82,7 @@ class Model(object):
             # do not let user change pk after it has been set
             if attr in self.Meta.pk_fields:
                 if curr_val is not None and curr_val != val:
-                    raise RuntimeError("trying to change set pk value: {} to {}".format(self, val))
+                    raise RuntimeError("trying to change set pk value: {} to {}".format(self.pk, val))
 
             self.__dict__['_dirty'] = curr_val != val
         else:
