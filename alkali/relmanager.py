@@ -77,4 +77,7 @@ class RelManager(object):
 
         :rtype: :class:`alkali.model.Model`
         """
+        if not kw:
+            return self.child_class.objects.get( **{self.child_field: self.foreign} )
+
         return self.child_class.objects.get(**kw)
