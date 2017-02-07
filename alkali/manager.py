@@ -206,6 +206,8 @@ class Manager(object):
 
         self.clear()
 
+        force_dirty = False
+
         for elem in storage.read( self._model_class ):
             skip = False
 
@@ -221,7 +223,7 @@ class Manager(object):
                     logger.warn( "%s: not adding to list: %s" % (self._model_class.__name__, pk_value))
 
                     # FIXME auto lookup of foreign key only works when it's there
-                    self._dirty = True # on save this element will be effectively deleted
+                    force_dirty = True # on save this element will be effectively deleted
                     skip = True
                     break
 
@@ -241,6 +243,10 @@ class Manager(object):
 
 
         self._dirty = False
+
+        if force_dirty:
+            self._dirty = True
+
         logger.debug( "%s: finished loading %d records", self._name, len(self) )
 
 
