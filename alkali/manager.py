@@ -200,35 +200,34 @@ class Manager(object):
         :raises KeyError: if there are duplicate primary keys
 
         """
-        assert not inspect.isclass(storage)
-        storage = IStorage(storage)
-        logger.debug( "%s: loading models via storage class: %s", self._name, storage._name )
-
-        self.clear()
-
-        force_dirty = False
-
-        for elem in storage.read( self._model_class ):
-            skip = False
-
-            if isinstance(elem, dict):
-                elem = self._model_class( **elem )
-
+        def validate(elem):
             for fk in elem.Meta.field_filter(fields.ForeignKey):
                 try:
                     getattr(elem, fk) # this does a lookup on for foreign key object
                 except KeyError:
                     field_name = elem.Meta.pk_fields.keys()[0]
                     pk_value = elem.__dict__[field_name]
-                    logger.warn( "%s: not adding to list: %s" % (self._model_class.__name__, pk_value))
+                    logger.warn( "%s: foreign instance is missing: %s" % (self._model_class.__name__, pk_value))
 
-                    # FIXME auto lookup of foreign key only works when it's there
-                    force_dirty = True # on save this element will be effectively deleted
-                    skip = True
                     break
+            else:
+                return True
 
-            # this adds elem to our internal list
-            if skip:
+
+        assert not inspect.isclass(storage)
+        storage = IStorage(storage)
+        logger.debug( "%s: loading models via storage class: %s", self._name, storage._name )
+
+        self.clear()
+
+        dirty = False
+
+        for elem in storage.read( self._model_class ):
+            if isinstance(elem, dict):
+                elem = self._model_class( **elem )
+
+            if not validate(elem):
+                dirty = True
                 continue
 
             if elem.pk in self._instances:
@@ -242,10 +241,7 @@ class Manager(object):
             self.save(elem, dirty=False)
 
 
-        self._dirty = False
-
-        if force_dirty:
-            self._dirty = True
+        self._dirty = dirty
 
         logger.debug( "%s: finished loading %d records", self._name, len(self) )
 
