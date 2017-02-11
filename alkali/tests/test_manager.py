@@ -15,11 +15,17 @@ from alkali import tznow
 from . import MyModel, MyDepModel
 
 import logging
-logging.getLogger('alkali.manager').addHandler(logging.NullHandler())
+logger = logging.getLogger('alkali.manager')
 
 class TestManager( unittest.TestCase ):
 
+    def setUp(self):
+        self.log_level = logger.getEffectiveLevel()
+        logger.setLevel(logging.CRITICAL+1)
+
     def tearDown(self):
+        logger.setLevel(self.log_level)
+
         MyModel.objects.clear()
         MyDepModel.objects.clear()
 
