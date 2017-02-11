@@ -122,12 +122,21 @@ class Model(object):
 
         :rtype: :class:`alkali.fields.Field` or tuple-of-Field
         """
-        pks = map( lambda name: getattr(self, name), self.Meta.pk_fields )
+        #pks = map( lambda n_f: (n_f[1], getattr(self, n_f[0])), self.Meta.pk_fields.items() )
+        pks = [ (field, getattr(self, name)) for name, field in self.Meta.pk_fields.items() ]
 
-        if len(pks) == 1:
-            return pks[0]
+        pk_are_foreign = [isinstance(f, fields.ForeignKey) for f, _ in pks]
+        pk_is_foreign = any(pk_are_foreign)
 
-        return tuple(pks)
+        if pk_is_foreign:
+            if len(pks) == 1:
+                return pks[0][1].pk
+            return tuple([ value.pk for _, value in pks ])
+
+        else:
+            if len(pks) == 1:
+                return pks[0][1]
+            return tuple([ value for _, value in pks ])
 
     @property
     def dict(self):

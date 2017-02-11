@@ -85,6 +85,9 @@ class Manager(object):
         if self._dirty:
             return True
 
+        # THINK since all instances are copies, they'll never be dirty unless
+        # Manager.save() is called and that sets self._dirty. I think this check
+        # can be deleted
         return any( map( lambda e: e.dirty, self._instances.itervalues() ) )
 
 
@@ -117,13 +120,7 @@ class Manager(object):
         assert instance.pk is not None, \
                 "{}.save(): instance '{}' has None for pk".format(self._name, instance)
 
-        pk_are_foreign = [isinstance(f, fields.ForeignKey)
-                for name, f in instance.Meta.pk_fields.items()]
-
-        if any(pk_are_foreign):
-            instance = self._instances[instance.pk.pk] = copy.copy(instance)
-        else:
-            instance = self._instances[instance.pk] = copy.copy(instance)
+        instance = self._instances[instance.pk] = copy.copy(instance)
 
         # THINK may be mistake to send the actual object out via the signal but probably
         # what any reciever actually wants
