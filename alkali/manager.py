@@ -117,11 +117,17 @@ class Manager(object):
         assert instance.pk is not None, \
                 "{}.save(): instance '{}' has None for pk".format(self._name, instance)
 
-        self._instances[instance.pk] = copy.copy(instance)
+        pk_are_foreign = [isinstance(f, fields.ForeignKey)
+                for name, f in instance.Meta.pk_fields.items()]
+
+        if any(pk_are_foreign):
+            instance = self._instances[instance.pk.pk] = copy.copy(instance)
+        else:
+            instance = self._instances[instance.pk] = copy.copy(instance)
 
         # THINK may be mistake to send the actual object out via the signal but probably
         # what any reciever actually wants
-        signals.post_save.send( self.model_class, instance=self._instances[instance.pk] )
+        signals.post_save.send( self.model_class, instance=instance )
 
         # self._dirty is required because think what would happen
         # if we add a clean model instance
