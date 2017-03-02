@@ -197,3 +197,21 @@ class TestField( unittest.TestCase ):
         MyDepModel(pk1=12, foreign="1").save()
 
         self.assertEqual( 3, m.mydepmodel_set.all().count )
+
+    def test_20(self):
+        "test auto increment integer field"
+
+        class AutoModel1( Model ):
+            auto = IntField(primary_key=True, auto_increment=True)
+
+        class AutoModel2( Model ):
+            auto = IntField(primary_key=True, auto_increment=True)
+
+        self.assertEqual( 1, AutoModel1().auto )
+        self.assertEqual( 2, AutoModel1().auto )
+
+        self.assertEqual( 3, AutoModel2().auto )
+        self.assertEqual( 4, AutoModel2().auto )
+
+        m = AutoModel2().save()
+        self.assertEqual( 5, m.auto )

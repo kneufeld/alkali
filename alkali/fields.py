@@ -65,6 +65,10 @@ class Field(object):
         return ['primary_key', 'indexed']
 
     @property
+    def default_value(self):
+        return None
+
+    @property
     def primary_key(self):
         """
         **property**: return true/false if this field is a primary key
@@ -105,8 +109,20 @@ class Field(object):
 
 class IntField(Field):
 
+    # FIXME this sucks, all auto_increment fields share the same counter
+    __auto_increment = 0
+
     def __init__(self, **kw):
+        self.auto_increment = kw.pop('auto_increment', False)
         super(IntField, self).__init__(int, **kw)
+
+    @property
+    def default_value(self):
+        if self.auto_increment:
+            IntField.__auto_increment += 1
+            return IntField.__auto_increment
+
+        return None
 
 
 class FloatField(Field):

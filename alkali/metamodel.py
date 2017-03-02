@@ -145,7 +145,8 @@ class MetaModel(type):
 
         # put fields into model instance
         for name in cls.Meta.fields.iterkeys():
-            value = kw.pop(name, None)
+            default_value = cls.Meta.fields[name].default_value
+            value = kw.pop(name, default_value)
             value = obj.Meta.fields[name].cast(value)
             setattr(obj, name, value)
 
