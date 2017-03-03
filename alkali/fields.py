@@ -54,7 +54,8 @@ class Field(object):
         assert len(kw) == 0, "unhandeled kwargs: {}".format(str(kw))
 
     def __str__(self):
-        return "<{}>".format(self.__class__.__name__)
+        name = getattr(self, 'name', '')
+        return "<{}: {}>".format(self.__class__.__name__, name)
 
     @property
     def field_type(self):
