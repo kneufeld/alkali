@@ -99,18 +99,15 @@ class Field(object):
 
 class IntField(Field):
 
-    # FIXME this sucks, all auto_increment fields share the same counter
-    __auto_increment = 0
-
     def __init__(self, **kw):
-        self.auto_increment = kw.pop('auto_increment', False)
         super(IntField, self).__init__(int, **kw)
 
     @property
     def default_value(self):
         if self.auto_increment:
-            IntField.__auto_increment += 1
-            return IntField.__auto_increment
+            val = getattr(self.meta, '_auto__' + self.name, 0) + 1
+            setattr( self.meta, '_auto__' + self.name, val )
+            return val
 
         return None
 
@@ -147,6 +144,8 @@ class DateTimeField(Field):
 
     def __init__(self, **kw):
         super(DateTimeField, self).__init__(dt.datetime, **kw)
+
+    # TODO def default_value: auto_now, auto_now_add
 
     def cast(self, value):
         """

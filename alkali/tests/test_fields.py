@@ -31,7 +31,7 @@ class TestField( unittest.TestCase ):
         self.assertTrue( str(f) )
 
     def test_2(self):
-        "Field is a meta class, it has no value. make sure of that"
+        "Field is a meta-like class, it has no value. make sure of that"
         f = IntField()
         with self.assertRaises(AttributeError):
             f.value
@@ -211,8 +211,8 @@ class TestField( unittest.TestCase ):
         self.assertEqual( 1, AutoModel1().auto )
         self.assertEqual( 2, AutoModel1().auto )
 
-        self.assertEqual( 3, AutoModel2().auto )
-        self.assertEqual( 4, AutoModel2().auto )
+        self.assertEqual( 1, AutoModel2().auto )
+        self.assertEqual( 2, AutoModel2().auto )
 
         m = AutoModel2().save()
-        self.assertEqual( 5, m.auto )
+        self.assertEqual( 3, m.auto )
