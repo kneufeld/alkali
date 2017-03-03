@@ -3,6 +3,18 @@
 Here's what we all hope is an accurate list of things that have changed
 between versions.
 
+## v0.5.2
+
+* no longer using IField as a zope interface, just have a Field class now
+* IntField now has auto_increment property
+* general work on ForeignKey fields, still not happy with implementation
+* ForeignKey validation during save/load
+* Fields now have more properties, links to model and meta class parents
+* refactoring around how Model instances are created
+* Query returns copies of Model instances
+* Query speeds and Manager.get() are now faster
+* general refactorings
+
 ## v0.5.1
 
 * fix: model instances going to/from its manager are copied. this
