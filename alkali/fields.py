@@ -38,14 +38,20 @@ class Field(object):
         assert field_type is not None
         self._field_type = field_type
 
-        self._primary_key = kw.pop('primary_key', False)
-        self._indexed     = kw.pop('indexed', False)
+        self._properties = ['primary_key', 'indexed',
+                'auto_increment', 'auto_now', 'auto_now_add']
 
-        # nice and dynamic but more magic than is strictly required
-        # for prop in self.properties:
-        #     setattr(self.__class__, prop, property(fget=lambda self, prop=prop: getattr(self, '_'+prop)) )
+        # create a getter property based on _properties list
+        # self.property_name returns self._property_name
+        for name in self._properties:
+            val = kw.pop(name, None)
+            name = '_'+name
+            setattr(self, name, val)
 
-        assert len(kw) == 0, "unhandeled kwargs"
+            fget = lambda self, name=name: getattr(self, name)
+            setattr( self.__class__, name[1:], property(fget=fget) )
+
+        assert len(kw) == 0, "unhandeled kwargs: {}".format(str(kw))
 
     def __str__(self):
         return "<{}>".format(self.__class__.__name__)
@@ -62,25 +68,11 @@ class Field(object):
         """
         **property**: return list of possible Field properties
         """
-        return ['primary_key', 'indexed']
+        return self._properties
 
     @property
     def default_value(self):
         return None
-
-    @property
-    def primary_key(self):
-        """
-        **property**: return true/false if this field is a primary key
-        """
-        return self._primary_key
-
-    @property
-    def indexed(self):
-        """
-        **property**: return true/false if this field is indexed (not implemented yet)
-        """
-        return self._indexed
 
     def cast(self, value):
         if value is None:

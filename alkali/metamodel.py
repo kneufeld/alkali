@@ -96,6 +96,8 @@ class MetaModel(type):
 
         class Object(object): pass
 
+        # Meta is an instance in Model class
+        # all following properties on the Meta class, not instance
         meta = attrs.pop( 'Meta', Object )
         setattr( new_class, 'Meta', meta() )
 
@@ -120,6 +122,21 @@ class MetaModel(type):
         for field in meta.ordering:
             meta.fields[field] = attrs.pop(field)
             delattr( meta.fields[field], '_order' )
+
+        # add properties to field
+        # name, model
+        for name, field in meta.fields.items():
+            field._name = name
+            fget = lambda self: getattr(self, '_name')
+            setattr( field.__class__, 'name', property(fget=fget) )
+
+            field._model = new_class
+            fget = lambda self: getattr(self, '_model')
+            setattr( field.__class__, 'model', property(fget=fget) )
+
+            field._meta = meta
+            fget = lambda self: getattr(self, '_meta')
+            setattr( field.__class__, 'meta', property(fget=fget) )
 
         # make sure 'pk' isn't a field name, etc
         for d in dir(new_class):

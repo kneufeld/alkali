@@ -39,10 +39,11 @@ class TestField( unittest.TestCase ):
             f._value
 
     def test_4(self):
-        "test primary key setting"
+        "test some field properties, verify primary key setting"
         f = IntField()
-        self.assertEqual( False, f.primary_key )
-        self.assertEqual( False, f.indexed )
+
+        for prop in f.properties:
+            self.assertFalse( getattr(f, prop) )
 
         f = IntField( primary_key=True, indexed=True )
         self.assertEqual( True, f.primary_key )
