@@ -80,10 +80,7 @@ class Field(object):
             return None
 
         # simple cast, eg. int(value)
-        if not isinstance(value, self._field_type):
-            return self._field_type(value)
-
-        return value
+        return self._field_type(value)
 
     def dumps(self, value):
         """
