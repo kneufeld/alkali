@@ -131,6 +131,9 @@ class Query(object):
         """
         return self.fields.keys()
 
+    def all(self):
+        return self
+
     def filter(self, **kw):
         """
         :param kw: ``field_name__op=value``, note: ``field_name`` can be a ``property``

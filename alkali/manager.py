@@ -38,6 +38,12 @@ class Manager(object):
     def __len__(self):
         return len(self._instances)
 
+    def __getattr__(self, attr):
+        # return a Query object, this prevents us from having to
+        # make pass-through functions for each Query param.
+        # eg. Manager().filter() -> Query().filter()
+        return getattr(Query(self), attr)
+
     @property
     def model_class(self):
         return self._model_class
@@ -284,28 +290,3 @@ class Manager(object):
                 self.model_class.__name__, len(results), str(kw)) )
 
         return results[0]
-
-    def filter(self, **kw):
-        """
-        see :func:`alkali.query.Query.filter` for documentation
-
-        :rtype: :class:`alkali.query.Query`
-        """
-        return Query(self).filter(**kw)
-
-    def order_by(self, *args):
-        """
-        see :func:`alkali.query.Query.order_by` for documentation
-
-        :rtype: :class:`alkali.query.Query`
-        """
-        return Query(self).order_by(*args)
-
-    def all(self):
-        """
-        return a ``Query`` object that contains all instances in
-        unsorted order
-
-        :rtype: :class:`alkali.query.Query`
-        """
-        return Query(self)
