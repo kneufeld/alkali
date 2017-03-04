@@ -81,7 +81,7 @@ class Query(object):
 
         :rtype: ``list``
         """
-        return copy.copy( map( copy.copy, self._instances ) )
+        return map( copy.copy, self._instances )
 
     @property
     def fields(self):
@@ -118,8 +118,6 @@ class Query(object):
 
         see example code above. see Django page for very thorough docs on
         this functionality. basically, its field_name '__' operation = value.
-
-        major enhancement to Django is the ability to compare ``sets``
 
         ::
 
@@ -178,14 +176,17 @@ class Query(object):
             oper = regexi
         else:
             oper = getattr(operator,oper)
+        # TODO: exact, iexact, (i)contains == rin, (i)startswith, (i)endswith,
+        # range (for dates), date (return datetime as date), year/month/day,
+        # hour/minute/second, week_day (sun=1, sat=7)
 
         return filter( lambda e: oper(getattr(e,field), value), instances)
 
-    def order_by(self, *args):
+    def order_by(self, *fields):
         """
         change order of self.instances
 
-        :param str args: field names, prefixed with optional '-' to
+        :param str fields: field names, prefixed with optional '-' to
             indicate reverse order
         :rtype: Query
 
@@ -201,10 +202,10 @@ class Query(object):
             else:
                 return False, field
 
-        if args == ('pk',):
-            args = self.model_class.Meta.pk_fields.keys()
+        if fields == ('pk',):
+            fields = self.model_class.Meta.pk_fields.keys()
 
-        for field in args:
+        for field in fields:
             reverse, field = _order_by( field )
             key = operator.attrgetter(field)
             self._instances = sorted( self._instances, key=key, reverse=reverse)
