@@ -243,9 +243,7 @@ class TestQuery( unittest.TestCase ):
         now = tznow()
         m = MyModel(int_type=1, str_type=u'string', dt_type=now).save()
 
-        d = { 'int_type':1, 'str_type':u'string', 'dt_type':now.isoformat() }
-
-        self.assertDictEqual( d, m.dict ) # quick test to so we know what we're working with
+        d = { 'int_type':1, 'str_type':u'string', 'dt_type':now }
 
         q = MyModel.objects.all()
 

@@ -257,21 +257,14 @@ class Query(object):
             return self._instances
 
     def values(self, *fields):
-        dicts = map( lambda elem: elem.dict, self.instances )
-
-        # return all fields
         if not fields:
-            return dicts
+            fields = self.field_names
 
-        def _keep_keys( d, all_keys, keys ):
-            unwanted = set(all_keys) - set(keys)
-            for k in unwanted:
-                del d[k]
+        def _mk_dict( obj, fields ):
+            vals = [ (field, getattr(obj, field)) for field in fields ]
+            return collections.OrderedDict(vals)
 
-            return d
-
-        all_fields = self.field_names
-        return map( lambda d: _keep_keys(d, all_fields, fields), dicts )
+        return map( lambda obj: _mk_dict(obj, fields), self._instances )
 
     def values_list(self, *fields, **kw):
         """
