@@ -313,3 +313,23 @@ class TestQuery( unittest.TestCase ):
 
         self.assertTrue( q.filter(int_type=0).exists() )
         self.assertFalse( q.filter(int_type=9).exists() )
+
+    def test_agg_sum(self):
+        for i in range(1,4):
+            MyModel(int_type=i, str_type='string').save()
+
+        q = MyModel.objects.all()
+
+        def count(lst):
+            return len(lst)
+
+        from alkali.query import Sum, Count
+
+        d = {'int_type__sum': 6, 'str_type__count': 3}
+        self.assertDictEqual( d, q.aggregate(Sum('int_type'), Count('str_type')) )
+
+        d = {'foo': 6, 'bar': 3}
+        self.assertDictEqual( d, q.aggregate(foo=Sum('int_type'), bar=Count('str_type')) )
+
+        # d = {'int_type__sum': 3, 'str_type__count': 2}
+        # self.assertDictEqual( d, q.filter(int_type__le=2).aggregate(int_type=sum, str_type=count) )

@@ -32,6 +32,29 @@ import re
 import logging
 logger = logging.getLogger(__name__)
 
+
+class Aggregate(object):
+    def __init__(self, field):
+        self.field = field
+
+class Count(Aggregate):
+
+    def __call__(self, query):
+        return len( query )
+
+class Sum(Aggregate):
+    def __call__(self, query):
+        return sum( query.values_list(self.field, flat=True) )
+
+class Max(Aggregate):
+    def __call__(self, query):
+        return max( query.values_list(self.field, flat=True) )
+
+class Min(Aggregate):
+    def __call__(self, query):
+        return min( query.values_list(self.field, flat=True) )
+
+
 class Query(object):
     """
     this class performs queries on manager instances
@@ -262,3 +285,26 @@ class Query(object):
 
     def exists(self):
         return len(self) > 0
+
+    def aggregate(self, *args, **kw):
+        """
+        :param args: ``Count`` ``Sum`` ``Max`` ``Min``
+        :param kw: ``field_name=agg``, note: ``field_name`` can be a ``property``
+        :rtype: dict
+
+        ::
+
+            MyModel.objects.aggregate( size='sum', id='count' )
+            # { 'id__count': 12, 'size__sum': 24957 }
+        """
+
+        ret = {}
+
+        for agg in args:
+            key = '{}__{}'.format(agg.field, agg.__class__.__name__.lower())
+            ret[key] = agg(self)
+
+        for field, agg in kw.iteritems():
+            ret[field] = agg(self)
+
+        return ret
