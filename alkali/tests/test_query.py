@@ -219,7 +219,7 @@ class TestQuery( unittest.TestCase ):
         self.assertEqual( instances, MyModel.objects.all().order_by('pk').instances )
 
     def test_40(self):
-        "test limit"
+        "test limit, equivalent to slicing"
 
         now = tznow()
         instances = [ MyModel(int_type=i, str_type='string %d' % i, dt_type=now ) for i in range(3)]
@@ -235,3 +235,50 @@ class TestQuery( unittest.TestCase ):
 
         self.assertEqual( instances[:2], MyModel.objects.all().limit(2) )
         self.assertEqual( instances[-2:], MyModel.objects.all().limit(-2) )
+
+    def test_values(self):
+        """
+        test .values(), return dict instead of objects
+        """
+        now = tznow()
+        m = MyModel(int_type=1, str_type=u'string', dt_type=now).save()
+
+        d = { 'int_type':1, 'str_type':u'string', 'dt_type':now.isoformat() }
+
+        self.assertDictEqual( d, m.dict ) # quick test to so we know what we're working with
+
+        q = MyModel.objects.all()
+
+        self.assertDictEqual( d, q.values()[0] )
+        self.assertDictEqual(
+                { 'int_type':1, 'str_type':u'string' },
+                q.values('int_type', 'str_type' )[0] )
+        self.assertDictEqual(
+                { 'str_type':u'string' },
+                q.values('str_type' )[0] )
+
+    def test_values_1(self):
+        """
+        test .values() with multiple returned values
+        """
+        for i in range(3):
+            MyModel(int_type=i).save()
+
+        q = MyModel.objects.all()
+        self.assertEqual( 3, len(q.values()) )
+
+        for i in range(3):
+            self.assertDictEqual( {'int_type':i}, q.values('int_type')[i] )
+
+    def test_value_list(self):
+        """
+        verify that lists are returne
+        """
+        for i in range(3):
+            MyModel(int_type=i).save()
+
+        q = MyModel.objects.all()
+        self.assertEqual( 3, len(q.values_list()) )
+
+        self.assertTrue( ('int_type', 0) in q.values_list()[0] )
+        self.assertEqual( [('int_type', 0)], q.values_list('int_type')[0] )

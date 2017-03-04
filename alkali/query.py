@@ -228,3 +228,32 @@ class Query(object):
             return self._instances[n:]
         else: # n == 0, return all instead of [] because why not?
             return self._instances
+
+    def values(self, *fields):
+        dicts = map( lambda elem: elem.dict, self.instances )
+
+        # return all fields
+        if not fields:
+            return dicts
+
+        def _keep_keys( d, all_keys, keys ):
+            unwanted = set(all_keys) - set(keys)
+            for k in unwanted:
+                del d[k]
+
+            return d
+
+        all_fields = self.field_names
+        return map( lambda d: _keep_keys(d, all_fields, fields), dicts )
+
+    def values_list(self, *fields, **kw):
+        """
+        same as values() but return list instead of a dict
+        """
+        flat = kw.pop('flat', False)
+        assert len(kw) == 0, "extra kwargs passed to values_list"
+
+        if flat:
+            pass
+        else:
+            return map( lambda d: d.items(), self.values(*fields) )
