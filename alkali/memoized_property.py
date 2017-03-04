@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # from: https://github.com/ytyng/python-memoized-property
 
+import functools
+
 class memoized_property(object):
 
     def __init__(self, fget=None, fset=None, fdel=None, doc=None):
@@ -31,3 +33,16 @@ class memoized_property(object):
             setattr(inst, self._attr_name, result)
 
         return result
+
+# note that this decorator ignores **kwargs
+def memoize(obj):
+    cache = {}
+
+    @functools.wraps(obj)
+    def memoizer(*args, **kwargs):
+        try:
+            return cache[args]
+        except KeyError:
+            val = cache[args] = obj(*args, **kwargs)
+            return val
+    return memoizer
