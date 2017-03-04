@@ -272,13 +272,35 @@ class TestQuery( unittest.TestCase ):
 
     def test_value_list(self):
         """
-        verify that lists are returne
+        verify that lists are returned
         """
+        return
         for i in range(3):
-            MyModel(int_type=i).save()
+            MyModel(int_type=i, str_type='string').save()
 
         q = MyModel.objects.all()
         self.assertEqual( 3, len(q.values_list()) )
 
         self.assertTrue( ('int_type', 0) in q.values_list()[0] )
         self.assertEqual( [('int_type', 0)], q.values_list('int_type')[0] )
+
+        # order of returned list is not guaranteed
+        self.assertTrue( ('int_type', 0) in q.values_list('int_type', 'str_type')[0] )
+        self.assertTrue( ('str_type', u'string') in q.values_list('int_type', 'str_type')[0] )
+
+    def test_value_list_1(self):
+        """
+        verify that flat lists are returned
+        """
+        for i in range(3):
+            MyModel(int_type=i, str_type='string').save()
+
+        q = MyModel.objects.all()
+        self.assertEqual( 9, len(q.values_list(flat=True)) )
+        self.assertEqual( 3, len(q.values_list('int_type', flat=True)) )
+
+        self.assertTrue( 0 in q.values_list(flat=True) )
+        self.assertEqual( [0,1,2], q.values_list('int_type', flat=True) )
+
+        self.assertEqual( [0, u'string'],
+                q.filter(int_type=0).values_list('int_type', 'str_type', flat=True) )

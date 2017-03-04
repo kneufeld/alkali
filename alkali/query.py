@@ -254,6 +254,7 @@ class Query(object):
         assert len(kw) == 0, "extra kwargs passed to values_list"
 
         if flat:
-            pass
+            ret = map( lambda d: d.values(), self.values(*fields) )
+            return [item for sublist in ret for item in sublist]
         else:
-            return map( lambda d: d.items(), self.values(*fields) )
+            return map( lambda d: d.values(), self.values(*fields) )
