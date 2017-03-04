@@ -1,4 +1,5 @@
 from zope.interface import Interface, Attribute, implements
+from collections import OrderedDict
 import json
 
 from .memoized_property import memoized_property
@@ -144,10 +145,10 @@ class Model(object):
         **property**: returns a dict of all the fields, the fields are
         json consumable
 
-        :rtype: ``dict``
+        :rtype: ``OrderedDict``
         """
-        return { name: field.dumps( getattr(self, name) )
-                for name, field in self.Meta.fields.iteritems() }
+        return OrderedDict( [(name, field.dumps(getattr(self, name)))
+                for name, field in self.Meta.fields.iteritems() ])
 
     @property
     def json(self):
