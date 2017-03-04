@@ -210,13 +210,16 @@ class Manager(object):
 
         """
         def validate(elem):
-            for fk in elem.Meta.field_filter(fields.ForeignKey):
+            for fk_field_name in elem.Meta.field_filter(fields.ForeignKey):
                 try:
-                    getattr(elem, fk) # this does a lookup on for foreign key object
+                    getattr(elem, fk_field_name) # this does a lookup on foreign key object
                 except KeyError:
+                    # get elem's pk value, need to do it in this convoluted way since
+                    # elem.pk might try to lookup the very thing that is missing
                     field_name = elem.Meta.pk_fields.keys()[0]
                     pk_value = elem.__dict__[field_name]
-                    logger.warn( "%s: foreign instance is missing: %s" % (self._model_class.__name__, pk_value))
+                    logger.warn( "%s.%s: foreign instance missing: %s",
+                           self._model_class.__name__, elem.__dict__[fk_field_name], pk_value)
 
                     break
             else:
