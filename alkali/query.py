@@ -280,11 +280,19 @@ class Query(object):
         flat = kw.pop('flat', False)
         assert len(kw) == 0, "extra kwargs passed to values_list"
 
+        if not fields:
+            fields = self.field_names
+
         if flat:
-            ret = map( lambda d: d.values(), self.values(*fields) )
-            return [item for sublist in ret for item in sublist]
+            return [
+                getattr(e,field) for field in fields
+                for e in self._instances
+                ]
         else:
-            return map( lambda d: d.values(), self.values(*fields) )
+            return [
+                [getattr(e,field) for field in fields]
+                for e in self._instances
+                ]
 
     def exists(self):
         return len(self) > 0
@@ -297,8 +305,8 @@ class Query(object):
 
         ::
 
-            MyModel.objects.aggregate( size='sum', id='count' )
-            # { 'id__count': 12, 'size__sum': 24957 }
+            MyModel.objects.aggregate( the_count=Count('id'), Sum('size') )
+            # { 'the_count': 12, 'size__sum': 24957 }
         """
 
         ret = {}
