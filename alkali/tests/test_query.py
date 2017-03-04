@@ -304,3 +304,12 @@ class TestQuery( unittest.TestCase ):
 
         self.assertEqual( [0, u'string'],
                 q.filter(int_type=0).values_list('int_type', 'str_type', flat=True) )
+
+    def test_exists(self):
+        for i in range(3):
+            MyModel(int_type=i, str_type='string').save()
+
+        q = MyModel.objects.all()
+
+        self.assertTrue( q.filter(int_type=0).exists() )
+        self.assertFalse( q.filter(int_type=9).exists() )

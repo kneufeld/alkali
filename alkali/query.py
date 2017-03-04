@@ -259,3 +259,6 @@ class Query(object):
             return [item for sublist in ret for item in sublist]
         else:
             return map( lambda d: d.values(), self.values(*fields) )
+
+    def exists(self):
+        return len(self) > 0
