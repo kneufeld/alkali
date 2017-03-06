@@ -96,6 +96,18 @@ class Field(object):
         """
         return value
 
+    def __get__(self, model, owner):
+        #print self, "__get__"
+        if model is None:
+            return self
+
+        return model.__dict__[self._name]
+
+    def __set__(self, model, value):
+        print self, "__set__"
+        value = self.cast(value)
+        model.__dict__[self._name] = value
+
 
 class IntField(Field):
 

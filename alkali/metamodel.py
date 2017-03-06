@@ -161,11 +161,14 @@ class MetaModel(type):
         obj = cls.__new__(cls, *args)
 
         # put fields into model instance
-        for name in cls.Meta.fields.iterkeys():
-            default_value = cls.Meta.fields[name].default_value
+        for name, field in cls.Meta.fields.iteritems():
+            default_value = field.default_value
             value = kw.pop(name, default_value)
-            value = obj.Meta.fields[name].cast(value)
-            setattr(obj, name, value)
+            value = field.cast(value)
+
+            obj.__dict__[name] = value
+
+            setattr( obj.__class__, name, field)
 
         setattr( obj, '_dirty', False )
 
