@@ -55,29 +55,33 @@ class Model(object):
     def __ne__(self, other):
         return not self.__eq__(other)
 
-    def _assign_field_val(self, attr, val):
+    def set_field(self, field, value):
+        """
+        set a field value, this method is automatically called when setting
+        a field value. safe to call externally.
+
+        :param field: instance of Field
+        :type field: :class:`alkali.fields.Field`
+        :param value: the already-cast value to store
+        :type value: ``Field.field_type``
+
+        :rtype: :class:`alkali.fields.Field` or tuple-of-Field
+        """
         # if we're setting a field value and that value is different
         # than current value, mark self as modified
 
-        field_type = self.Meta.fields[attr]  # eg. IntField
-        val = field_type.cast(val)           # make sure val is correct type
+        curr_val = getattr(self, field.name)
 
-        if hasattr(self, attr):
-            curr_val = getattr(self, attr)
+        # do not let user change pk after it has been set
+        if field.primary_key:
+            if curr_val is not None and curr_val != value:
+                raise RuntimeError("{}: trying to change set pk value: {} to {}".format(self.__class__.__name__, self.pk, value))
 
-            # do not let user change pk after it has been set
-            if attr in self.Meta.pk_fields:
-                if curr_val is not None and curr_val != val:
-                    raise RuntimeError("trying to change set pk value: {} to {}".format(self.pk, val))
+        self.__dict__[field.name] = value # actually set the value
 
-            self.__dict__['_dirty'] = curr_val != val
-        else:
-            # we don't have this attr during object creation
-            curr_val = None
-
-        self.__dict__[attr] = val # actually set the value
-
-        signals.field_update.send(self.__class__, field=attr, old_val=curr_val, new_val=val)
+        if curr_val != value:
+            self.__dict__['_dirty'] = True
+            signals.field_update.send(self.__class__, field=field.name, old_val=curr_val, new_val=value)
 
     @property
     def dirty(self):

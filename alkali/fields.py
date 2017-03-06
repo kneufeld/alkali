@@ -62,8 +62,8 @@ class Field(object):
 
     def __set__(self, model, value):
         # WARNING: if it existed, Model.__setattr__ would intercept this method
-        model._assign_field_val(self._name, value)
-
+        value = self.cast(value)           # make sure val is correct type
+        model.set_field(self, value)
 
     def __str__(self):
         name = getattr(self, 'name', '')
