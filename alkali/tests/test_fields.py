@@ -2,9 +2,11 @@
 
 import os
 import unittest
+import mock
 import tempfile
 import datetime as dt
 
+from alkali.fields import Field
 from alkali.fields import IntField, StringField
 from alkali.fields import DateTimeField, FloatField, SetField
 from alkali.fields import ForeignKey
@@ -216,3 +218,28 @@ class TestField( unittest.TestCase ):
 
         m = AutoModel2().save()
         self.assertEqual( 3, m.auto )
+
+    def test_25(self):
+        "test that Field.__set__ gets called"
+
+        with mock.patch.object(Field, '__set__') as mock_method:
+            m = MyModel()
+            m.int_type = 1
+            mock_method.assert_called_once_with(m, 1)
+
+        m = MyModel()
+        self.assertIsNone( m.int_type )
+
+        m.int_type = 1
+        self.assertIsInstance( m.int_type, int )
+        self.assertIsInstance( m.__dict__['int_type'], int )
+        self.assertIs( m.int_type, m.__dict__['int_type'] )
+        self.assertIsInstance( m.Meta.fields['int_type'], IntField ) # hasn't magically changed
+
+    def test_26(self):
+        "test that Field.__get__ gets called"
+
+        with mock.patch.object(Field, '__get__') as mock_method:
+            m = MyModel()
+            m.int_type
+            mock_method.assert_called_once_with(m.Meta.fields['int_type'], m, MyModel)

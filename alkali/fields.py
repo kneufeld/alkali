@@ -53,6 +53,18 @@ class Field(object):
 
         assert len(kw) == 0, "unhandeled kwargs: {}".format(str(kw))
 
+    def __get__(self, model, owner):
+        #print self, "__get__"
+        if model is None:
+            return self
+
+        return model.__dict__[self._name]
+
+    def __set__(self, model, value):
+        # WARNING: if it existed, Model.__setattr__ would intercept this method
+        model._assign_field_val(self._name, value)
+
+
     def __str__(self):
         name = getattr(self, 'name', '')
         return "<{}: {}>".format(self.__class__.__name__, name)
@@ -95,17 +107,6 @@ class Field(object):
         decode value into correct type
         """
         return value
-
-    def __get__(self, model, owner):
-        #print self, "__get__"
-        if model is None:
-            return self
-
-        return model.__dict__[self._name]
-
-    def __set__(self, model, value):
-        # WARNING: if it existed, Model.__setattr__ would intercept this method
-        model._assign_field_val(self._name, value)
 
 
 class IntField(Field):
@@ -220,7 +221,7 @@ class ForeignKey(Field):
 
         # TODO treat foreign_model as model name and lookup in database
         # if isinstance(foreign_model, types.StringTypes):
-        #     pass
+        #     foreign_model = <db>.get_model(foreign_model)
 
         self.foreign_model = foreign_model
 
@@ -240,6 +241,8 @@ class ForeignKey(Field):
 
         fk_value = model.__dict__[self._name]
         return self.lookup(fk_value)
+
+    # don't require a __set__ because Model._assign_field_val() calls our cast() method
 
     @property
     def pk_field(self):

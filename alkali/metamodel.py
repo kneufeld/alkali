@@ -162,12 +162,15 @@ class MetaModel(type):
 
         # put fields into model instance
         for name, field in cls.Meta.fields.iteritems():
+            # THINK: this somewhat duplicates Field.__set__ code
             default_value = field.default_value
             value = kw.pop(name, default_value)
             value = field.cast(value)
 
+            # store the actual value in the model's __dict__, used by Field.__get__
             obj.__dict__[name] = value
 
+            # set the Field descriptor object on the model instance
             setattr( obj.__class__, name, field)
 
         setattr( obj, '_dirty', False )
