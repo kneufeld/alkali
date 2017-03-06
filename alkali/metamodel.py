@@ -125,7 +125,7 @@ class MetaModel(type):
 
         # add properties to field
         # name, model
-        for name, field in meta.fields.items():
+        for name, field in meta.fields.iteritems():
             field._name = name
             fget = lambda self: getattr(self, '_name')
             setattr( field.__class__, 'name', property(fget=fget) )
@@ -137,6 +137,11 @@ class MetaModel(type):
             field._meta = meta
             fget = lambda self: getattr(self, '_meta')
             setattr( field.__class__, 'meta', property(fget=fget) )
+
+        # put property model.fieldname_field that returns Field object
+        for name in meta.fields.iterkeys():
+            fget = lambda self, name=name: self.Meta.fields[name]
+            setattr( new_class, name+'_field', property(fget=fget) )
 
         # make sure 'pk' isn't a field name, etc
         for d in dir(new_class):

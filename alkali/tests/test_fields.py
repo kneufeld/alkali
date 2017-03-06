@@ -243,3 +243,8 @@ class TestField( unittest.TestCase ):
             m = MyModel()
             m.int_type
             mock_method.assert_called_once_with(m.Meta.fields['int_type'], m, MyModel)
+
+    def test_27(self):
+        "test that magic model.fieldname_field returns Field object"
+        m = MyModel()
+        self.assertIs( MyModel.Meta.fields['int_type'], m.int_type_field )
