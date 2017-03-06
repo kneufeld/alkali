@@ -104,9 +104,8 @@ class Field(object):
         return model.__dict__[self._name]
 
     def __set__(self, model, value):
-        print self, "__set__"
-        value = self.cast(value)
-        model.__dict__[self._name] = value
+        # WARNING: if it existed, Model.__setattr__ would intercept this method
+        model._assign_field_val(self._name, value)
 
 
 class IntField(Field):
@@ -234,6 +233,13 @@ class ForeignKey(Field):
                 "compound foreign key is not currently allowed"
 
         super(ForeignKey, self).__init__(self.foreign_model, **kw)
+
+    def __get__(self, model, owner):
+        if model is None:
+            return self
+
+        fk_value = model.__dict__[self._name]
+        return self.lookup(fk_value)
 
     @property
     def pk_field(self):

@@ -58,7 +58,12 @@ class Model(object):
     def __getattribute__(self, attr):
         # lookup and return foreign object if attr is a ForeignKey
         meta = super(Model,self).__getattribute__('Meta')
-        if attr in meta.fields:
+
+        if attr.endswith('_field'):
+            field_name = attr[:-6] # len('_field') == 6
+            return meta.fields[field_name]
+
+        if False and attr in meta.fields:
             field_type = meta.fields[attr]
             if isinstance(field_type, fields.ForeignKey):
                 foreign_pk = self.__dict__[attr]
@@ -66,13 +71,7 @@ class Model(object):
 
         return super(Model, self).__getattribute__(attr)
 
-    def __setattr__(self, attr, val):
-        if attr in self.Meta.fields:
-            self.__assign_field( attr, val)
-        else:
-            self.__dict__[attr] = val
-
-    def __assign_field(self, attr, val):
+    def _assign_field_val(self, attr, val):
         # if we're setting a field value and that value is different
         # than current value, mark self as modified
 
