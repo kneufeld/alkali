@@ -185,7 +185,7 @@ class Manager(object):
             self._dirty = True
 
         if self.dirty:
-            signals.pre_store.send(self.model_class, storage=storage)
+            signals.pre_store.send(self.model_class)
 
             logger.debug( "%s: has dirty records, saving", self._name )
             logger.debug( "%s: storing models via storage class: %s", self._name, storage._name )
@@ -194,7 +194,7 @@ class Manager(object):
             storage.write(gen)
 
             logger.debug( "%s: finished storing %d records", self._name, len(self) )
-            signals.post_store.send(self.model_class, storage=storage)
+            signals.post_store.send(self.model_class)
         else:
             logger.debug( "%s: has no dirty records, not saving", self._name )
 
@@ -230,6 +230,8 @@ class Manager(object):
         storage = IStorage(storage)
         logger.debug( "%s: loading models via storage class: %s", self._name, storage._name )
 
+        signals.pre_load.send(self.model_class)
+
         self.clear()
 
         dirty = False
@@ -256,6 +258,7 @@ class Manager(object):
         self._dirty = dirty
 
         logger.debug( "%s: finished loading %d records", self._name, len(self) )
+        signals.post_load.send(self.model_class)
 
 
     def get(self, *pk, **kw):
