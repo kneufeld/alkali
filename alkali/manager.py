@@ -255,7 +255,7 @@ class Manager(object):
                 raise KeyError( '%s: pk was None during load' \
                         % (self._model_class.__name__) )
 
-            self.save(elem, dirty=False)
+            self.save(elem, dirty=False, copy_instance=False)
 
 
         self._dirty = dirty
