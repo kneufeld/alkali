@@ -111,7 +111,7 @@ class Manager(object):
             yield elements[key]
 
 
-    def save(self, instance, dirty=True):
+    def save(self, instance, dirty=True, copy_instance=True):
         """
         Copy instance into our collection. We make a copy so that caller
         can't change its object and affect our version without calling
@@ -126,7 +126,10 @@ class Manager(object):
         assert instance.pk is not None, \
                 "{}.save(): instance '{}' has None for pk".format(self._name, instance)
 
-        instance = self._instances[instance.pk] = copy.copy(instance)
+        if copy_instance:
+            instance = self._instances[instance.pk] = copy.copy(instance)
+        else:
+            self._instances[instance.pk] = instance
 
         # THINK may be mistake to send the actual object out via the signal but probably
         # what any reciever actually wants
