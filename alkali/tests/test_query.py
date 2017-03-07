@@ -328,3 +328,22 @@ class TestQuery( unittest.TestCase ):
 
         # d = {'int_type__sum': 3, 'str_type__count': 2}
         # self.assertDictEqual( d, q.filter(int_type__le=2).aggregate(int_type=sum, str_type=count) )
+
+    def test_annotate_1(self):
+        "test hard-coded annotation"
+        m = MyModel(int_type=1, str_type='string').save()
+        q = MyModel.objects.all()
+
+        a = q.annotate(foo='foo')[0]
+        self.assertEqual( "foo", a.foo )
+
+    def test_annotate_2(self):
+        "test callable annotation"
+        m = MyModel(int_type=1, str_type='string').save()
+        q = MyModel.objects.all()
+
+        def func(elem):
+            return elem.str_type + " {}".format(elem.int_type)
+
+        a = q.annotate(foo=func)[0]
+        self.assertEqual( "string 1", a.foo )
