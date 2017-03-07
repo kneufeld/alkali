@@ -108,23 +108,21 @@ class Model(object):
         **property**: returns this models primary key value. If the model is
         comprised of serveral primary keys then return a tuple of them.
 
-        :rtype: :class:`alkali.fields.Field` or tuple-of-Field
+        :rtype: ``Field.field_type`` or tuple-of-Field.field_type
         """
-        #pks = map( lambda n_f: (n_f[1], getattr(self, n_f[0])), self.Meta.pk_fields.items() )
-        pks = [ (field, getattr(self, name)) for name, field in self.Meta.pk_fields.items() ]
+        pks = self.Meta.pk_fields.values()
+        foreign_pks = filter(lambda f: isinstance(f, fields.ForeignKey), pks)
 
-        pk_are_foreign = [isinstance(f, fields.ForeignKey) for f, _ in pks]
-        pk_is_foreign = any(pk_are_foreign)
-
-        if pk_is_foreign:
-            if len(pks) == 1:
-                return pks[0][1].pk
-            return tuple([ value.pk for _, value in pks ])
-
+        if foreign_pks:
+            pk_vals = tuple( getattr(self, f.name).pk for f in pks )
+            if len(pk_vals) == 1:
+                return pk_vals[0]
+            return pk_vals
         else:
-            if len(pks) == 1:
-                return pks[0][1]
-            return tuple([ value for _, value in pks ])
+            pk_vals = tuple( getattr(self, f.name) for f in pks )
+            if len(pk_vals) == 1:
+                return pk_vals[0]
+            return pk_vals
 
     @property
     def dict(self):
