@@ -23,6 +23,12 @@
     assert MyModel.objects.order_by('-id')[0].id == 9
 """
 
+# TODO: annotate(), add a field to each object returned
+# TODO: distinct(fields),
+# TODO: query should work on index of manager instances, this would save a copy or two,
+# only dereferencing a query should return a copy
+
+
 import types
 import operator
 import collections
