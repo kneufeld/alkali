@@ -175,6 +175,17 @@ class Manager(object):
             pass
 
 
+    def cb_delete_foreign(self, sender, instance ):
+        """
+        called when our foreign parent is about to be deleted
+        """
+        # keep in sync with metamodel._add_relmanagers()
+        fk_set = self.model_class.__name__.lower() + '_set' # eg. auxinfo_set
+
+        # equivalent to: instance.thismodel_set.all()
+        for elem in getattr(instance, fk_set).all():
+            self.delete(elem)
+
     def store(self, storage, force=False):
         """
         save all our instances to storage
@@ -283,6 +294,7 @@ class Manager(object):
             m = MyModel.objects.get(field1='a unique', field2='value')
         """
         # FIXME need to support direct access multi pk models
+
         # NOTE without this, direct access ForeignKeys are 100x slower
         if len(pk) == 1:
             pk = self.model_class.Meta.pk_fields.values()[0].cast(pk[0])

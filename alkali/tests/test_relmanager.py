@@ -60,3 +60,19 @@ class TestRelManager( unittest.TestCase ):
 
         e2.auxinfo_set.add(a)
         self.assertEqual( a, e2.auxinfo_set.get() )
+
+    def test_5(self):
+        """
+        test cascade delete
+        """
+        # a refers to e and e2
+        self.assertEqual( 1, Entry.objects.count )
+        self.assertEqual( 1, Entry2.objects.count )
+        self.assertEqual( 1, AuxInfo.objects.count )
+        self.assertTrue( self.e2.auxinfo_set.all())
+
+        Entry2.objects.delete(self.e2)
+
+        self.assertEqual( 1, Entry.objects.count )
+        self.assertEqual( 0, Entry2.objects.count )
+        self.assertEqual( 0, AuxInfo.objects.count )

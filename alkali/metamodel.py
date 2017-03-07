@@ -78,8 +78,11 @@ class MetaModel(type):
                     lambda fm_instance, name=name: RelManager(fm_instance, new_class, name)
                     )
             set_name = "{}_set".format(new_class.__name__).lower()
-
             setattr( field.foreign_model, set_name, rel_manager )
+
+            signals.pre_delete.connect(
+                    new_class.objects.cb_delete_foreign,
+                    sender=field.foreign_model)
 
     def _add_meta( new_class, attrs ):
 
