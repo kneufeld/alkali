@@ -201,15 +201,13 @@ class MetaModel(type):
         # put field values (int,str,etc) into model instance
         for name, field in cls.Meta.fields.iteritems():
             # THINK: this somewhat duplicates Field.__set__ code
-            default_value = field.default_value
-            value = kw.pop(name, default_value)
+            value = kw.pop(name, field.default_value)
             value = field.cast(value)
 
             # store the actual value in the model's __dict__, used by Field.__get__
             obj.__dict__[name] = value
 
-        setattr( obj, '_dirty', False )
-
+        obj._dirty = False
         obj.__init__(*args, **kw)
 
         return obj
