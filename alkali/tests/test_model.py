@@ -115,6 +115,7 @@ class TestModel( unittest.TestCase ):
         m=MyModel(int_type=1)
         self.assertEqual( 1, m.int_type )
         self.assertEqual( m.int_type, m.pk )
+        self.assertTrue( m.int_type_field.primary_key )
 
         n=MyModel(int_type=2)
         #print id(m.Meta.fields['int_type']), id(n.Meta.fields['int_type'])

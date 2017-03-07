@@ -4,6 +4,19 @@ from .relmanager import RelManager
 from .fields import Field, ForeignKey
 from . import signals
 
+# Architecture
+#
+# This is complicated enough to warrant some explanation.
+#
+# A Model class has a Meta instance.
+#
+# The Fields are instances in the Meta instance.
+#
+# For a given Model, all Field instances are shared since there is only
+# one Meta instance for that Model class. This means that a field can't know
+# it's exact Model instance, only it's parent Model class.
+
+
 # from: http://stackoverflow.com/questions/12006267/how-do-django-models-work
 # from: lib/python2.7/site-packages/django/db/models/base.py
 #
@@ -46,6 +59,7 @@ class MetaModel(type):
         # new_class <class 'alkali.metamodel.MetaModel'> <class 'redb.metamodel.MyModel'>
         new_class = super_new(meta_class, name, bases, {})
         new_class._add_meta( attrs )
+        new_class._add_fields()
         new_class._add_manager()
         new_class._add_relmanagers()
 
@@ -84,6 +98,7 @@ class MetaModel(type):
                     new_class.objects.cb_delete_foreign,
                     sender=field.foreign_model)
 
+
     def _add_meta( new_class, attrs ):
 
         def _get_fields( attrs ):
@@ -120,34 +135,15 @@ class MetaModel(type):
         assert len(meta.ordering) == len(_get_fields(attrs)), \
             "missing/extra fields defined in Meta.ordering"
 
+        # put the fields into the meta class
         # meta.ordering contains field names, attrs contains Field types
         meta.fields = OrderedDict()
         for field in meta.ordering:
             meta.fields[field] = attrs.pop(field)
             delattr( meta.fields[field], '_order' )
 
-        # add properties to field
-        # name, model
-        for name, field in meta.fields.iteritems():
-            field._name = name
-            fget = lambda self: getattr(self, '_name')
-            setattr( field.__class__, 'name', property(fget=fget) )
-
-            field._model = new_class
-            fget = lambda self: getattr(self, '_model')
-            setattr( field.__class__, 'model', property(fget=fget) )
-
-            field._meta = meta
-            fget = lambda self: getattr(self, '_meta')
-            setattr( field.__class__, 'meta', property(fget=fget) )
-
-        # put property model.fieldname_field that returns Field object
-        for name in meta.fields.iterkeys():
-            fget = lambda self, name=name: self.Meta.fields[name]
-            setattr( new_class, name+'_field', property(fget=fget) )
-
         # make sure 'pk' isn't a field name, etc
-        for d in dir(new_class):
+        for d in ['pk']:
             assert d not in meta.fields
 
         # you can set a property on a class but it will only be called on an instance
@@ -163,12 +159,46 @@ class MetaModel(type):
             assert len(meta.pk_fields) > 0, "no primary_key defined in fields"
 
 
+    def _add_fields( new_class ):
+        """
+        put the Field reference into new_class
+        """
+        meta = new_class.Meta
+
+        # add properties to field
+        for name, field in meta.fields.iteritems():
+            field._name = name
+            fget = lambda self: getattr(self, '_name')
+            setattr( field.__class__, 'name', property(fget=fget) )
+
+            field._model = new_class
+            fget = lambda self: getattr(self, '_model')
+            setattr( field.__class__, 'model', property(fget=fget) )
+
+            fget = lambda self: self.model.Meta
+            setattr( field.__class__, 'meta', property(fget=fget) )
+
+        # put fields in model
+        for name, field in meta.fields.iteritems():
+            # make magic property model.fieldname_field that returns Field object
+            fget = lambda self, name=name: self.Meta.fields[name]
+            setattr( new_class, name+'_field', property(fget=fget) )
+
+            # set the Field descriptor object on the model class
+            # which makes it accessable on the model instance
+            #
+            # the field can't be a property to Meta.fields[name]
+            # because then the descriptor-ness is lost and a normal
+            # getattr is called on the model instance
+            setattr( new_class, name, field )
+
+
     # creates a new instance of derived model, this is called each
     # time a Model instance is created
     def __call__(cls, *args, **kw):
         obj = cls.__new__(cls, *args)
 
-        # put fields into model instance
+        # put field values (int,str,etc) into model instance
         for name, field in cls.Meta.fields.iteritems():
             # THINK: this somewhat duplicates Field.__set__ code
             default_value = field.default_value
@@ -177,9 +207,6 @@ class MetaModel(type):
 
             # store the actual value in the model's __dict__, used by Field.__get__
             obj.__dict__[name] = value
-
-            # set the Field descriptor object on the model instance
-            setattr( obj.__class__, name, field)
 
         setattr( obj, '_dirty', False )
 
