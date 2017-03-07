@@ -180,11 +180,12 @@ class Manager(object):
         called when our foreign parent is about to be deleted
         """
         # keep in sync with metamodel._add_relmanagers()
-        fk_set = self.model_class.__name__.lower() + '_set' # eg. auxinfo_set
+        fk_set = self.model_class.__name__.lower() + '_set'
 
-        # equivalent to: instance.thismodel_set.all()
+        # eg. instance.auxinfo_set.all()
         for elem in getattr(instance, fk_set).all():
             self.delete(elem)
+
 
     def store(self, storage, force=False):
         """
@@ -235,9 +236,9 @@ class Manager(object):
                     logger.warn( "%s.%s: foreign instance missing: %s",
                            self._model_class.__name__, elem.__dict__[fk_field_name], pk_value)
 
-                    break
-            else:
-                return True
+                    return False
+
+            return True
 
 
         assert not inspect.isclass(storage)
