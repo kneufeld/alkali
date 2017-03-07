@@ -81,6 +81,7 @@ class Manager(object):
         """
         return map( copy.copy, self._instances.itervalues() )
 
+
     @property
     def dirty(self):
         """
@@ -90,11 +91,6 @@ class Manager(object):
         """
         if self._dirty:
             return True
-
-        # THINK since all instances are copies, they'll never be dirty unless
-        # Manager.save() is called and that sets self._dirty. I think this check
-        # can be deleted
-        return any( map( lambda e: e.dirty, self._instances.itervalues() ) )
 
 
     @staticmethod

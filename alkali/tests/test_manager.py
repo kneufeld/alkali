@@ -178,6 +178,10 @@ class TestManager( unittest.TestCase ):
         self.assertTrue( m.dirty )
         self.assertFalse( man.dirty )
 
+        m.save()
+        self.assertFalse( m.dirty )
+        self.assertTrue( man.dirty )
+
     def test_9(self):
         "verify some simple queries"
         self.assertEqual( Query, type(MyModel.objects.all()) )
