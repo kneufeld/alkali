@@ -256,6 +256,7 @@ class ForeignKey(Field):
         """
         if pk is None:
             return None
+
         return self.foreign_model.objects.get(pk)
 
     def cast(self, value):

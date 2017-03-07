@@ -38,7 +38,6 @@ class Aggregate(object):
         self.field = field
 
 class Count(Aggregate):
-
     def __call__(self, query):
         return len( query )
 

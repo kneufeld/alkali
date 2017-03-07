@@ -318,9 +318,6 @@ class TestQuery( unittest.TestCase ):
 
         q = MyModel.objects.all()
 
-        def count(lst):
-            return len(lst)
-
         from alkali.query import Sum, Count
 
         d = {'int_type__sum': 6, 'str_type__count': 3}
