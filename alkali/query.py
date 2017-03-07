@@ -259,6 +259,9 @@ class Query(object):
             return self._instances
 
     def values(self, *fields):
+        """
+        returns list of dicts, each sub-list contains (field_name, field_value)
+        """
         if not fields:
             fields = self.field_names
 
@@ -270,7 +273,10 @@ class Query(object):
 
     def values_list(self, *fields, **kw):
         """
-        same as values() but return list instead of a dict
+        returns list of values, caller is responsible for knowing order of elements
+
+        if flat=False, returns list of lists, each sub-list is the values of that
+        particular record
         """
         flat = kw.pop('flat', False)
         assert len(kw) == 0, "extra kwargs passed to values_list"
@@ -316,6 +322,9 @@ class Query(object):
         return ret
 
     def annotate(self, **kw):
+        """
+        add a variable to each model instance
+        """
         # don't use self._instances, need to work on copies
         instances = self.instances
 
