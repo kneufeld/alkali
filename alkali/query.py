@@ -86,7 +86,7 @@ class Query(object):
         return iter(self._instances)
 
     def __getitem__(self, i):
-        return self._instances[i]
+        return copy.copy( self._instances[i] )
 
     def __str__(self):
         return "<Query: " + ", ".join([str(q) for q in self]) + ">"
