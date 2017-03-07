@@ -3,6 +3,14 @@
 Here's what we all hope is an accurate list of things that have changed
 between versions.
 
+## v0.5.3
+
+* implemented Query.aggregate functions: Sum, Count, Min, Max
+* can access Field object via shortcut model.fieldname_field
+* Fields are now descriptors on Model instance
+* models now cascade delete when ForeignKey instance is deleted
+* some minor speed ups
+
 ## v0.5.2
 
 * no longer using IField as a zope interface, just have a Field class now
