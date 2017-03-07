@@ -347,3 +347,11 @@ class TestQuery( unittest.TestCase ):
 
         a = q.annotate(foo=func)[0]
         self.assertEqual( "string 1", a.foo )
+
+    def test_distinct(self):
+        MyModel(int_type=1, str_type='string').save()
+        MyModel(int_type=2, str_type='string').save()
+
+        self.assertEqual( [[1,2]], MyModel.objects.distinct('int_type') )
+        self.assertEqual( [['string']], MyModel.objects.distinct('str_type') )
+        self.assertEqual( [[1,2],['string']], MyModel.objects.distinct('int_type','str_type') )

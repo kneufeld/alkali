@@ -23,10 +23,8 @@
     assert MyModel.objects.order_by('-id')[0].id == 9
 """
 
-# TODO: distinct(fields),
 # TODO: query should work on index of manager instances, this would save a copy or two,
 # only dereferencing a query should return a copy
-
 
 import types
 import operator
@@ -330,3 +328,18 @@ class Query(object):
 
         self._instances = instances
         return self
+
+    def distinct(self, *fields):
+        """
+        returns a list of lists, each sub-list contains distinct values
+        of the given field
+        """
+        instances = self.instances
+
+        ret = []
+
+        for field in fields:
+            distinct = set( [ getattr(elem, field) for elem in instances] )
+            ret.append( list(distinct) )
+
+        return ret
