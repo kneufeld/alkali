@@ -9,7 +9,7 @@
         id = fields.IntField(primary_key=True)
         title = fields.StringField()
 
-    db = Database(models=[MyModel], storage=JSONStorage, root_dir='/tmp', save_on_exit=True)
+    db = Database( models=[MyModel] )
 
     # create 10 instances and save them
     for i in range(10):
@@ -104,7 +104,7 @@ class Query(object):
     @property
     def instances(self):
         """
-        **property**: return our model instances as a list. useful for
+        **property**: return a copy of our model instances as a list. useful for
         iteration (in a loop) otherwise just index us via ``Query()[n]``
 
         :rtype: ``list``
