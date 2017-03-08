@@ -297,7 +297,7 @@ class Manager(object):
             pk = self.model_class.Meta.pk_fields.values()[0].cast(pk[0])
             return copy.copy( self._instances[pk] )
 
-        results = Query(self).filter(**kw).instances
+        results = Query(self).filter(**kw)
 
         if len(results) == 0:
             raise KeyError("{}: no results for: {}".format(

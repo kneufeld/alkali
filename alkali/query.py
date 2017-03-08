@@ -77,16 +77,16 @@ class Query(object):
         :param Manager manager:
         """
         self.manager = manager
-        self._instances = manager._instances.values()
+        self._instances = map( copy.copy, manager._instances.itervalues() )
 
     def __len__(self):
         return len(self._instances)
 
     def __iter__(self):
-        return iter(self.instances)
+        return iter(self._instances)
 
     def __getitem__(self, i):
-        return copy.copy( self._instances[i] )
+        return self._instances[i]
 
     def __str__(self):
         return "<Query: " + ", ".join([str(q) for q in self]) + ">"
@@ -97,16 +97,6 @@ class Query(object):
         **property**: number of model instances we are currently tracking
         """
         return len(self)
-
-    @property
-    def instances(self):
-        """
-        **property**: return a copy of our model instances as a list. useful for
-        iteration (in a loop) otherwise just index us via ``Query()[n]``
-
-        :rtype: ``list``
-        """
-        return map( copy.copy, self._instances )
 
     @property
     def fields(self):
@@ -325,17 +315,14 @@ class Query(object):
         """
         add a variable to each model instance
         """
-        # don't use self._instances, need to work on copies
-        instances = self.instances
 
         for name, func in kw.items():
             if not callable(func):
                 func = lambda elem, val=func: val
 
-            for elem in instances:
+            for elem in self._instances:
                 setattr( elem, name, func(elem) )
 
-        self._instances = instances
         return self
 
     def distinct(self, *fields):
@@ -343,12 +330,10 @@ class Query(object):
         returns a list of lists, each sub-list contains distinct values
         of the given field
         """
-        instances = self.instances
-
         ret = []
 
         for field in fields:
-            distinct = set( [ getattr(elem, field) for elem in instances] )
+            distinct = set( [ getattr(elem, field) for elem in self._instances] )
             ret.append( list(distinct) )
 
         return ret

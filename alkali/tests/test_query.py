@@ -63,8 +63,9 @@ class TestQuery( unittest.TestCase ):
         man = MyModel.objects
         q = Query(man)
 
-        self.assertEqual( man._instances[1].pk, q.instances[0].pk )
-        self.assertNotEqual( id(man._instances[1]), id(q.instances[0]) )
+        self.assertEqual( man._instances[1].pk, q[0].pk )
+        self.assertNotEqual( id(man._instances[1]), id(q[0]) )
+        self.assertNotEqual( id(man._instances[1]), id(list(q)[0]) )
 
     def test_15(self):
         "make sure query objects are not 'updated' when manager objects changes"
@@ -75,7 +76,7 @@ class TestQuery( unittest.TestCase ):
         man = MyModel.objects
         q = Query(man)
 
-        mq = q.instances[0]
+        mq = q[0]
         self.assertEqual( m.str_type, mq.str_type )
 
         m.str_type = 'new string'
@@ -92,7 +93,7 @@ class TestQuery( unittest.TestCase ):
         for i in range(3):
             q = MyModel.objects.filter(int_type=i)
             self.assertEqual( 1, len(q) )
-            self.assertEqual( i, q.instances[0].int_type )
+            self.assertEqual( i, q[0].int_type )
 
     def test_21(self):
         "test different filter functions"
@@ -103,44 +104,44 @@ class TestQuery( unittest.TestCase ):
         for inst in instances:
             inst.save()
 
-        results = MyModel.objects.filter(int_type__eq=0).instances
+        results = MyModel.objects.filter(int_type__eq=0)
         self.assertEqual( 1, len(results) )
 
-        results = MyModel.objects.filter(int_type__gt=0).instances
+        results = MyModel.objects.filter(int_type__gt=0)
         self.assertEqual( 2, len(results) )
 
-        results = MyModel.objects.filter(int_type=0, str_type='string 0').instances
+        results = MyModel.objects.filter(int_type=0, str_type='string 0')
         self.assertEqual( 1, len(results) )
 
-        results = MyModel.objects.filter(int_type=0, str_type='string XXX').instances
+        results = MyModel.objects.filter(int_type=0, str_type='string XXX')
         self.assertEqual( 0, len(results) )
 
-        results = MyModel.objects.filter(iter_type__in=[1]).instances
+        results = MyModel.objects.filter(iter_type__in=[1])
         self.assertEqual( 1, len(results) )
 
-        results = MyModel.objects.filter(iter_type__rin=1).instances
+        results = MyModel.objects.filter(iter_type__rin=1)
         self.assertEqual( 1, len(results) )
 
-        results = MyModel.objects.filter(iter_type__rin=[1]).instances
+        results = MyModel.objects.filter(iter_type__rin=[1])
         self.assertEqual( 1, len(results) )
 
-        results = MyModel.objects.filter(str_type__in=['string 1']).instances
+        results = MyModel.objects.filter(str_type__in=['string 1'])
         self.assertEqual( 1, len(results) )
 
-        results = MyModel.objects.filter(str_type__rin='1').instances
+        results = MyModel.objects.filter(str_type__rin='1')
         self.assertEqual( 1, len(results) )
 
-        results = MyModel.objects.filter(str_type__re='1$').instances
+        results = MyModel.objects.filter(str_type__re='1$')
         self.assertEqual( 1, len(results) )
 
-        results = MyModel.objects.filter(str_type__rei='^STR').instances
+        results = MyModel.objects.filter(str_type__rei='^STR')
         self.assertEqual( 3, len(results) )
 
-        results = MyModel.objects.filter(dt_type__gt=fromts(0)).instances
+        results = MyModel.objects.filter(dt_type__gt=fromts(0))
         self.assertEqual( 3, len(results) )
 
         # test pk queries
-        results = MyModel.objects.filter(pk=1).instances
+        results = MyModel.objects.filter(pk=1)
         self.assertEqual( 1, len(results) )
 
         results = MyModel.objects.get(pk=1)
@@ -183,22 +184,22 @@ class TestQuery( unittest.TestCase ):
         m3 = MyMulti(pk1=10,pk2=3,other='10 3')
         m3.save()
 
-        results = MyMulti.objects.filter(pk=(1,2)).instances
+        results = MyMulti.objects.filter(pk=(1,2))
         self.assertEqual( 1, len(results) )
 
-        results = MyMulti.objects.filter(pk=[1,2]).instances
+        results = MyMulti.objects.filter(pk=[1,2])
         self.assertEqual( 0, len(results) )
 
-        results = MyMulti.objects.filter(pk=1).instances
+        results = MyMulti.objects.filter(pk=1)
         self.assertEqual( 0, len(results) )
 
-        results = MyMulti.objects.filter(pk=(10,2)).instances
+        results = MyMulti.objects.filter(pk=(10,2))
         self.assertEqual( 1, len(results) )
 
-        results = MyMulti.objects.filter(pk=(2,10)).instances
+        results = MyMulti.objects.filter(pk=(2,10))
         self.assertEqual( 0, len(results) )
 
-        results = MyMulti.objects.filter(pk1=10).instances
+        results = MyMulti.objects.filter(pk1=10)
         self.assertEqual( 2, len(results) )
 
     def test_35(self):
@@ -206,17 +207,16 @@ class TestQuery( unittest.TestCase ):
 
         # make some instances
         now = tznow()
-        instances = [ MyModel(int_type=i, str_type='string', dt_type=now ) for i in range(3)]
-        map( lambda e: e.save(), instances )
-        self.assertEqual( instances, MyModel.objects.all().instances )
+        instances = [ MyModel(int_type=i, str_type='string', dt_type=now ).save() for i in range(3)]
+        self.assertEqual( instances, list(MyModel.objects.all()) )
 
         self.assertEqual( Query, type(MyModel.objects.all().order_by('int_type')) )
-        self.assertEqual( instances, MyModel.objects.all().instances )
+        self.assertEqual( instances, list(MyModel.objects.all()) )
 
-        self.assertEqual( instances[::-1], MyModel.objects.all().order_by('-int_type').instances )
-        self.assertEqual( instances, MyModel.objects.all().order_by('str_type','dt_type').instances )
+        self.assertEqual( instances[::-1], list( MyModel.objects.all().order_by('-int_type')) )
+        self.assertEqual( instances, list(MyModel.objects.all().order_by('str_type','dt_type')) )
 
-        self.assertEqual( instances, MyModel.objects.all().order_by('pk').instances )
+        self.assertEqual( instances, list(MyModel.objects.all().order_by('pk')) )
 
     def test_40(self):
         "test limit, equivalent to slicing"
