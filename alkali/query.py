@@ -83,7 +83,7 @@ class Query(object):
         return len(self._instances)
 
     def __iter__(self):
-        return iter(self._instances)
+        return iter(self.instances)
 
     def __getitem__(self, i):
         return copy.copy( self._instances[i] )
