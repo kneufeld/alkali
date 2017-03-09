@@ -163,8 +163,6 @@ class Database(object):
         assert _storage is None or inspect.isclass(_storage)
 
         for model in self.models:
-            logger.debug( "Database: storing model: %s", model.__name__ )
-
             storage = _storage or self.get_storage(model)
 
             if inspect.isclass(storage):
