@@ -13,18 +13,18 @@ Jrnl
 There's a great app called jrnl_, it's a journal writing wrapper around
 your editor. One of jrnl's killer features is that it writes out plain
 text files, that means you can edit your journal file with your editor
-of choice and use the whole host of Unix command line tools on it.
+of choice and use all those great Unix command line tools on it.
 
 Jrnl is so great I use it at work and at home. Howerver, it's really
-annoying to have two journals, it seems like the good info was always in
+annoying having two journals, it seems like the good info was always in
 the other one. We have a pretty draconian firewall at work so that means
 no Dropbox and no ssh. Thankfully, *POST*\s still work.
 
-Anyhow, I wanted jrnl to be able to sync its entries with a website. So
-I started hacking away and before you know it I was completely rewriting
-jrnl. But jrnl's main data structure was a list of Entry objects. This
-worked, but was a bit cumbersome. It was very cumbersome when trying to
-sync with a remote server.
+Long story short, I wanted jrnl to be able to sync its entries with
+a website. So I started hacking away and before you know it I was
+completely rewriting jrnl. But jrnl's main data structure was a list
+of Entry objects. This worked, but was a bit cumbersome. It was very
+cumbersome when trying to sync with a remote server.
 
 So I decided that jrnl really needed to be a wrapper around a
 *database*. So I started looking at some different Python databases and
@@ -41,11 +41,11 @@ PS. my version of jrnl will hopefully be released not too long after alkali.
 Django
 ------
 
-I've used Django_ in the past and found its ORM (Object Relational Mapper) to
-be very easy to use. So I decided that I'd write a light weight database using
-the same syntax as Django.
+I've used Django_ in the past and found its ORM (Object Relational
+Mapper) to be easy and intuitive. So I decided that I'd write a light
+weight database using the same syntax as Django.
 
-This worked surprisingly well. So if you're ever in doubt about alkali,
+This worked surprisingly well. If you're ever in doubt about alkali, go
 read the fantastic Django docs and they'll probably point you in the
 correct direction. The two relevant sections are about models_ and
 queries_.
