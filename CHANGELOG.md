@@ -3,6 +3,15 @@
 Here's what we all hope is an accurate list of things that have changed
 between versions.
 
+## v0.5.4
+
+* updated docs and comments
+* test coverage back up to 100%
+* Query copies manager objects at creation time, less effiecient but
+  less error prone
+* implemented Query.distinct
+* implemented Query.annotate
+
 ## v0.5.3
 
 * implemented Query.aggregate functions: Sum, Count, Min, Max
