@@ -21,6 +21,9 @@ class Field(object):
 
     **Note**: the Field does not hold a value, only meta information about a
     value. The Model holds the value and is set via Model.__setattr__
+
+    The actual Field() object is accessable via model().Meta.fields[field_name] or
+    via dynamic lookup of <field_name>__field. eg. m.email__field.
     """
 
     _counter = itertools.count() # keeps track of declaration order in the Models

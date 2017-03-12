@@ -251,7 +251,7 @@ class TestField( unittest.TestCase ):
     def test_27(self):
         "test that magic model.fieldname_field returns Field object"
         m = MyModel()
-        self.assertIs( MyModel.Meta.fields['int_type'], m.int_type_field )
+        self.assertIs( MyModel.Meta.fields['int_type'], m.int_type__field )
 
     def test_28(self):
         # this is just to get code coverage, not sure how this

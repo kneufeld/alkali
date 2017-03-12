@@ -182,7 +182,7 @@ class MetaModel(type):
         for name, field in meta.fields.iteritems():
             # make magic property model.fieldname_field that returns Field object
             fget = lambda self, name=name: self.Meta.fields[name]
-            setattr( new_class, name+'_field', property(fget=fget) )
+            setattr( new_class, name+'__field', property(fget=fget) )
 
             # set the Field descriptor object on the model class
             # which makes it accessable on the model instance

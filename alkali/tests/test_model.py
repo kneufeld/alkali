@@ -36,6 +36,8 @@ class TestModel( unittest.TestCase ):
         m2 = MyModel(int_type=2)
         self.assertEqual( id(m1.Meta), id(m2.Meta) )
 
+        self.assertEqual( id(m1.Meta.fields['int_type']), id(m2.int_type__field) )
+
     def test_2(self):
         "empty fields by default"
         self.assertEqual( 0, len(EmptyModel.Meta.fields) )
@@ -118,10 +120,7 @@ class TestModel( unittest.TestCase ):
         m=MyModel(int_type=1)
         self.assertEqual( 1, m.int_type )
         self.assertEqual( m.int_type, m.pk )
-        self.assertTrue( m.int_type_field.primary_key )
-
-        n=MyModel(int_type=2)
-        #print id(m.Meta.fields['int_type']), id(n.Meta.fields['int_type'])
+        self.assertTrue( m.int_type__field.primary_key )
 
     def test_8(self):
         "find the filename and str"
