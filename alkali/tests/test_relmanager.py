@@ -60,6 +60,7 @@ class TestRelManager( unittest.TestCase ):
 
         e2.auxinfo_set.add(a)
         self.assertEqual( a, e2.auxinfo_set.get() )
+        self.assertEqual( a, e2.auxinfo_set.get(entry=e) )
 
     def test_5(self):
         """

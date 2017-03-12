@@ -32,6 +32,9 @@ class TestModel( unittest.TestCase ):
 
         self.assertTrue( EmptyModel.pk )
 
+        m1 = MyModel(int_type=1)
+        m2 = MyModel(int_type=2)
+        self.assertEqual( id(m1.Meta), id(m2.Meta) )
 
     def test_2(self):
         "empty fields by default"

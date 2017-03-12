@@ -35,7 +35,7 @@ class memoized_property(object):
         return result
 
 # note that this decorator ignores **kwargs
-def memoize(obj):
+def memoize(obj): # pragma: nocover
     cache = {}
 
     @functools.wraps(obj)

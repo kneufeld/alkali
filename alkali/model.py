@@ -117,7 +117,7 @@ class Model(object):
             pk_vals = tuple( getattr(self, f.name).pk for f in pks )
             if len(pk_vals) == 1:
                 return pk_vals[0]
-            return pk_vals
+            return pk_vals # pragma: nocover, not actually supported at this time
         else:
             pk_vals = tuple( getattr(self, f.name) for f in pks )
             if len(pk_vals) == 1:

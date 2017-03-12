@@ -316,7 +316,7 @@ class TestQuery( unittest.TestCase ):
 
         q = MyModel.objects.all()
 
-        from alkali.query import Sum, Count
+        from alkali.query import Sum, Count, Max, Min
 
         d = {'int_type__sum': 6, 'str_type__count': 3}
         self.assertDictEqual( d, q.aggregate(Sum('int_type'), Count('str_type')) )
@@ -324,8 +324,11 @@ class TestQuery( unittest.TestCase ):
         d = {'foo': 6, 'bar': 3}
         self.assertDictEqual( d, q.aggregate(foo=Sum('int_type'), bar=Count('str_type')) )
 
-        # d = {'int_type__sum': 3, 'str_type__count': 2}
-        # self.assertDictEqual( d, q.filter(int_type__le=2).aggregate(int_type=sum, str_type=count) )
+        d = {'int_type__min': 1}
+        self.assertDictEqual( d, q.aggregate(Min('int_type')) )
+
+        d = {'int_type__max': 3}
+        self.assertDictEqual( d, q.aggregate(Max('int_type')) )
 
     def test_annotate_1(self):
         "test hard-coded annotation"

@@ -32,6 +32,10 @@ class TestField( unittest.TestCase ):
         f = ForeignKey(MyModel)
         self.assertTrue( str(f) )
 
+        m1 = MyModel(int_type=1)
+        m2 = MyModel(int_type=2)
+        self.assertEqual( id(m1.Meta.fields['int_type']), id(m2.Meta.fields['int_type']) )
+
     def test_2(self):
         "Field is a meta-like class, it has no value. make sure of that"
         f = IntField()
@@ -248,3 +252,9 @@ class TestField( unittest.TestCase ):
         "test that magic model.fieldname_field returns Field object"
         m = MyModel()
         self.assertIs( MyModel.Meta.fields['int_type'], m.int_type_field )
+
+    def test_28(self):
+        # this is just to get code coverage, not sure how this
+        # would ever happen in real life
+        MyModel.int_type
+        MyDepModel.foreign
