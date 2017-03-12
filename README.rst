@@ -22,6 +22,11 @@ In that case run: ``pip install -e .[dev]``
 
 If you want to be able to build the docs then also run ``pip install -e .[docs]``
 
+Documentation
+-------------
+
+To build the docs run: ``sphinx-build -b html docs/ build/``
+
 Testing
 -------
 

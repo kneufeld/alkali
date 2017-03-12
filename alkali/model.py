@@ -60,12 +60,12 @@ class Model(object):
         set a field value, this method is automatically called when setting
         a field value. safe to call externally.
 
+        fires :data:`alkali.signals.field_update` for any listeners
+
         :param field: instance of Field
         :type field: :class:`alkali.fields.Field`
         :param value: the already-cast value to store
         :type value: ``Field.field_type``
-
-        :rtype: :class:`alkali.fields.Field` or tuple-of-Field
         """
         # if we're setting a field value and that value is different
         # than current value, mark self as modified
@@ -75,7 +75,8 @@ class Model(object):
         # do not let user change pk after it has been set
         if field.primary_key:
             if curr_val is not None and curr_val != value:
-                raise RuntimeError("{}: trying to change set pk value: {} to {}".format(self.__class__.__name__, self.pk, value))
+                _vals = (self.__class__.__name__, self.pk, value)
+                raise RuntimeError( "{}: trying to change set pk value: {} to {}".format(*_vals) )
 
         self.__dict__[field.name] = value # actually set the value
 

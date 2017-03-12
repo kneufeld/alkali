@@ -37,22 +37,40 @@ logger = logging.getLogger(__name__)
 
 
 class Aggregate(object):
+    """
+    A reducing function that returns a single value
+    """
     def __init__(self, field):
+        """
+        :param field str:
+        """
         self.field = field
 
 class Count(Aggregate):
+    """
+    number of objects in query
+    """
     def __call__(self, query):
         return len( query )
 
 class Sum(Aggregate):
+    """
+    sum of given field (numeric field required)
+    """
     def __call__(self, query):
         return sum( query.values_list(self.field, flat=True) )
 
 class Max(Aggregate):
+    """
+    largest field (numeric field required)
+    """
     def __call__(self, query):
         return max( query.values_list(self.field, flat=True) )
 
 class Min(Aggregate):
+    """
+    smallest field (numeric field required)
+    """
     def __call__(self, query):
         return min( query.values_list(self.field, flat=True) )
 
@@ -251,6 +269,14 @@ class Query(object):
     def values(self, *fields):
         """
         returns list of dicts, each sub-list contains (field_name, field_value)
+
+        :rtype: list of OrderedDict
+
+        ::
+
+            MyModel.objects.values('int_type','str_type')
+            # [ OrderedDict([('int_type', 10), ('str_type', u'hi')]),
+            #   OrderedDict([('int_type', 11), ('str_type', u'hi')]) ]
         """
         if not fields:
             fields = self.field_names
@@ -263,10 +289,15 @@ class Query(object):
 
     def values_list(self, *fields, **kw):
         """
-        returns list of values, caller is responsible for knowing order of elements
+        returns nested list of values in given ``fields`` order
 
-        if flat=False, returns list of lists, each sub-list is the values of that
-        particular record
+        if flat=True, returns single list
+
+        :param str fields: field names or all fields if empty
+        :param bool kw: ``flat``
+        :rtye: ``list``
+
+        see :func:`alkali.query.Query.annotate` for example
         """
         flat = kw.pop('flat', False)
         assert len(kw) == 0, "extra kwargs passed to values_list"
@@ -286,13 +317,24 @@ class Query(object):
                 ]
 
     def exists(self):
+        """
+        does the current query hold any elements
+
+        :rtype: int
+        """
         return len(self) > 0
 
     def aggregate(self, *args, **kw):
         """
-        :param args: ``Count`` ``Sum`` ``Max`` ``Min``
-        :param kw: ``field_name=agg``, note: ``field_name`` can be a ``property``
-        :rtype: dict
+        Aggregate (aka reduce) the query via the given function. Each callable
+        ``Aggregate`` object takes a field/property name as a parameter.
+
+        The returned dictionary has key ``<field_name>__<agg function>`` unless
+        keyword is given.
+
+        :param Aggregate args: ``Count`` ``Sum`` ``Max`` ``Min``
+        :param kw: ``key_value=Aggregate``, note: ``field_name`` can be a ``property``
+        :rtype: ``dict``
 
         ::
 
@@ -313,7 +355,23 @@ class Query(object):
 
     def annotate(self, **kw):
         """
-        add a variable to each model instance
+        add a variable to each model instance currently in the query
+
+        each element in query is passed into function.
+
+        :param kw: variable=function
+        :rtype: Query
+
+        ::
+
+            c = itertools.count()
+            Counter = lambda elem, c=c: c.next()
+            MyModel(int_type=10).save()
+            MyModel(int_type=11).save()
+            MyModel.objects.annotate(counter=Counter).values_list('int_type','counter')
+            # [[10, 1], [11, 2]]
+            MyModel.objects.annotate(counter=Counter).values_list('int_type','counter')
+            # [[10, 3], [11, 4]]
         """
 
         for name, func in kw.items():
@@ -329,6 +387,21 @@ class Query(object):
         """
         returns a list of lists, each sub-list contains distinct values
         of the given field
+
+        :param str fields: field names
+        :rtype: ``list``
+
+        ::
+
+            MyModel(int_type=10, str_type='hi').save()
+            MyModel(int_type=11, str_type='hi').save()
+            MyModel(int_type=12, str_type='there').save()
+
+            MyModel.objects.distinct('int_type','str_type')
+            # [[10, 11, 12], [u'there', u'hi']]
+
+            MyModel.objects.distinct('str_type')
+            # [[u'there', u'hi']]
         """
         ret = []
 

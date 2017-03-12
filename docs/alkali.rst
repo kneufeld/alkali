@@ -65,6 +65,14 @@ alkali.relmanager module
     :undoc-members:
     :show-inheritance:
 
+alkali.signals module
+---------------------
+
+.. automodule:: alkali.signals
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 alkali.storage module
 ---------------------
 

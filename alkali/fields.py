@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class Field(object):
     """
-    base class for all field types. it tries to hold all the functionality
+    Base class for all field types. it tries to hold all the functionality
     so derived classes only need to override methods in special circumstances.
 
     Field objects are instantiated during model creation. ``i = IntField()``
@@ -19,8 +19,8 @@ class Field(object):
     All Model instances share the same instantiated Field objects in their
     Meta class. ie: ``id(MyModel().Meta.fields['i']) == id(MyModel().Meta.fields['i'])``
 
-    **Note**: the Field does not hold a value, only meta information about a
-    value. The Model holds the value and is set via Model.__setattr__
+    Fields are python descriptors (@property is also a descriptor). So when a field
+    is get/set the actual value is stored in the parent model instance.
 
     The actual Field() object is accessable via model().Meta.fields[field_name] or
     via dynamic lookup of <field_name>__field. eg. m.email__field.
@@ -57,25 +57,37 @@ class Field(object):
         assert len(kw) == 0, "unhandeled kwargs: {}".format(str(kw))
 
     def __get__(self, model, owner):
-        #print self, "__get__"
+        """
+        Field is a descriptor `python.org <https://docs.python.org/2/howto/descriptor.html>`_.
+
+        return the value stored in model's __dict__ (stored via __set__ below)
+        """
         if model is None:
             return self
 
         return model.__dict__[self._name]
 
     def __set__(self, model, value):
+        """
+        Cast the value via individual Field rules and then store the value
+        in model instance.
+
+        This allows the same Field instance to "save" multiple values because
+        the actual value is in a different model instance.
+        """
         # WARNING: if it existed, Model.__setattr__ would intercept this method
-        value = self.cast(value)           # make sure val is correct type
+        value = self.cast(value)
         model.set_field(self, value)
 
     def __str__(self):
+        # name is set via MetaModel during Model creation
         name = getattr(self, 'name', '')
         return "<{}: {}>".format(self.__class__.__name__, name)
 
     @property
     def field_type(self):
         """
-        **property**: return ``type`` of this field
+        **property**: return ``type`` of this field (int, str, etc)
         """
         return self._field_type
 
@@ -88,9 +100,22 @@ class Field(object):
 
     @property
     def default_value(self):
+        """
+        **property**: what value does this Field default to during
+        model instantiation
+        """
         return None
 
     def cast(self, value):
+        """
+        Whenever a field value is set, the given value passes through
+        this (or derived class) function. This allows validation plus
+        helpful conversion.
+
+        ::
+            int_field = "1"             # converts to int("1")
+            date_field = "Jan 1 2017"   # coverted to datetime()
+        """
         if value is None:
             return None
 
@@ -99,15 +124,15 @@ class Field(object):
 
     def dumps(self, value):
         """
-        by not changing value, it means that json.dumps can properly
-        encode type(value)
+        called during json serialization, if json module is unable to
+        deal with given Field.field_type, convert to a known type here.
         """
         return value
 
     def loads(self, value):
         """
-        by not changing value, it means that json.loads can properly
-        decode value into correct type
+        called during json serialization, if json module is unable to
+        deal with given Field.field_type, convert to a known type here.
         """
         return value
 
@@ -119,6 +144,10 @@ class IntField(Field):
 
     @property
     def default_value(self):
+        """
+        IntField implements auto_increment, useful for a primary_key. The
+        value is incremented during model instantiation.
+        """
         if self.auto_increment:
             val = getattr(self.meta, '_auto__' + self.name, 0) + 1
             setattr( self.meta, '_auto__' + self.name, val )
@@ -239,13 +268,14 @@ class ForeignKey(Field):
         super(ForeignKey, self).__init__(self.foreign_model, **kw)
 
     def __get__(self, model, owner):
+        ":rtype: Model instance"
         if model is None:
             return self
 
         fk_value = model.__dict__[self._name]
         return self.lookup(fk_value)
 
-    # don't require a __set__ because Model._assign_field_val() calls our cast() method
+    # don't require a __set__ because Model.set_field() calls our cast() method
 
     @property
     def pk_field(self):
@@ -264,7 +294,7 @@ class ForeignKey(Field):
 
     def cast(self, value):
         """
-        return the pk value of the foreign model
+        return the primary_key value of the foreign model
         """
         if value is None:
             return None
