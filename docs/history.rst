@@ -15,7 +15,7 @@ your editor. One of jrnl's killer features is that it writes out plain
 text files, that means you can edit your journal file with your editor
 of choice and use all those great Unix command line tools on it.
 
-Jrnl is so great I use it at work and at home. Howerver, it's really
+Jrnl is so great I use it at work and at home. However, it's really
 annoying having two journals, it seems like the good info was always in
 the other one. We have a pretty draconian firewall at work so that means
 no Dropbox and no ssh. Thankfully, *POST*\s still work.
