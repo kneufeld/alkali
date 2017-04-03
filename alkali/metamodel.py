@@ -26,16 +26,17 @@ class MetaModel(type):
     """
     *do not use this class directly*
 
-    *code reviews of this class are vey welcome*
+    *code reviews of this class are very welcome*
 
-    base class for :class:`alkali.model.Model`. this complicated
-    metaclass is required to convert a stylized class into a useful
-    concrete one.
+    base class for :class:`alkali.model.Model`.
 
-    it converts :class:`alkali.fields.Field` variables into their base
-    itypes as attributes on the nstantiated class.
+    this complicated metaclass is required to convert a stylized class
+    into a useful concrete one. it converts :class:`alkali.fields.Field`
+    variables into their base types as attributes on the instantiated
+    class.
 
-    **Meta**: adds a ``Meta`` class if not already defined in ``Model`` derived class
+    **Meta**: adds a ``Meta`` class if not already defined in ``Model``
+    derived class
 
     **objects**: :class:`alkali.manager.Manager`
     """
