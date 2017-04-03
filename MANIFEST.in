@@ -1,3 +1,5 @@
 include requirements.txt
 include req_docs.txt
 include req_tests.txt
+include AUTHORS.md CHANGELOG.md LICENSE.md
+include README.rst
