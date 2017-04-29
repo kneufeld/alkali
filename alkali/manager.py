@@ -292,6 +292,9 @@ class Manager(object):
         """
         # FIXME need to support direct access multi pk models
 
+        if len(pk) == 0 and ['pk'] == kw.keys():
+            pk = kw.values()
+
         # NOTE without this, direct access ForeignKeys are 100x slower
         if len(pk) == 1:
             pk = self.model_class.Meta.pk_fields.values()[0].cast(pk[0])
@@ -304,7 +307,7 @@ class Manager(object):
                 self.model_class.__name__, str(kw)) )
 
         if len(results) > 1:
-            raise KeyError("{}: got {} results  for: {}".format(
+            raise KeyError("{}: got {} results for: {}".format(
                 self.model_class.__name__, len(results), str(kw)) )
 
         return results[0]
