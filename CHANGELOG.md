@@ -3,6 +3,13 @@
 Here's what we all hope is an accurate list of things that have changed
 between versions.
 
+## v0.5.5
+
+* adding BoolField
+* adding CSVStorage, load/save csv files
+* queries are bit more effecient/fast, don't copy as many objects by default
+* some doc cleanups
+
 ## v0.5.4
 
 * updated docs and comments
