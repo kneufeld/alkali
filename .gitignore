@@ -1,3 +1,8 @@
 /.cache
 .coverage
 build/
+/dist
+alkali.egg-info/
+/prof
+/stats
+/perf.log
