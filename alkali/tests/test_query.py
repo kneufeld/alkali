@@ -35,12 +35,28 @@ class TestQuery( unittest.TestCase ):
         self.assertEqual( 0, len(q) )
 
         now = tznow()
-        m = MyModel(int_type=3, str_type='string', dt_type=now )
-        m.save()
+        m = MyModel(int_type=3, str_type='string', dt_type=now ).save()
 
         self.assertEqual( 0, len(q) )
         self.assertEqual( 0, q.count )
         self.assertEqual( 1, len(man) )
+
+    def test_6(self):
+        "make sure query length changes as we filter"
+        for i in range(3):
+            MyModel(int_type=i).save()
+
+        q = MyModel.objects.all()
+        self.assertEqual( 3, len(q) )
+
+        q.filter(int_type__gt=0)
+        self.assertEqual( 2, len(q) )
+
+        q.filter(int_type__gt=1)
+        self.assertEqual( 1, len(q) )
+
+        q.filter(int_type__gt=2)
+        self.assertEqual( 0, len(q) )
 
     def test_10(self):
         "make sure query gets instances"
@@ -221,11 +237,19 @@ class TestQuery( unittest.TestCase ):
     def test_40(self):
         "test limit, equivalent to slicing"
 
+        # for i in range(3):
+        #     MyModel(int_type=i, str_type='string %d' % i, dt_type=now).save()
         now = tznow()
-        instances = [ MyModel(int_type=i, str_type='string %d' % i, dt_type=now ) for i in range(3)]
+        instances = [MyModel(int_type=i, str_type='string %d' % i, dt_type=now ) for i in range(3)]
 
         for inst in instances:
             inst.save()
+
+        # make sure all ids are unique
+        ids = [id(instances[0]), id(MyModel.objects._instances[0]), id(MyModel.objects.get(0))]
+        self.assertEqual(len(ids), len(set(ids)) )
+
+        self.assertNotEqual( id(MyModel.objects._instances[0]), id(MyModel.objects.limit(0)[0]) )
 
         self.assertEqual( list, type(MyModel.objects.all().limit(0)) )
         self.assertEqual( 3, len(MyModel.objects.all().limit(0)) )
@@ -332,11 +356,12 @@ class TestQuery( unittest.TestCase ):
 
     def test_annotate_1(self):
         "test hard-coded annotation"
-        m = MyModel(int_type=1, str_type='string').save()
+        m = MyModel(int_type=0, str_type='string').save()
         q = MyModel.objects.all()
 
         a = q.annotate(foo='foo')[0]
         self.assertEqual( "foo", a.foo )
+        self.assertFalse( hasattr(MyModel.objects._instances[0], 'foo') )
 
     def test_annotate_2(self):
         "test callable annotation"

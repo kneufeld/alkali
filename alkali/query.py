@@ -23,9 +23,6 @@
     assert MyModel.objects.order_by('-id')[0].id == 9
 """
 
-# TODO: query should work on index of manager instances, this would save a copy or two,
-# only dereferencing a query should return a copy
-
 import types
 import operator
 import collections
@@ -95,19 +92,34 @@ class Query(object):
         :param Manager manager:
         """
         self.manager = manager
-        self._instances = map( copy.copy, manager._instances.itervalues() )
+
+        # THINK: Query should work on the keys of manager instances,
+        # this might save a copy or two, then only dereferencing a query
+        # should return a copy. If we ever get multiple indexes then
+        # that might also dramatically speed up queries
+
+        # THINK: I tried really hard to make Query._instances an
+        # manager._instances.itervalues() but this is fraught with
+        # peril. You have to convert to a list to get it's length, you
+        # have to convert to a list to get __getitem__, and if you
+        # iterate over it once then it's "empty" if you need to do so
+        # again. I'm afraid that for now each Query object needs to get
+        # a copy of the Manager values. Note, you still need to copy the
+        # individual elements as they leave the Query.
+        self._instances = manager._instances.values()
 
     def __len__(self):
         return len(self._instances)
 
     def __iter__(self):
-        return iter(self._instances)
+        for elem in self._instances:
+            yield copy.copy(elem)
 
     def __getitem__(self, i):
-        return self._instances[i]
+        return copy.copy(self._instances[i])
 
     def __str__(self):
-        return "<Query: " + ", ".join([str(q) for q in self]) + ">"
+        return "<Query: {}>".format(", ".join([str(q) for q in self]))
 
     @property
     def count(self):
@@ -212,6 +224,7 @@ class Query(object):
             oper = regexi
         else:
             oper = getattr(operator,oper)
+
         # TODO: exact, iexact, (i)contains == rin, (i)startswith, (i)endswith,
         # range (for dates), date (return datetime as date), year/month/day,
         # hour/minute/second, week_day (sun=1, sat=7)
@@ -260,11 +273,11 @@ class Query(object):
         :rtype: ``list``
         """
         if n > 0:
-            return self._instances[:n]
+            return map( copy.copy, self._instances[:n] )
         elif n < 0:
-            return self._instances[n:]
+            return map( copy.copy, self._instances[n:] )
         else: # n == 0, return all instead of [] because why not?
-            return self._instances
+            return map( copy.copy, self._instances )
 
     def values(self, *fields):
         """
@@ -373,6 +386,9 @@ class Query(object):
             MyModel.objects.annotate(counter=Counter).values_list('int_type','counter')
             # [[10, 3], [11, 4]]
         """
+
+        # make sure instances are a copy so we don't annotate the originals
+        self._instances = map( copy.copy, self._instances )
 
         for name, func in kw.items():
             if not callable(func):
