@@ -1,6 +1,9 @@
 import os
 from zope.interface import Interface, Attribute, implements
 import json
+import csv
+
+from .peekorator import Peekorator
 
 import logging
 logger = logging.getLogger(__name__)
@@ -80,7 +83,6 @@ class JSONStorage(FileStorage):
     """
     save models in json format
     """
-    implements(IStorage)
     extension = 'json'
 
     def read(self, model_class):
@@ -93,7 +95,6 @@ class JSONStorage(FileStorage):
             yield elem
 
     def write(self, iterator):
-        from peekorator import Peekorator
 
         if iterator is None:
             return False
@@ -110,5 +111,66 @@ class JSONStorage(FileStorage):
                     f.write(',\n')
 
             f.write('\n]')
+
+        return True
+
+
+class CSVStorage(FileStorage):
+    """
+    load models in csv format
+    first line assumed to be column headers (aka: field names)
+    use remap_fieldnames to change column headers into model field names
+    """
+    extension = 'csv'
+
+    def read(self, model_class):
+        with open( self.filename, 'r' ) as f:
+            reader = csv.DictReader(f)
+
+            for row in reader:
+                row = self.remap_fieldnames(model_class, row)
+                yield model_class(**row)
+
+    def remap_fieldnames(self, model_class, row):
+        """
+        example
+
+        fields = model_class.Meta.fields.keys()
+
+        for k in row.keys():
+            results_key = k.lower().replace(' ', '_')
+
+            if results_key not in fields:
+                if k == 'Some Wierd Name':
+                    results_key = 'good_name'
+                else:
+                    raise RuntimeError( "unknown field: {}".format(k) )
+
+            row[results_key] = row.pop(k)
+
+        return row
+        """
+        return row
+
+    def write(self, iterator):
+        """
+        warning: if remap_fieldnames changes names then saved file
+        will have a different header line than original file
+        """
+        if iterator is None:
+            return False
+
+        with open( self.filename, 'w' ) as f:
+            _peek = Peekorator(iter(iterator))
+            writer = None
+
+            for e in _peek:
+                if _peek.is_first():
+                    fieldnames = e.Meta.fields.keys()
+                    writer = csv.DictWriter(f, fieldnames=fieldnames)
+                    writer.writeheader()
+                    writer.writerow(e.dict)
+                else:
+                    writer.writerow(e.dict)
 
         return True

@@ -1,9 +1,11 @@
 import os
 import unittest
 import tempfile
+import csv
 from zope.interface.verify import verifyObject, verifyClass
 
-from alkali.storage import IStorage, FileStorage, JSONStorage
+from alkali.storage import IStorage, FileStorage, JSONStorage, CSVStorage
+from alkali import tznow
 from . import MyModel, MyDepModel
 
 class TestStorage( unittest.TestCase ):
@@ -99,3 +101,79 @@ class TestStorage( unittest.TestCase ):
         tfile = tempfile.NamedTemporaryFile()
         storage = JSONStorage( tfile.name )
         storage.write([d])
+
+    def test_15(self):
+        "test CSVStorage"
+
+        tfile = tempfile.NamedTemporaryFile()
+
+        self.assertFalse( CSVStorage( tfile.name ).write(None) )
+
+        now = tznow()
+        m1 = MyModel(int_type=1, str_type='a string, with comma', dt_type=now).save()
+        m2 = MyModel(int_type=2, str_type='a string, with comma', dt_type=now).save()
+
+        storage = CSVStorage( tfile.name )
+        storage.write([m1,m2])
+
+        # with open(tfile.name, 'r') as f:
+        #     print f.read()
+
+        storage = CSVStorage( tfile.name )
+
+        loaded = [e for e in storage.read(MyModel)]
+        self.assertEqual(2, len(loaded))
+
+        m = loaded[0]
+
+        self.assertEqual(1, m.int_type)
+        self.assertEqual('a string, with comma', m.str_type)
+        self.assertEqual(now, m.dt_type)
+
+    def test_16(self):
+        "test CSVStorage with wrong header"
+        def remap_fieldnames(model_class, row):
+            fields = model_class.Meta.fields.keys()
+
+            for k in row.keys():
+                results_key = k.lower().replace(' ', '_')
+
+                if results_key not in fields:
+                    if k == 'Bad Name':
+                        results_key = 'dt_type'
+                    else:
+                        raise RuntimeError( "unknown field: {}".format(k) ) # pragma: nocover
+
+                row[results_key] = row.pop(k)
+
+            return row
+
+        tfile = tempfile.NamedTemporaryFile()
+
+        now = tznow()
+        m = MyModel(int_type=1, str_type='a string, with comma', dt_type=now).save()
+
+        with open( tfile.name, 'w' ) as f:
+            d = { 'Int Type':1,
+                    'Str Type': 'a string, with comma',
+                    'Bad Name': now}
+            writer = csv.DictWriter(f, fieldnames=d.keys())
+            writer.writeheader()
+            writer.writerow(d)
+
+        # with open(tfile.name, 'r') as f:
+        #     print f.read()
+
+        m = MyModel(int_type=1, str_type='a string, with comma', dt_type=now).save()
+
+        storage = CSVStorage( tfile.name )
+        storage.remap_fieldnames = remap_fieldnames
+
+        loaded = [e for e in storage.read(MyModel)]
+        self.assertEqual(1, len(loaded))
+
+        m = loaded[0]
+
+        self.assertEqual(1, m.int_type)
+        self.assertEqual('a string, with comma', m.str_type)
+        self.assertEqual(now, m.dt_type)
