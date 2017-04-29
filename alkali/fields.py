@@ -156,6 +156,27 @@ class IntField(Field):
         return None
 
 
+class BoolField(Field):
+
+    def __init__(self, **kw):
+        super(BoolField, self).__init__(bool, **kw)
+
+    def cast(self, value):
+        if value is None:
+            return None
+
+        if isinstance(value, types.StringTypes):
+            # if value is an empty string then consider that as not yet
+            # set vs False. This may be a mistake.
+            if not value:
+                return None
+
+            if value.lower() in ['false', '0', 'no', 'n']:
+                return False
+
+        return bool(value)
+
+
 class FloatField(Field):
 
     def __init__(self, **kw):

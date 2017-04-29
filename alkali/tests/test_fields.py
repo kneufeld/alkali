@@ -7,7 +7,7 @@ import tempfile
 import datetime as dt
 
 from alkali.fields import Field
-from alkali.fields import IntField, StringField
+from alkali.fields import IntField, StringField, BoolField
 from alkali.fields import DateTimeField, FloatField, SetField
 from alkali.fields import ForeignKey
 from alkali.model import Model
@@ -24,7 +24,7 @@ class TestField( unittest.TestCase ):
     def test_1(self):
         "verify class/instance implementation"
 
-        for field in [IntField, StringField, DateTimeField, FloatField, SetField ]:
+        for field in [IntField, BoolField, StringField, DateTimeField, FloatField, SetField ]:
             f = field()
             self.assertTrue( str(f) )
             self.assertTrue( f.properties )
@@ -258,3 +258,24 @@ class TestField( unittest.TestCase ):
         # would ever happen in real life
         MyModel.int_type
         MyDepModel.foreign
+
+    def test_30(self):
+        "test BoolField"
+
+        class MyModel( Model ):
+            int_type   = IntField(primary_key=True)
+            bool_type  = BoolField()
+
+        m = MyModel()
+
+        for v in [None, '']:
+            m.bool_type = v
+            self.assertEqual(None, m.bool_type)
+
+        for v in ['false','False','0','NO','n',0,[]]:
+            m.bool_type = v
+            self.assertEqual(False, m.bool_type)
+
+        for v in [' ','true','anything else',1,[1]]:
+            m.bool_type = v
+            self.assertEqual(True, m.bool_type)
