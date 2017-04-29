@@ -118,8 +118,10 @@ class JSONStorage(FileStorage):
 class CSVStorage(FileStorage):
     """
     load models in csv format
+
     first line assumed to be column headers (aka: field names)
-    use remap_fieldnames to change column headers into model field names
+
+    use `remap_fieldnames` to change column headers into model field names
     """
     extension = 'csv'
 
@@ -133,28 +135,32 @@ class CSVStorage(FileStorage):
 
     def remap_fieldnames(self, model_class, row):
         """
-        example
+        example of remap_fieldnames that could be defined
+        in derived class or as a stand-alone function.
 
-        fields = model_class.Meta.fields.keys()
+        ::
 
-        for k in row.keys():
-            results_key = k.lower().replace(' ', '_')
+            def remap_fieldnames(self, model_class, row):
+                fields = model_class.Meta.fields.keys()
 
-            if results_key not in fields:
-                if k == 'Some Wierd Name':
-                    results_key = 'good_name'
-                else:
-                    raise RuntimeError( "unknown field: {}".format(k) )
+                for k in row.keys():
+                    results_key = k.lower().replace(' ', '_')
 
-            row[results_key] = row.pop(k)
+                    if results_key not in fields:
+                        if k == 'Some Wierd Name':
+                            results_key = 'good_name'
+                        else:
+                            raise RuntimeError( "unknown field: {}".format(k) )
 
-        return row
+                    row[results_key] = row.pop(k)
+
+                return row
         """
         return row
 
     def write(self, iterator):
         """
-        warning: if remap_fieldnames changes names then saved file
+        warning: if ``remap_fieldnames`` changes names then saved file
         will have a different header line than original file
         """
         if iterator is None:
