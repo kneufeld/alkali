@@ -381,3 +381,10 @@ class TestQuery( unittest.TestCase ):
         self.assertEqual( [[1,2]], MyModel.objects.distinct('int_type') )
         self.assertEqual( [['string']], MyModel.objects.distinct('str_type') )
         self.assertEqual( [[1,2],['string']], MyModel.objects.distinct('int_type','str_type') )
+
+    def test_first_1(self):
+        m1 = MyModel(int_type=1, str_type='string').save()
+        m2 = MyModel(int_type=2, str_type='string').save()
+
+        self.assertEqual(m1, MyModel.objects.all().first())
+        self.assertEqual(m1, MyModel.objects.filter(int_type=1).first())

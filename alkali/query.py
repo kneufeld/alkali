@@ -279,6 +279,16 @@ class Query(object):
         else: # n == 0, return all instead of [] because why not?
             return map( copy.copy, self._instances )
 
+    def first(self):
+        """
+        return first object from query, depends on ordering
+        raise if query is empty
+        """
+        try:
+            return self[0]
+        except IndexError:
+            raise KeyError('empty query')
+
     def values(self, *fields):
         """
         returns list of dicts, each sub-list contains (field_name, field_value)
