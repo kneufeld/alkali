@@ -220,8 +220,8 @@ class Manager(object):
         :raises KeyError: if there are duplicate primary keys
 
         """
-        def validate(elem):
-            for fk_field_name in elem.Meta.field_filter(fields.ForeignKey):
+        def validate_fk_fields(fk_fields, elem):
+            for fk_field_name in fk_fields:
                 try:
                     getattr(elem, fk_field_name) # this does a lookup on foreign key object
                 except KeyError:
@@ -246,12 +246,14 @@ class Manager(object):
         self.clear()
 
         dirty = False
+        fk_fields = self.model_class.Meta.field_filter(fields.ForeignKey)
 
         for elem in storage.read( self.model_class ):
             if isinstance(elem, dict):
                 elem = self.model_class( **elem )
 
-            if not validate(elem):
+            if not validate_fk_fields(fk_fields, elem):
+                logger.debug("failed to validate_fk_fields")
                 dirty = True
                 continue
 
