@@ -61,7 +61,7 @@ class Manager(object):
         **property**: pretty version of our class name, based on our model
             eg. *MyModelManager*
         """
-        return "{}Manager".format(self._model_class.__name__)
+        return "{}Manager".format(self.model_class.__name__)
 
     @property
     def pks(self):
@@ -230,7 +230,7 @@ class Manager(object):
                     field_name = elem.Meta.pk_fields.keys()[0]
                     pk_value = elem.__dict__[field_name]
                     logger.warn( "%s.%s: foreign instance missing: %s",
-                           self._model_class.__name__, elem.__dict__[fk_field_name], pk_value)
+                           self.model_class.__name__, elem.__dict__[fk_field_name], pk_value)
 
                     return False
 
@@ -247,9 +247,9 @@ class Manager(object):
 
         dirty = False
 
-        for elem in storage.read( self._model_class ):
+        for elem in storage.read( self.model_class ):
             if isinstance(elem, dict):
-                elem = self._model_class( **elem )
+                elem = self.model_class( **elem )
 
             if not validate(elem):
                 dirty = True
@@ -257,11 +257,11 @@ class Manager(object):
 
             if elem.pk in self._instances:
                 raise KeyError( '%s: pk collision detected during load: %s' \
-                        % (self._model_class.__name__, str(elem.pk)) )
+                        % (self.model_class.__name__, str(elem.pk)) )
 
             if elem.pk is None:
                 raise KeyError( '%s: pk was None during load' \
-                        % (self._model_class.__name__) )
+                        % (self.model_class.__name__) )
 
             self.save(elem, dirty=False, copy_instance=False)
 
