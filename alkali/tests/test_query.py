@@ -388,3 +388,24 @@ class TestQuery( unittest.TestCase ):
 
         self.assertEqual(m1, MyModel.objects.all().first())
         self.assertEqual(m1, MyModel.objects.filter(int_type=1).first())
+
+    def test_sorted(self):
+        """
+        make sure we get our models back in sorted order
+        not actually sure this works on purpose or by accident
+        """
+        MyModel(int_type=4).save()
+        MyModel(int_type=9).save()
+        MyModel(int_type=2).save()
+        MyModel(int_type=3).save()
+        MyModel(int_type=1).save()
+        MyModel(int_type=5).save()
+        MyModel(int_type=6).save()
+        MyModel(int_type=10).save()
+        MyModel(int_type=8).save()
+        MyModel(int_type=7).save()
+
+        q = MyModel.objects.all()
+
+        for i in range(10):
+            self.assertEqual(i+1, q[i].int_type)
