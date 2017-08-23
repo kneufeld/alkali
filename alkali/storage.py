@@ -56,14 +56,14 @@ class FileStorage(Storage):
 
     def read(self, model_class):
         """
-        helper function that does just reads a file
+        helper function that just reads a file
         """
         with open( self.filename, 'r' ) as f:
             return f.read()
 
     def _write(self, iterator):
         """
-        helper function that does just writes a file if
+        helper function that just writes a file if
         data is not None
         """
         if iterator is None:
@@ -137,6 +137,9 @@ class CSVStorage(FileStorage):
         """
         example of remap_fieldnames that could be defined
         in derived class or as a stand-alone function.
+
+        warning: make sure your header row that contains field
+        names has no spaces in it
 
         ::
 

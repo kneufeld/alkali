@@ -53,9 +53,9 @@ class Database(object):
         """
         :param models: a list of :class:`alkali.model.Model` classes
         :param kw:
-            * storage: default storage class for all models
             * root_dir: default save path directory
             * save_on_exit: save all models to disk on exit
+            * storage: default storage class for all models
         """
 
         logger.debug( "Database: creating database" )
@@ -72,6 +72,8 @@ class Database(object):
         self._root_dir = kw.pop('root_dir', '.')
         self._root_dir = os.path.expanduser(self._root_dir)
         self._root_dir = os.path.abspath(self._root_dir)
+
+        assert len(kw) == 0, "unknown kwargs: {}".format(kw.keys())
 
 
     def __del__(self):
@@ -176,7 +178,7 @@ class Database(object):
         """
         load all model data from disk
 
-        :param storage: override model storage class
+        :param IStorage storage: override model storage class
         """
         logger.debug( "Database: loading models" )
 
