@@ -1,4 +1,6 @@
 import os
+import fcntl
+from contextlib import contextmanager
 from zope.interface import Interface, Attribute, implements
 import json
 import csv
@@ -54,11 +56,24 @@ class FileStorage(Storage):
     def filename(self):
         return self._filename
 
+    @contextmanager
+    def open(self, filename, mode):
+        """
+        open filename and get an exclusive lock on it
+        """
+
+        try:
+            f = open(filename, mode)
+            fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            yield f
+        finally:
+            fcntl.flock(f, fcntl.LOCK_UN)
+
     def read(self, model_class):
         """
         helper function that just reads a file
         """
-        with open( self.filename, 'r' ) as f:
+        with self.open( self.filename, 'r' ) as f:
             return f.read()
 
     def _write(self, iterator):
@@ -69,7 +84,7 @@ class FileStorage(Storage):
         if iterator is None:
             return False
 
-        with open( self.filename, 'w' ) as f:
+        with self.open( self.filename, 'w' ) as f:
             for data in iterator:
                 f.write( bytes(data) )
 
@@ -86,7 +101,7 @@ class JSONStorage(FileStorage):
     extension = 'json'
 
     def read(self, model_class):
-        data = super(JSONStorage,self).read(model_class)
+        data = super(JSONStorage, self).read(model_class)
 
         if not data:
             return
@@ -99,7 +114,7 @@ class JSONStorage(FileStorage):
         if iterator is None:
             return False
 
-        with open( self.filename, 'w' ) as f:
+        with self.open( self.filename, 'w' ) as f:
             f.write('[\n')
 
             _peek = Peekorator(iter(iterator))
@@ -126,7 +141,7 @@ class CSVStorage(FileStorage):
     extension = 'csv'
 
     def read(self, model_class):
-        with open( self.filename, 'r' ) as f:
+        with self.open( self.filename, 'r' ) as f:
             reader = csv.DictReader(f)
 
             for row in reader:
@@ -169,7 +184,7 @@ class CSVStorage(FileStorage):
         if iterator is None:
             return False
 
-        with open( self.filename, 'w' ) as f:
+        with self.open( self.filename, 'w' ) as f:
             _peek = Peekorator(iter(iterator))
             writer = None
 

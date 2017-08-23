@@ -177,3 +177,20 @@ class TestStorage( unittest.TestCase ):
         self.assertEqual(1, m.int_type)
         self.assertEqual('a string, with comma', m.str_type)
         self.assertEqual(now, m.dt_type)
+
+    def test_locking(self):
+
+        tfile = tempfile.NamedTemporaryFile()
+        stor1 = FileStorage( tfile.name )
+        stor2 = FileStorage( tfile.name )
+
+        with stor1.open(stor1.filename, 'r') as f1:
+            self.assertFalse(f1.closed)
+            with self.assertRaises(IOError):
+                with stor2.open(stor2.filename, 'r') as f2:
+                    # the with statement above should raise
+                    self.assertTrue(False) # pragma: nocover
+
+        # make sure locks are released by reopening file
+        with stor2.open(stor2.filename, 'r') as f2:
+            self.assertFalse(f2.closed)
