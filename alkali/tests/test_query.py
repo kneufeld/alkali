@@ -389,6 +389,10 @@ class TestQuery( unittest.TestCase ):
         self.assertEqual(m1, MyModel.objects.all().first())
         self.assertEqual(m1, MyModel.objects.filter(int_type=1).first())
 
+    def test_first_2(self):
+        with self.assertRaises(MyModel.DoesNotExist):
+            MyModel.objects.first()
+
     def test_sorted(self):
         """
         make sure we get our models back in sorted order

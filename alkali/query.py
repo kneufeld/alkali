@@ -87,7 +87,7 @@ class Query(object):
     def __init__( self, manager):
         """
         this is an internal class so you shouldn't have to create it directly. create
-        via Manager. ``MyModel.objects.filter()``
+        via Manager. ``MyModel.objects``
 
         :param Manager manager:
         """
@@ -287,7 +287,7 @@ class Query(object):
         try:
             return self[0]
         except IndexError:
-            raise KeyError('empty query')
+            raise self.model_class.DoesNotExist()
 
     def values(self, *fields):
         """

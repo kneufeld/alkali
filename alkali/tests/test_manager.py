@@ -105,8 +105,9 @@ class TestManager( unittest.TestCase ):
         self.assertRaises( KeyError, man.get, 200 )
 
         MyModel(int_type=2).save()
-        self.assertRaises( KeyError, man.get, int_type=200  )    # < 1
-        self.assertRaises( KeyError, man.get, int_type__gt=0  )  # > 1
+        self.assertRaises( MyModel.DoesNotExist, man.get, int_type=200  )    # < 1
+        self.assertRaises( MyModel.ObjectDoesNotExist, man.get, int_type=200  )    # < 1
+        self.assertRaises( MyModel.MultipleObjectsReturned, man.get, int_type__gt=0  )  # > 1
 
     def test_5(self):
         "test saving actual model objects"
@@ -212,7 +213,7 @@ class TestManager( unittest.TestCase ):
             f.write( json.dumps([m.dict,m.dict]) )
 
         man = Manager(MyModel)
-        self.assertRaises( KeyError, man.load, JSONStorage(tfile.name) )
+        self.assertRaises( MyModel.EmptyPrimaryKey, man.load, JSONStorage(tfile.name) )
 
     def test_10b(self):
         "test that loading can continue if foreign model instance is missing"

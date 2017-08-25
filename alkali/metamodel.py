@@ -63,6 +63,7 @@ class MetaModel(type):
         new_class._add_fields()
         new_class._add_manager()
         new_class._add_relmanagers()
+        new_class._add_exceptions()
 
         # put the rest of the attributes (methods and properties)
         # defined in the Model derived class into the "new" Model
@@ -99,6 +100,18 @@ class MetaModel(type):
                     new_class.objects.cb_delete_foreign,
                     sender=field.foreign_model)
 
+    def _add_exceptions( new_class ):
+        from .model import ObjectDoesNotExist
+
+        # dynamically create a new class types
+        DoesNotExist            = type('DoesNotExist', (ObjectDoesNotExist,), {} )
+        EmptyPrimaryKey         = type('EmptyPrimaryKey', (Exception,), {} )
+        MultipleObjectsReturned = type('MultipleObjectsReturned', (Exception,), {} )
+
+        setattr( new_class, 'ObjectDoesNotExist', ObjectDoesNotExist )
+        setattr( new_class, 'DoesNotExist', DoesNotExist )
+        setattr( new_class, 'EmptyPrimaryKey', EmptyPrimaryKey )
+        setattr( new_class, 'MultipleObjectsReturned', MultipleObjectsReturned )
 
     def _add_meta( new_class, attrs ):
 

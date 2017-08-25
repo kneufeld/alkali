@@ -224,7 +224,7 @@ class Manager(object):
             for fk_field_name in fk_fields:
                 try:
                     getattr(elem, fk_field_name) # this does a lookup on foreign key object
-                except KeyError:
+                except KeyError: # THINK
                     # get elem's pk value, need to do it in this convoluted way since
                     # elem.pk might try to lookup the very thing that is missing
                     field_name = elem.Meta.pk_fields.keys()[0]
@@ -257,13 +257,12 @@ class Manager(object):
                 dirty = True
                 continue
 
-            if elem.pk in self._instances:
+            if elem.pk in self._instances: # THINK
                 raise KeyError( '%s: pk collision detected during load: %s' \
                         % (self.model_class.__name__, str(elem.pk)) )
 
             if elem.pk is None:
-                raise KeyError( '%s: pk was None during load' \
-                        % (self.model_class.__name__) )
+                raise self.model_class.EmptyPrimaryKey()
 
             self.save(elem, dirty=False, copy_instance=False)
 
@@ -282,7 +281,8 @@ class Manager(object):
         :type pk: value or ``tuple`` if multi-pk
         :param kw: optional ``field_name=value``
         :rtype: single :class:`alkali.model.Model` instance
-        :raises KeyError: if 0 or more than 1 instance returned
+        :raises DoesNotExist: if 0 instances returned
+        :raises MultipleObjectsReturned: if more than 1 instance returned
 
         ::
 
@@ -305,11 +305,11 @@ class Manager(object):
         results = Query(self).filter(**kw)
 
         if len(results) == 0:
-            raise KeyError("{}: no results for: {}".format(
+            raise self.model_class.DoesNotExist("{}: no results for: {}".format(
                 self.model_class.__name__, str(kw)) )
 
         if len(results) > 1:
-            raise KeyError("{}: got {} results for: {}".format(
+            raise self.model_class.MultipleObjectsReturned("{}: got {} results for: {}".format(
                 self.model_class.__name__, len(results), str(kw)) )
 
         return results[0]

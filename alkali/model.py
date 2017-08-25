@@ -7,6 +7,9 @@ from .metamodel import MetaModel
 from . import fields
 from . import signals
 
+class ObjectDoesNotExist(Exception):
+    pass
+
 class IModel( Interface ):
 
     dict   = Attribute("represent our data as a dict")

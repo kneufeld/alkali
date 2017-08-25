@@ -225,3 +225,7 @@ class TestModel( unittest.TestCase ):
         c.save()
         self.assertNotEqual( id(c), id(MyModel.objects._instances[c.int_type]) )
         self.assertNotEqual( id(c), id(m1) )
+
+    def test_doesnotexist(self):
+        self.assertEqual( MyModel.ObjectDoesNotExist, MyMulti.ObjectDoesNotExist )
+        self.assertNotEqual( MyModel.DoesNotExist, MyMulti.DoesNotExist )
