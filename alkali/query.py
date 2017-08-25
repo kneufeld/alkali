@@ -72,6 +72,12 @@ class Min(Aggregate):
         return min( query.values_list(self.field, flat=True) )
 
 
+def copy_instances(func): # pragma: nocover
+   def wrapper(*args, **kw):
+       return map( copy.copy, func(*args, **kw) )
+   return wrapper
+
+
 class Query(object):
     """
     this class performs queries on manager instances
