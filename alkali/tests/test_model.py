@@ -2,7 +2,7 @@ import os
 import unittest
 from zope.interface.verify import verifyObject, verifyClass
 
-from alkali.model import IModel, Model
+from alkali.model import Model
 from alkali import fields
 from alkali import tznow
 from . import EmptyModel, MyModel, MyMulti
@@ -16,9 +16,7 @@ class TestModel( unittest.TestCase ):
         "verify class/instance implementation"
 
         for model_class in [EmptyModel, MyModel]:
-            self.assertTrue( verifyClass(IModel, model_class) )
             m = model_class()
-            self.assertTrue( verifyObject(IModel, m) )
 
             self.assertTrue( m.dict or m.dict == {} ) # make sure it doesn't blow up
             self.assertTrue( m.schema ) # make sure it doesn't blow up
@@ -198,9 +196,7 @@ class TestModel( unittest.TestCase ):
 
     def test_18(self):
         "test multi field primary key"
-        self.assertTrue( verifyClass(IModel, MyMulti) )
         m = MyMulti(pk1=100,pk2=200)
-        self.assertTrue( verifyObject(IModel, m) )
         self.assertTrue( m.schema )
 
         self.assertEqual( ['pk1','pk2'], MyMulti.Meta.pk_fields.keys() )

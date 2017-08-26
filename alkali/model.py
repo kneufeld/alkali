@@ -1,4 +1,3 @@
-from zope.interface import Interface, Attribute, implements
 from collections import OrderedDict
 import json
 
@@ -9,10 +8,6 @@ from . import signals
 
 class ObjectDoesNotExist(Exception):
     pass
-
-class IModel( Interface ):
-
-    dict   = Attribute("represent our data as a dict")
 
 
 class Model(object):
@@ -30,7 +25,6 @@ class Model(object):
     see :mod:`alkali.database` for some example code
     """
     __metaclass__ = MetaModel
-    implements(IModel)
 
     def __init__(self, *args, **kw):
         # MetaModel.__call__ has put fields in self,
