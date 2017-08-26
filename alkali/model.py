@@ -6,7 +6,12 @@ from .metamodel import MetaModel
 from . import fields
 from . import signals
 
+
 class ObjectDoesNotExist(Exception):
+    """
+    base class for a model specific exception (eg. MyModel.DoesNotExist)
+    raised when a query yields no results
+    """
     pass
 
 
