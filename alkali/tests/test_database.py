@@ -1,6 +1,7 @@
 import os
 import unittest
 import tempfile
+import inspect
 
 from alkali.database import Database
 from alkali.model import Model
@@ -11,26 +12,41 @@ from . import MyModel
 
 curr_dir = os.path.dirname( os.path.abspath( __file__ ) )
 
+class FooStorage(Storage):
+    extension = 'foo'
+
 class TestDatabase( unittest.TestCase ):
+
+    def tearDown(self):
+        # cleanup any created data files
+        from os import getcwd
+        from os.path import join
+
+        for d in [getcwd(), join(getcwd(),'alkali','tests')]:
+            for f in ['MyModel.json','foo.bar']:
+                t = join(d,f)
+                if os.path.isfile(t):
+                    os.unlink(t)
 
     def test_1(self):
         "verify instantiation"
         self.assertTrue( Database() )
+        self.assertTrue( FooStorage(None) )
 
     def test_2(self):
         "test default values"
         db = Database()
         self.assertEqual( JSONStorage, db._storage_type )
         self.assertEqual( os.getcwd(), db._root_dir )
+        self.assertEqual( False, db._save_on_exit )
 
     def test_2a(self):
         "test setting values"
-        class Foo(object): pass
 
         model = MyModel
-        db = Database( models=[model], storage=Foo, root_dir='/foo')
+        db = Database( models=[model], storage=FooStorage, root_dir='/foo')
         self.assertTrue( model in db.models )
-        self.assertEqual( Foo, db._storage_type )
+        self.assertEqual( FooStorage, db._storage_type )
         self.assertEqual( '/foo', db._root_dir )
 
     def test_3(self):
@@ -64,9 +80,6 @@ class TestDatabase( unittest.TestCase ):
     def test_5(self):
         "test overriding storage"
 
-        class FooStorage(Storage):
-            extension = 'foo'
-
         class MyModel( Model ):
             class Meta:
                 storage = FooStorage
@@ -79,14 +92,16 @@ class TestDatabase( unittest.TestCase ):
         db = Database( models=[model], storage=JSONStorage, root_dir=curr_dir)
 
         self.assertEqual( db.get_storage(model), db.get_storage('MyModel') )
-        self.assertEqual( FooStorage, db.get_storage(model) )
+        self.assertEqual( FooStorage, db.get_storage(model).__class__ )
 
-        import inspect
         self.assertTrue( inspect.isclass(FooStorage) )
-        self.assertTrue( inspect.isclass(MyModel.Meta.storage) )
-        self.assertTrue( inspect.isclass(db.get_storage(model)) )
-        self.assertTrue( FooStorage('') )
-        self.assertTrue( db.get_storage(model)('') )
+        self.assertTrue( db.get_storage(model) )
+
+        db.set_storage(MyModel, FooStorage)
+        self.assertEqual( FooStorage, db.get_storage(model).__class__ )
+
+        db.set_storage('MyModel', FooStorage)
+        self.assertEqual( FooStorage, db.get_storage(model).__class__ )
 
     def test_get_models(self):
         db = Database( models=[MyModel] )
@@ -118,6 +133,7 @@ class TestDatabase( unittest.TestCase ):
 
         db.store()
         self.assertTrue( os.path.getsize(tfile.name) )
+        del db
 
         # with open(tfile.name,'r') as f:
         #     print f.read()
@@ -173,6 +189,7 @@ class TestDatabase( unittest.TestCase ):
 
         db.store()
         self.assertTrue( os.path.getsize(tfile.name) )
+        del db
 
         # need to add a auto increment for when there is no pk
         # and/or assert when model doesn't have pk
@@ -188,9 +205,6 @@ class TestDatabase( unittest.TestCase ):
 
     def test_two_models(self):
 
-        class FooStorage(Storage):
-            pass
-
         class MyModel2(Model):
             class Meta:
                 storage = FooStorage
@@ -202,5 +216,9 @@ class TestDatabase( unittest.TestCase ):
 
         db = Database(models=[MyModel, MyModel2])
 
-        self.assertEqual( JSONStorage, db.get_storage(MyModel) )
-        self.assertEqual( FooStorage, db.get_storage(MyModel2) )
+        self.assertEqual( JSONStorage, db.get_storage(MyModel).__class__ )
+        self.assertEqual( FooStorage, db.get_storage(MyModel2).__class__ )
+
+    def test_bad_load(self):
+        db = Database(models=[MyModel])
+        self.assertIsNone( db.get_storage(self.__class__) )

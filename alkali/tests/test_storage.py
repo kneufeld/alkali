@@ -5,6 +5,7 @@ import csv
 from zope.interface.verify import verifyObject, verifyClass
 
 from alkali.storage import IStorage, FileStorage, JSONStorage, CSVStorage
+from alkali.storage import FileAlreadyLocked
 from alkali import tznow
 from . import MyModel, MyDepModel
 
@@ -20,7 +21,7 @@ class TestStorage( unittest.TestCase ):
 
         for storage in [FileStorage,JSONStorage]:
             self.assertTrue( verifyClass(IStorage, storage) )
-            self.assertTrue( verifyObject(IStorage, storage('') ) )
+            self.assertTrue( verifyObject(IStorage, storage(None) ) )
 
     def test_2(self):
         "write should handle empty dicts vs None"
@@ -115,6 +116,7 @@ class TestStorage( unittest.TestCase ):
 
         storage = CSVStorage( tfile.name )
         storage.write([m1,m2])
+        del storage
 
         # with open(tfile.name, 'r') as f:
         #     print f.read()
@@ -182,15 +184,37 @@ class TestStorage( unittest.TestCase ):
 
         tfile = tempfile.NamedTemporaryFile()
         stor1 = FileStorage( tfile.name )
-        stor2 = FileStorage( tfile.name )
 
-        with stor1.open(stor1.filename, 'r') as f1:
-            self.assertFalse(f1.closed)
-            with self.assertRaises(IOError):
-                with stor2.open(stor2.filename, 'r') as f2:
-                    # the with statement above should raise
-                    self.assertTrue(False) # pragma: nocover
+        with self.assertRaises(FileAlreadyLocked):
+            FileStorage( tfile.name )
 
-        # make sure locks are released by reopening file
-        with stor2.open(stor2.filename, 'r') as f2:
-            self.assertFalse(f2.closed)
+        del stor1 # release lock
+        FileStorage( tfile.name ) # shouldn't raise
+
+    def test_changing_filename(self):
+        tfile1 = tempfile.NamedTemporaryFile()
+        tfile2 = tempfile.NamedTemporaryFile()
+
+        stor1 = FileStorage( tfile1.name )
+        self.assertEqual( stor1.filename, tfile1.name )
+
+        stor1.filename = tfile2.name
+        self.assertEqual( stor1.filename, tfile2.name )
+
+        stor1.filename = None
+        self.assertEqual( stor1.filename, None )
+
+    def test_creating_new_file(self):
+        tname = tempfile.NamedTemporaryFile().name
+        stor1 = FileStorage( tname )
+
+        self.assertTrue( os.path.isfile(tname) )
+
+    def test_pass_file_handle(self):
+        tfile = tempfile.NamedTemporaryFile()
+        stor1 = FileStorage( tfile )
+
+        self.assertEqual( tfile.name, stor1.filename )
+
+    def test_safe_lock(self):
+        FileStorage( None ).lock()

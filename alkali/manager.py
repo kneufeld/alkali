@@ -190,7 +190,9 @@ class Manager(object):
         :param Storage storage: an instance
         :param bool force: force save even if we're not dirty
         """
-        assert not inspect.isclass(storage)
+        if not storage:
+            logger.debug("%s: no storage instance for storing, exiting", self._name)
+            return
 
         if force:
             self._dirty = True
@@ -220,6 +222,10 @@ class Manager(object):
         :raises KeyError: if there are duplicate primary keys
 
         """
+        if not storage:
+            logger.debug("%s: no storage instance for loading, exiting", self._name)
+            return
+
         def validate_fk_fields(fk_fields, elem):
             for fk_field_name in fk_fields:
                 try:

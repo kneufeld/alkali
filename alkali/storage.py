@@ -1,4 +1,5 @@
 import os
+import types
 import fcntl
 from contextlib import contextmanager
 from zope.interface import Interface, Attribute, implements
@@ -9,6 +10,15 @@ from .peekorator import Peekorator
 
 import logging
 logger = logging.getLogger(__name__)
+
+
+class FileAlreadyLocked(Exception):
+    """
+    the exception that is thrown when a storage instance tries
+    and fails to lock its data file
+    """
+    pass
+
 
 class IStorage( Interface ):
 
@@ -49,32 +59,69 @@ class FileStorage(Storage):
     implements(IStorage)
     extension = 'raw'
 
-    def __init__(self, filename, *args, **kw ):
-        self._filename = os.path.expanduser(filename)
+    def __init__(self, filename=None, *args, **kw ):
+        self._fhandle = None
+        self.filename = filename
+
+    def __del__(self):
+        self.unlock()
 
     @property
     def filename(self):
-        return self._filename
+        if self._fhandle is None:
+            return None
 
-    @contextmanager
-    def open(self, filename, mode):
+        return self._fhandle.name
+
+    @filename.setter
+    def filename(self, filename):
         """
-        open filename and get an exclusive lock on it
+        when setting the filename, immediately open and lock the file handle
         """
+        self.unlock()
+
+        if filename is None:
+            if self._fhandle:
+                self._fhandle.close()
+                self._fhandle = None
+            return
+
+        if isinstance(filename, types.StringTypes):
+            filename = os.path.expanduser(filename)
+
+            if os.path.exists(filename):
+                assert os.path.isfile(filename)
+                self._fhandle = open(filename, 'r+')
+            else:
+                self._fhandle = open(filename, 'w+')
+
+        else: # assuming file type
+            self._fhandle = filename
+
+        self.lock()
+
+    def lock(self):
+        if not self._fhandle:
+            return
 
         try:
-            f = open(filename, mode)
-            fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            yield f
-        finally:
-            fcntl.flock(f, fcntl.LOCK_UN)
+            fcntl.flock(self._fhandle, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except IOError:
+            raise FileAlreadyLocked("can't lock: {}".format(self.filename))
+
+    def unlock(self):
+        if not self._fhandle:
+            return
+
+        # I don't think this can ever fail
+        fcntl.flock(self._fhandle, fcntl.LOCK_UN)
 
     def read(self, model_class):
         """
         helper function that just reads a file
         """
-        with self.open( self.filename, 'r' ) as f:
-            return f.read()
+        self._fhandle.seek(0)
+        return self._fhandle.read()
 
     def _write(self, iterator):
         """
@@ -84,10 +131,12 @@ class FileStorage(Storage):
         if iterator is None:
             return False
 
-        with self.open( self.filename, 'w' ) as f:
-            for data in iterator:
-                f.write( bytes(data) )
+        self._fhandle.seek(0)
 
+        for data in iterator:
+            self._fhandle.write( bytes(data) )
+
+        self._fhandle.flush()
         return True
 
     def write(self, iterator):
@@ -114,18 +163,21 @@ class JSONStorage(FileStorage):
         if iterator is None:
             return False
 
-        with self.open( self.filename, 'w' ) as f:
-            f.write('[\n')
+        f = self._fhandle
+        f.seek(0)
 
-            _peek = Peekorator(iter(iterator))
-            for e in _peek:
-                data = json.dumps(e.dict)
-                f.write(data)
+        f.write('[\n')
 
-                if not _peek.is_last():
-                    f.write(',\n')
+        _peek = Peekorator(iter(iterator))
+        for e in _peek:
+            data = json.dumps(e.dict)
+            f.write(data)
 
-            f.write('\n]')
+            if not _peek.is_last():
+                f.write(',\n')
+
+        f.write('\n]')
+        f.flush()
 
         return True
 
@@ -141,12 +193,12 @@ class CSVStorage(FileStorage):
     extension = 'csv'
 
     def read(self, model_class):
-        with self.open( self.filename, 'r' ) as f:
-            reader = csv.DictReader(f)
+        self._fhandle.seek(0)
+        reader = csv.DictReader(self._fhandle)
 
-            for row in reader:
-                row = self.remap_fieldnames(model_class, row)
-                yield model_class(**row)
+        for row in reader:
+            row = self.remap_fieldnames(model_class, row)
+            yield model_class(**row)
 
     def remap_fieldnames(self, model_class, row):
         """
@@ -184,17 +236,19 @@ class CSVStorage(FileStorage):
         if iterator is None:
             return False
 
-        with self.open( self.filename, 'w' ) as f:
-            _peek = Peekorator(iter(iterator))
-            writer = None
+        f = self._fhandle
+        f.seek(0)
 
-            for e in _peek:
-                if _peek.is_first():
-                    fieldnames = e.Meta.fields.keys()
-                    writer = csv.DictWriter(f, fieldnames=fieldnames)
-                    writer.writeheader()
-                    writer.writerow(e.dict)
-                else:
-                    writer.writerow(e.dict)
+        _peek = Peekorator(iter(iterator))
+        writer = None
+
+        for e in _peek:
+            if _peek.is_first():
+                fieldnames = e.Meta.fields.keys()
+                writer = csv.DictWriter(f, fieldnames=fieldnames)
+                writer.writeheader()
+                writer.writerow(e.dict)
+            else:
+                writer.writerow(e.dict)
 
         return True

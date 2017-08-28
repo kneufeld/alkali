@@ -254,3 +254,6 @@ class TestManager( unittest.TestCase ):
         m2 = MyModel.objects.get(m.pk)
         self.assertNotEqual( id(m1), id(m2) )
 
+    def test_no_storage(self):
+        MyModel.objects.store(None)
+        MyModel.objects.load(None)

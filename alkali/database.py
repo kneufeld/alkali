@@ -60,11 +60,8 @@ class Database(object):
 
         logger.debug( "Database: creating database" )
 
-        self._models = OrderedDict()
-        for model in models:
-            assert inspect.isclass(model)
-            logger.debug( "Database: adding model to database: %s", model.__name__ )
-            self._models[model.__name__.lower()] = model
+        self._models  = OrderedDict()
+        self._storage = OrderedDict()
 
         self._storage_type = kw.pop('storage', JSONStorage)
         self._save_on_exit = kw.pop('save_on_exit', False)
@@ -74,6 +71,12 @@ class Database(object):
         self._root_dir = os.path.abspath(self._root_dir)
 
         assert len(kw) == 0, "unknown kwargs: {}".format(kw.keys())
+
+        for model in models:
+            assert inspect.isclass(model)
+            logger.debug( "Database: adding model to database: %s", model.__name__ )
+            self._models[model.__name__.lower()] = model
+            self.set_storage(model)
 
 
     def __del__(self):
@@ -103,7 +106,7 @@ class Database(object):
         return None
 
 
-    def get_filename(self, model):
+    def get_filename(self, model, storage=None):
         """
         get the filename for the specified model. allow models to
         specify their own filename or generate one based on storage
@@ -122,59 +125,77 @@ class Database(object):
         filename = model.Meta.filename
 
         if not filename:
-            storage = self.get_storage(model)
+            storage = storage or model.Meta.storage or self._storage_type
             filename = "{}.{}".format(model.__name__, storage.extension)
 
-        # if filename is absolute, then self._root_dir is gets filtered out
+        # if filename is absolute, then self._root_dir gets filtered out
         return os.path.join( self._root_dir, filename )
 
 
-    def get_storage(self, model):
+    def set_storage(self, model, storage=None):
         """
-        get the storage class for the specified model
+        set the storage instance for the specified model
 
         precedence is:
 
+        #. passed in storage class
         #. model defined storage class
-        #. storage class defined in call
-        #. storage class default of database
+        #. default storage class of database (JSONStorage)
 
         :param model: the model name or model class
-        :param storage: override database default storage class
-        :rtype: :class:`alkali.storage.Storage` (not an instance)
+        :param IStorage storage: override model storage class
+        :rtype: :class:`alkali.storage.Storage` instance or None
         """
         if isinstance(model, types.StringTypes):
             model = self.get_model(model)
 
-        storage = model.Meta.storage or self._storage_type
-        return storage
+        storage = storage or model.Meta.storage or self._storage_type
+        assert inspect.isclass(storage)
+
+        filename = self.get_filename(model, storage)
+
+        self._storage[model] = storage(filename)
+        return self._storage[model]
 
 
-    def store(self, _storage=None, force=False):
+    def get_storage(self, model):
+        """
+        get the storage instance for the specified model
+
+        :param model: the model name or model class
+        :rtype: :class:`alkali.storage.Storage` instance or None
+        """
+        if isinstance(model, types.StringTypes):
+            model = self.get_model(model)
+
+        try:
+            return self._storage[model]
+        except KeyError:
+            pass
+
+        return None
+
+
+    def store(self, force=False):
         """
         persistantly store all model data
 
-        :param IStorage storage: override model storage class
         :param bool force: force store even if :class:`alkali.manager.Manager`
             thinks data is clean
         """
-        logger.debug( "Database: storing models" )
-
         # you can't save more than one model with a single storage
         # instance because the file will get over written
-        assert _storage is None or inspect.isclass(_storage)
 
         for model in self.models:
-            storage = _storage or self.get_storage(model)
+            logger.debug( "Database: storing model: %s", model.__name__ )
 
-            if inspect.isclass(storage):
-                filename = self.get_filename(model)
-                storage = storage(filename)
-
+            storage = self.get_storage(model)
             model.objects.store(storage, force=force)
 
+        return True
 
-    def load(self, _storage=None):
+
+    def load(self):
         """
         load all model data from disk
 
@@ -182,18 +203,8 @@ class Database(object):
         """
         logger.debug( "Database: loading models" )
 
-        # you can't load more than one model with a single storage
-        # instance since only one file will get read
-        assert _storage is None or inspect.isclass(_storage)
-
         for model in self.models:
             logger.debug( "Database: loading model: %s", model.__name__ )
 
-            storage = _storage or self.get_storage(model)
-            logger.debug( "Database: using storage: %s", storage.__name__ )
-
-            if inspect.isclass(storage):
-                filename = self.get_filename(model)
-                storage = storage(filename)
-
+            storage = self.get_storage(model)
             model.objects.load(storage)
