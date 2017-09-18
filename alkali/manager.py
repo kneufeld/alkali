@@ -238,6 +238,7 @@ class Manager(object):
                     logger.warn( "%s.%s: foreign instance missing: %s",
                            self.model_class.__name__, elem.__dict__[fk_field_name], pk_value)
 
+                    # THINK/TODO we need to delete ourselves
                     return False
 
             return True

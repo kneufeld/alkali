@@ -136,6 +136,7 @@ class FileStorage(Storage):
         for data in iterator:
             self._fhandle.write( bytes(data) )
 
+        self._fhandle.truncate()
         self._fhandle.flush()
         return True
 
@@ -177,6 +178,11 @@ class JSONStorage(FileStorage):
                 f.write(',\n')
 
         f.write('\n]')
+
+        # since the file may shrink (we've deleted records) then
+        # we must truncate the file at our current position to avoid
+        # stale data being present on the next load
+        f.truncate()
         f.flush()
 
         return True
@@ -251,4 +257,5 @@ class CSVStorage(FileStorage):
             else:
                 writer.writerow(e.dict)
 
+        f.truncate()
         return True
