@@ -1,4 +1,4 @@
-from collections import OrderedDict
+from collections import OrderedDict, Iterable
 import json
 
 from .memoized_property import memoized_property
@@ -126,6 +126,14 @@ class Model(object):
             if len(pk_vals) == 1:
                 return pk_vals[0]
             return pk_vals
+
+    @property
+    def valid_pk(self):
+        pk = self.pk
+        if isinstance(pk, Iterable):
+            return all( lambda e: e is not None, pk )
+
+        return pk is not None
 
     @property
     def dict(self):

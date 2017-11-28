@@ -12,7 +12,7 @@ from alkali.query import Query
 from alkali import fields
 from alkali import tznow
 
-from . import MyModel, MyDepModel
+from . import MyModel, MyDepModel, Entry
 
 import logging
 logger = logging.getLogger('alkali.manager')
@@ -257,3 +257,14 @@ class TestManager( unittest.TestCase ):
     def test_no_storage(self):
         MyModel.objects.store(None)
         MyModel.objects.load(None)
+
+    def test_create_with_pk_kwarg(self):
+        # creating an instance with 'pk' keyword didn't originally work as expected
+        now = dt.datetime.now()
+        e = Entry(pk=now).save()
+
+        self.assertTrue(Entry.objects.get(now))
+
+        # don't pass in 'pk' and actual pk field name
+        with self.assertRaises(AssertionError):
+            Entry(pk=now, date=now)

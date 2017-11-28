@@ -1,7 +1,7 @@
 from collections import OrderedDict
 
 from .relmanager import RelManager
-from .fields import Field, ForeignKey
+from .fields import Field, ForeignKey, OneToOneField
 from . import signals
 
 # Architecture
@@ -211,6 +211,15 @@ class MetaModel(type):
     # time a Model instance is created
     def __call__(cls, *args, **kw):
         obj = cls.__new__(cls, *args)
+
+        if 'pk' in kw:
+            assert len(cls.Meta.pk_fields) == 1, "can't currently set compound primary key via kwargs"
+
+            field_name = cls.Meta.pk_fields.keys()[0]
+            assert field_name not in kw, "can't pass in 'pk' and actual pk field name"
+
+            value = kw.pop('pk')
+            kw[field_name] = value
 
         # put field values (int,str,etc) into model instance
         for name, field in cls.Meta.fields.iteritems():

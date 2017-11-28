@@ -279,3 +279,12 @@ class TestField( unittest.TestCase ):
         for v in [' ','true','anything else',1,[1]]:
             m.bool_type = v
             self.assertEqual(True, m.bool_type)
+
+    def test_valid_pk(self):
+        import pytz
+        from . import Entry
+        now = dt.datetime.now(pytz.utc)
+        e = Entry(pk=now)
+
+        self.assertEqual(now, e.pk)
+        self.assertTrue(e.valid_pk)
