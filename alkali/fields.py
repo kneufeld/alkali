@@ -340,6 +340,8 @@ class ForeignKey(Field):
     # reading json strings and then using the Model.__init__() to feed
     # it key-value pairs. ie: we don't know that it's a ForeignKey on disk.
 
-# TODO class OneToOneField
+
+class OneToOneField(ForeignKey):
+    pass
 
 # TODO class ManyToManyField

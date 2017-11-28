@@ -182,6 +182,14 @@ class Manager(object):
         for elem in getattr(instance, fk_set).all():
             self.delete(elem)
 
+    def cb_create_foreign(self, sender, instance ):
+        """
+        called when our foreign parent (likely OneToOneField) is created
+        """
+        # keep in sync with metamodel._add_relmanagers()
+        elem = self.model_class(pk=instance)
+        self.save(elem, dirty=False, copy_instance=False)
+
 
     def store(self, storage, force=False):
         """

@@ -100,6 +100,11 @@ class MetaModel(type):
                     new_class.objects.cb_delete_foreign,
                     sender=field.foreign_model)
 
+            if isinstance(field, OneToOneField):
+                signals.post_save.connect(
+                    new_class.objects.cb_create_foreign,
+                    sender=field.foreign_model)
+
     def _add_exceptions( new_class ):
         from .model import ObjectDoesNotExist
 

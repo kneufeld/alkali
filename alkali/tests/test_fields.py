@@ -9,7 +9,7 @@ import datetime as dt
 from alkali.fields import Field
 from alkali.fields import IntField, StringField, BoolField
 from alkali.fields import DateTimeField, FloatField, SetField
-from alkali.fields import ForeignKey
+from alkali.fields import ForeignKey, OneToOneField
 from alkali.model import Model
 
 from . import MyModel, MyMulti, MyDepModel
@@ -288,3 +288,34 @@ class TestField( unittest.TestCase ):
 
         self.assertEqual(now, e.pk)
         self.assertTrue(e.valid_pk)
+
+    def test_one2one_sync(self):
+        # need to define this inside test otherwise it will sync with
+        # all other tests
+        from . import Entry
+        from alkali import signals as S
+
+        self.assertFalse(S.creation.has_receivers_for(Entry))
+
+        class AuxInfoSync(Model):
+            entry     = OneToOneField(Entry, primary_key=True)
+            mime_type = StringField()
+
+        self.assertTrue(S.post_save.has_receivers_for(Entry))
+        self.assertTrue(S.pre_delete.has_receivers_for(Entry))
+
+        now = dt.datetime.now()
+        e = Entry(pk=now)
+        self.assertEqual(0, Entry.objects.count)
+        self.assertEqual(0, AuxInfoSync.objects.count)
+
+        e.save()
+        self.assertEqual(1, Entry.objects.count)
+        self.assertEqual(1, AuxInfoSync.objects.count)
+        self.assertEqual(1, e.auxinfosync_set.count)
+
+        Entry.objects.delete(e)
+        self.assertEqual(0, AuxInfoSync.objects.count)
+
+        del e
+        self.assertEqual(0, AuxInfoSync.objects.count)
