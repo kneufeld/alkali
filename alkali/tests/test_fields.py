@@ -1,9 +1,7 @@
 # encoding: utf-8
 
-import os
 import unittest
 import mock
-import tempfile
 import datetime as dt
 
 from alkali.fields import Field
@@ -76,7 +74,7 @@ class TestField( unittest.TestCase ):
 
     def test_6(self):
         "test SetField"
-        s=set([1,2,3])
+        s = set([1, 2, 3])
         f = SetField()
 
         v = f.cast(s)
@@ -165,7 +163,6 @@ class TestField( unittest.TestCase ):
 
         self.assertTrue(m.dict)
 
-
     def test_13(self):
         """
         test queries
@@ -183,8 +180,7 @@ class TestField( unittest.TestCase ):
     def test_14(self):
         "test extra kw params to field raise assertion"
         with self.assertRaises(AssertionError):
-            f = IntField(some_keyword=True)
-
+            IntField(some_keyword=True)
 
     def test_15(self):
         """
@@ -272,11 +268,11 @@ class TestField( unittest.TestCase ):
             m.bool_type = v
             self.assertEqual(None, m.bool_type)
 
-        for v in ['false','False','0','NO','n',0,[]]:
+        for v in ['false', 'False', '0', 'NO', 'n', 0, []]:
             m.bool_type = v
             self.assertEqual(False, m.bool_type)
 
-        for v in [' ','true','anything else',1,[1]]:
+        for v in [' ', 'true', 'anything else', 1, [1]]:
             m.bool_type = v
             self.assertEqual(True, m.bool_type)
 

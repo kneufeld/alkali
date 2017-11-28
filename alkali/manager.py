@@ -81,7 +81,6 @@ class Manager(object):
         """
         return map( copy.copy, self._instances.itervalues() )
 
-
     @property
     def dirty(self):
         """
@@ -91,7 +90,6 @@ class Manager(object):
         """
         if self._dirty:
             return True
-
 
     @staticmethod
     def sorter(elements, reverse=False ):
@@ -105,7 +103,6 @@ class Manager(object):
         """
         for key in sorted( elements.iterkeys(), reverse=reverse ):
             yield elements[key]
-
 
     def save(self, instance, dirty=True, copy_instance=True):
         """
@@ -136,7 +133,6 @@ class Manager(object):
         if dirty:
             self._dirty = True
 
-
     def clear(self):
         """
         remove all instances of our models. we'll be marked as
@@ -149,7 +145,6 @@ class Manager(object):
 
         self._dirty = len(self) > 0
         self._instances = {}
-
 
     def delete(self, instance):
         """
@@ -170,7 +165,6 @@ class Manager(object):
         except KeyError:
             pass
 
-
     def cb_delete_foreign(self, sender, instance ):
         """
         called when our foreign parent is about to be deleted
@@ -189,7 +183,6 @@ class Manager(object):
         # keep in sync with metamodel._add_relmanagers()
         elem = self.model_class(pk=instance)
         self.save(elem, dirty=False, copy_instance=False)
-
 
     def store(self, storage, force=False):
         """
@@ -221,7 +214,6 @@ class Manager(object):
 
         self._dirty = False
 
-
     def load(self, storage):
         """
         load all our instances from storage
@@ -251,7 +243,6 @@ class Manager(object):
 
             return True
 
-
         assert not inspect.isclass(storage)
         storage = IStorage(storage)
         logger.debug( "%s: loading models via storage class: %s", self._name, storage._name )
@@ -273,7 +264,7 @@ class Manager(object):
                 continue
 
             if elem.pk in self._instances: # THINK
-                raise KeyError( '%s: pk collision detected during load: %s' \
+                raise KeyError( '%s: pk collision detected during load: %s'
                         % (self.model_class.__name__, str(elem.pk)) )
 
             if elem.pk is None:
@@ -281,12 +272,10 @@ class Manager(object):
 
             self.save(elem, dirty=False, copy_instance=False)
 
-
         self._dirty = dirty
 
         logger.debug( "%s: finished loading %d records", self._name, len(self) )
         signals.post_load.send(self.model_class)
-
 
     def get(self, *pk, **kw):
         """

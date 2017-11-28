@@ -101,7 +101,7 @@ class Model(object):
         def fmt(name, field):
             return "{}:{}".format(name, field.field_type.__name__)
 
-        name_type = [ fmt(n,f) for n,f in self.Meta.fields.iteritems() ]
+        name_type = [ fmt(n, f) for n, f in self.Meta.fields.iteritems() ]
         fields = ", ".join( name_type )
         return "<{}: {}>".format(self.__class__.__name__, fields)
 

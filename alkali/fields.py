@@ -48,7 +48,7 @@ class Field(object):
         # self.property_name returns self._property_name
         for name in self._properties:
             val = kw.pop(name, None)
-            name = '_'+name
+            name = '_' + name
             setattr(self, name, val)
 
             fget = lambda self, name=name: getattr(self, name)

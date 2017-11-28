@@ -121,7 +121,7 @@ class MetaModel(type):
     def _add_meta( new_class, attrs ):
 
         def _get_fields( attrs ):
-            return [(k,v) for k,v in attrs.items() if isinstance(v,Field)]
+            return [(k, v) for k, v in attrs.items() if isinstance(v, Field)]
 
         def _get_field_order(attrs):
             """
@@ -131,7 +131,8 @@ class MetaModel(type):
             fields.sort(key=lambda e: e[1]._order)
             return [k for k, _ in fields]
 
-        class Object(object): pass
+        class Object(object):
+            pass
 
         # Meta is an instance in Model class
         # all following properties on the Meta class, not instance
@@ -148,7 +149,7 @@ class MetaModel(type):
             meta.ordering = _get_field_order(attrs)
 
         meta.field_filter = lambda self, field_type: \
-                [n for n,f in self.fields.items() if isinstance(f, field_type)]
+                [n for n, f in self.fields.items() if isinstance(f, field_type)]
 
         # don't let user miss a field if they've defined Meta.ordering
         assert len(meta.ordering) == len(_get_fields(attrs)), \
@@ -171,12 +172,11 @@ class MetaModel(type):
         # note: don't use a dict comprehension because interim dict will have keys
         # inserted in random order
         meta.pk_fields = OrderedDict(
-                [(name,field) for name,field in meta.fields.items() if field.primary_key]
+                [(name, field) for name, field in meta.fields.items() if field.primary_key]
                 )
 
         if len(meta.fields):
             assert len(meta.pk_fields) > 0, "no primary_key defined in fields"
-
 
     def _add_fields( new_class ):
         """
@@ -201,7 +201,7 @@ class MetaModel(type):
         for name, field in meta.fields.iteritems():
             # make magic property model.fieldname_field that returns Field object
             fget = lambda self, name=name: self.Meta.fields[name]
-            setattr( new_class, name+'__field', property(fget=fget) )
+            setattr( new_class, name + '__field', property(fget=fget) )
 
             # set the Field descriptor object on the model class
             # which makes it accessable on the model instance
@@ -210,7 +210,6 @@ class MetaModel(type):
             # because then the descriptor-ness is lost and a normal
             # getattr is called on the model instance
             setattr( new_class, name, field )
-
 
     # creates a new instance of derived model, this is called each
     # time a Model instance is created
