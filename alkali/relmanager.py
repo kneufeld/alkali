@@ -50,6 +50,10 @@ class RelManager(object):
     def child_field(self):
         return self._child_field
 
+    @property
+    def count(self):
+        return len(self.all())
+
     def add(self, child):
         assert isinstance(child, self.child_class)
         setattr(child, self.child_field, self.foreign)
