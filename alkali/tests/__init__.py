@@ -6,7 +6,7 @@ class EmptyModel(Model):
 
 class MyModel( Model ):
     class Meta:
-        ordering = ['int_type','str_type','dt_type']
+        ordering = ['int_type', 'str_type', 'dt_type']
 
     int_type = fields.IntField(primary_key=True)
     str_type = fields.StringField()

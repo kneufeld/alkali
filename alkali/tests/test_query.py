@@ -412,7 +412,7 @@ class TestQuery( unittest.TestCase ):
         q = MyModel.objects.all()
 
         for i in range(10):
-            self.assertEqual(i+1, q[i].int_type)
+            self.assertEqual(i + 1, q[i].int_type)
 
     def test_groupby_1(self):
         MyModel(int_type=1, str_type='string 1').save()

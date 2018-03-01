@@ -229,13 +229,13 @@ class Query(object):
         elif oper == 'rei':
             oper = regexi
         else:
-            oper = getattr(operator,oper)
+            oper = getattr(operator, oper)
 
         # TODO: exact, iexact, (i)contains == rin, (i)startswith, (i)endswith,
         # range (for dates), date (return datetime as date), year/month/day,
         # hour/minute/second, week_day (sun=1, sat=7)
 
-        return filter( lambda e: oper(getattr(e,field), value), instances)
+        return filter( lambda e: oper(getattr(e, field), value), instances)
 
     def order_by(self, *fields):
         """
@@ -358,12 +358,12 @@ class Query(object):
 
         if flat:
             return [
-                getattr(e,field) for field in fields
+                getattr(e, field) for field in fields
                 for e in self._instances
                 ]
         else:
             return [
-                [getattr(e,field) for field in fields]
+                [getattr(e, field) for field in fields]
                 for e in self._instances
                 ]
 

@@ -19,7 +19,7 @@ class TestStorage( unittest.TestCase ):
         "verify class/instance implementation"
         self.assertTrue( verifyClass(IStorage, JSONStorage) )
 
-        for storage in [FileStorage,JSONStorage]:
+        for storage in [FileStorage, JSONStorage]:
             self.assertTrue( verifyClass(IStorage, storage) )
             self.assertTrue( verifyObject(IStorage, storage(None) ) )
 
@@ -27,7 +27,7 @@ class TestStorage( unittest.TestCase ):
         "write should handle empty dicts vs None"
         tfile = tempfile.NamedTemporaryFile()
 
-        for storage in [FileStorage,JSONStorage]:
+        for storage in [FileStorage, JSONStorage]:
             self.assertTrue( storage(tfile.name).write( iter([]) ) )
             self.assertFalse( storage(tfile.name).write( None ) )
 
@@ -46,7 +46,7 @@ class TestStorage( unittest.TestCase ):
         loaded = [e for e in storage.read(MyModel)]
         self.assertEqual( 2, len(loaded) )
 
-        for a,b in zip(entries,loaded):
+        for a, b in zip(entries, loaded):
             self.assertDictEqual( a.dict, b )
 
     def test_3a(self):
@@ -58,7 +58,7 @@ class TestStorage( unittest.TestCase ):
         self.assertTrue( storage.write([]) )
 
         # with open(tfile.name) as f:
-            # print f.read()
+        #     print f.read()
 
         size = os.path.getsize(tfile.name)
         self.assertEqual( 4, size )
