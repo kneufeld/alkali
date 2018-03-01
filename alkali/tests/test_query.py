@@ -413,3 +413,29 @@ class TestQuery( unittest.TestCase ):
 
         for i in range(10):
             self.assertEqual(i+1, q[i].int_type)
+
+    def test_groupby_1(self):
+        MyModel(int_type=1, str_type='string 1').save()
+        MyModel(int_type=2, str_type='string 1').save()
+        MyModel(int_type=3, str_type='string 2').save()
+
+        q = MyModel.objects.filter(**{'int_type': 1})
+        self.assertEqual( 1, q[0].int_type)
+
+        q = MyModel.objects.all()
+        self.assertEqual( 3, len(q) )
+
+        groups = MyModel.objects.group_by('str_type')
+
+        expected = {
+            'string 1': [1, 2],
+            'string 2': [3],
+        }
+
+        self.assertEqual(set(expected.keys()), set(groups.keys()))
+
+        g1 = groups['string 1'].all().order_by('int_type').values_list('int_type', flat=True)
+        self.assertEqual(set(expected['string 1']), set(g1))
+
+        g2 = groups['string 2'].all().order_by('int_type').values_list('int_type', flat=True)
+        self.assertEqual(set(expected['string 2']), set(g2))

@@ -267,6 +267,28 @@ class Query(object):
 
         return self
 
+    def group_by(self, field):
+        """
+        returns a dict of distinct values and Query objects
+
+        :param field: field name
+        :rtype: ``dict``
+
+        ::
+
+            MyModel.objects.group_by('str_type')
+
+            { 's1': <Query MyModel(1), MyModel(3)>
+              's2': <Query MyModel(2)> }
+        """
+        def _filter(value):
+            # need to start with a fresh query object to work with all objects
+            return Query(self.manager).filter(**{field: value})
+
+        values = self.distinct(field)[0]
+        groups = { value: _filter(value) for value in values }
+        return groups
+
     def limit(self, n):
         """
         return first(+) or last(-) n elements
