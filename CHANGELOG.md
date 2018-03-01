@@ -3,6 +3,19 @@
 Here's what we all hope is an accurate list of things that have changed
 between versions.
 
+## v0.6.0
+
+* add group_by ability to Query
+* added One2OneField type
+* added .count property to RelManager
+* added .first() function to Query
+* allow model instance creation with pk keyword
+* database now works with Storage instances, not classes
+* added custom exceptions: DoesNotExist, EmptyPrimaryKey, MultipleObjectsReturned
+* storage files now protected by a lock
+* fix some pep8 whitespace issues
+* fixed bug in valid_pk() regarding compound primary keys
+
 ## v0.5.5
 
 * adding BoolField
