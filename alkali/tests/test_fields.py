@@ -285,6 +285,10 @@ class TestField( unittest.TestCase ):
         self.assertEqual(now, e.pk)
         self.assertTrue(e.valid_pk)
 
+    def test_valid_pk_2(self):
+        m = MyMulti(pk1=1, pk2=2).save()
+        self.assertTrue(m.valid_pk)
+
     def test_one2one_sync(self):
         # need to define this inside test otherwise it will sync with
         # all other tests

@@ -131,7 +131,7 @@ class Model(object):
     def valid_pk(self):
         pk = self.pk
         if isinstance(pk, Iterable):
-            return all( lambda e: e is not None, pk )
+            return all( map(lambda e: e is not None, pk) )
 
         return pk is not None
 
