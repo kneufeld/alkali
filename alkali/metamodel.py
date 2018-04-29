@@ -131,7 +131,7 @@ class MetaModel(type):
             fields.sort(key=lambda e: e[1]._order)
             return [k for k, _ in fields]
 
-        class Object(object):
+        class Object():
             pass
 
         # Meta is an instance in Model class
@@ -175,6 +175,17 @@ class MetaModel(type):
                 [(name, field) for name, field in meta.fields.items() if field.primary_key]
                 )
 
+        # monkey patch stupid fucking iterators
+        meta.pk_fields._keys = meta.pk_fields.keys
+        meta.pk_fields.keys = lambda: list(meta.pk_fields._keys())
+        meta.pk_fields._values = meta.pk_fields.values
+        meta.pk_fields.values = lambda: list(meta.pk_fields._values())
+
+        meta.fields._keys = meta.fields.keys
+        meta.fields.keys = lambda: list(meta.fields._keys())
+        meta.fields._values = meta.fields.values
+        meta.fields.values = lambda: list(meta.fields._values())
+
         if len(meta.fields):
             assert len(meta.pk_fields) > 0, "no primary_key defined in fields"
 
@@ -185,7 +196,7 @@ class MetaModel(type):
         meta = new_class.Meta
 
         # add properties to field
-        for name, field in meta.fields.iteritems():
+        for name, field in meta.fields.items():
             field._name = name
             fget = lambda self: getattr(self, '_name')
             setattr( field.__class__, 'name', property(fget=fget) )
@@ -198,7 +209,7 @@ class MetaModel(type):
             setattr( field.__class__, 'meta', property(fget=fget) )
 
         # put fields in model
-        for name, field in meta.fields.iteritems():
+        for name, field in meta.fields.items():
             # make magic property model.fieldname_field that returns Field object
             fget = lambda self, name=name: self.Meta.fields[name]
             setattr( new_class, name + '__field', property(fget=fget) )
@@ -226,7 +237,7 @@ class MetaModel(type):
             kw[field_name] = value
 
         # put field values (int,str,etc) into model instance
-        for name, field in cls.Meta.fields.iteritems():
+        for name, field in cls.Meta.fields.items():
             # THINK: this somewhat duplicates Field.__set__ code
             value = kw.pop(name, field.default_value)
             value = field.cast(value)

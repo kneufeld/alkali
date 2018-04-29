@@ -2,7 +2,7 @@ import os
 import types
 import fcntl
 from contextlib import contextmanager
-from zope.interface import Interface, Attribute, implements
+#from zope.interface import Interface, Attribute, implements
 import json
 import csv
 
@@ -20,21 +20,21 @@ class FileAlreadyLocked(Exception):
     pass
 
 
-class IStorage( Interface ):
+# class IStorage( Interface ):
 
-    extension = Attribute("class level attr of desired filename extension. eg. json")
+#     extension = Attribute("class level attr of desired filename extension. eg. json")
 
-    def read(model_class):
-        """
-        yield (or return a list) of instantiated model_class objects or dicts
-        up to implementer but likely you want to read filename
-        """
+#     def read(model_class):
+#         """
+#         yield (or return a list) of instantiated model_class objects or dicts
+#         up to implementer but likely you want to read filename
+#         """
 
-    def write(iterator):
-        """
-        accept an iterator that yields elements
-        up to implementer but likely you want to write out to filename
-        """
+#     def write(iterator):
+#         """
+#         accept an iterator that yields elements
+#         up to implementer but likely you want to write out to filename
+#         """
 
 
 class Storage(object):
@@ -56,7 +56,7 @@ class FileStorage(Storage):
     could write out objects as json or plain txt or binary, that's up to
     the implementation and should be transparent to any models/database.
     """
-    implements(IStorage)
+    #implements(IStorage)
     extension = 'raw'
 
     def __init__(self, filename=None, *args, **kw ):
@@ -86,7 +86,7 @@ class FileStorage(Storage):
                 self._fhandle = None
             return
 
-        if isinstance(filename, types.StringTypes):
+        if isinstance(filename, str):
             filename = os.path.expanduser(filename)
 
             if os.path.exists(filename):
@@ -125,8 +125,7 @@ class FileStorage(Storage):
 
     def _write(self, iterator):
         """
-        helper function that just writes a file if
-        data is not None
+        helper function that just writes a file if data is not None
         """
         if iterator is None:
             return False
@@ -134,7 +133,7 @@ class FileStorage(Storage):
         self._fhandle.seek(0)
 
         for data in iterator:
-            self._fhandle.write( bytes(data) )
+            self._fhandle.write(str(data))
 
         self._fhandle.truncate()
         self._fhandle.flush()

@@ -77,6 +77,13 @@ class Min(Aggregate):
 #        return map( copy.copy, func(*args, **kw) )
 #    return wrapper
 
+def as_list(func):
+    def wrapper(*args, **kw):
+        ret = func(*args, **kw)
+        if type(ret) in [map, filter]:
+            ret = list(ret)
+        return ret
+    return wrapper
 
 class Query(object):
     """
@@ -112,7 +119,9 @@ class Query(object):
         # again. I'm afraid that for now each Query object needs to get
         # a copy of the Manager values. Note, you still need to copy the
         # individual elements as they leave the Query.
-        self._instances = manager._instances.values()
+        self._instances = list(manager._instances.values())
+        self.order_by('pk')
+
 
     def __len__(self):
         return len(self._instances)
@@ -181,7 +190,7 @@ class Query(object):
             # 'foo' is in field/property myset
             MyModel.objects.filter( myset__rin='foo' )
         """
-        for field, query in kw.iteritems():
+        for field, query in kw.items():
             try:
                 field, oper = field.split('__')
                 oper = oper or 'eq'
@@ -189,24 +198,25 @@ class Query(object):
                 field = field
                 oper = 'eq'
 
-            self._instances = self._filter( field, oper, query, self._instances )
+            self._instances = self._filter(field, oper, query, self._instances)
 
         return self
 
+    @as_list
     def _filter(self, field, oper, value, instances):
         """
         helper function that does the actual work of filtering out instances
         """
 
         def in_(coll, val):
-            if not isinstance(coll, types.StringTypes) \
+            if not isinstance(coll, str) \
             and isinstance(coll, collections.Iterable):
                 return bool( set(coll) & set(val) ) # intersection
             else:
                 return coll in val
 
         def rin_(coll, val):
-            if not isinstance(val, types.StringTypes) \
+            if not isinstance(val, str) \
             and isinstance(val, collections.Iterable):
                 return bool( set(coll) & set(val) ) # intersection
             else:
@@ -263,7 +273,7 @@ class Query(object):
         for field in fields:
             reverse, field = _order_by( field )
             key = operator.attrgetter(field)
-            self._instances = sorted( self._instances, key=key, reverse=reverse)
+            self._instances = sorted(self._instances, key=key, reverse=reverse)
 
         return self
 
@@ -289,6 +299,7 @@ class Query(object):
         groups = { value: _filter(value) for value in values }
         return groups
 
+    @as_list
     def limit(self, n):
         """
         return first(+) or last(-) n elements
@@ -301,11 +312,11 @@ class Query(object):
         :rtype: ``list``
         """
         if n > 0:
-            return map( copy.copy, self._instances[:n] )
+            return map(copy.copy, self._instances[:n])
         elif n < 0:
-            return map( copy.copy, self._instances[n:] )
+            return map(copy.copy, self._instances[n:])
         else: # n == 0, return all instead of [] because why not?
-            return map( copy.copy, self._instances )
+            return map(copy.copy, self._instances)
 
     def first(self):
         """
@@ -317,6 +328,7 @@ class Query(object):
         except IndexError:
             raise self.model_class.DoesNotExist()
 
+    @as_list
     def values(self, *fields):
         """
         returns list of dicts, each sub-list contains (field_name, field_value)
@@ -336,7 +348,7 @@ class Query(object):
             vals = [ (field, getattr(obj, field)) for field in fields ]
             return collections.OrderedDict(vals)
 
-        return map( lambda obj: _mk_dict(obj, fields), self._instances )
+        return map(lambda obj: _mk_dict(obj, fields), self._instances)
 
     def values_list(self, *fields, **kw):
         """
@@ -399,7 +411,7 @@ class Query(object):
             key = '{}__{}'.format(agg.field, agg.__class__.__name__.lower())
             ret[key] = agg(self)
 
-        for field, agg in kw.iteritems():
+        for field, agg in kw.items():
             ret[field] = agg(self)
 
         return ret
@@ -426,7 +438,7 @@ class Query(object):
         """
 
         # make sure instances are a copy so we don't annotate the originals
-        self._instances = map( copy.copy, self._instances )
+        self._instances = [copy.copy(obj) for obj in self._instances]
 
         for name, func in kw.items():
             if not callable(func):
@@ -460,7 +472,7 @@ class Query(object):
         ret = []
 
         for field in fields:
-            distinct = set( [ getattr(elem, field) for elem in self._instances] )
+            distinct = {getattr(elem, field) for elem in self._instances} # set
             ret.append( list(distinct) )
 
         return ret

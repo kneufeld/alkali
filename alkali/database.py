@@ -119,7 +119,7 @@ class Database(object):
         :return: returns a filename path
         :rtype: str
         """
-        if isinstance(model, types.StringTypes):
+        if isinstance(model, str):
             model = self.get_model(model)
 
         filename = model.Meta.filename
@@ -146,7 +146,7 @@ class Database(object):
         :param IStorage storage: override model storage class
         :rtype: :class:`alkali.storage.Storage` instance or None
         """
-        if isinstance(model, types.StringTypes):
+        if isinstance(model, str):
             model = self.get_model(model)
 
         storage = storage or model.Meta.storage or self._storage_type
@@ -165,7 +165,7 @@ class Database(object):
         :param model: the model name or model class
         :rtype: :class:`alkali.storage.Storage` instance or None
         """
-        if isinstance(model, types.StringTypes):
+        if isinstance(model, str):
             model = self.get_model(model)
 
         try:

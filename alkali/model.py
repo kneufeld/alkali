@@ -15,7 +15,7 @@ class ObjectDoesNotExist(Exception):
     pass
 
 
-class Model(object):
+class Model(metaclass=MetaModel):
     """
     main class for the database.
 
@@ -29,12 +29,11 @@ class Model(object):
 
     see :mod:`alkali.database` for some example code
     """
-    __metaclass__ = MetaModel
 
     def __init__(self, *args, **kw):
         # MetaModel.__call__ has put fields in self,
         # put any other keywords into self
-        for name, value in kw.iteritems():
+        for name, value in kw.items():
             setattr(self, name, value)
 
         # note, this is called twice, once during initial object creation
@@ -101,7 +100,7 @@ class Model(object):
         def fmt(name, field):
             return "{}:{}".format(name, field.field_type.__name__)
 
-        name_type = [ fmt(n, f) for n, f in self.Meta.fields.iteritems() ]
+        name_type = [ fmt(n, f) for n, f in self.Meta.fields.items() ]
         fields = ", ".join( name_type )
         return "<{}: {}>".format(self.__class__.__name__, fields)
 
@@ -109,17 +108,18 @@ class Model(object):
     def pk(self):
         """
         **property**: returns this models primary key value. If the model is
-        comprised of serveral primary keys then return a tuple of them.
+        comprised of several primary keys then return a tuple of them.
 
         :rtype: ``Field.field_type`` or tuple-of-Field.field_type
         """
-        pks = self.Meta.pk_fields.values()
-        foreign_pks = filter(lambda f: isinstance(f, fields.ForeignKey), pks)
+        pks = list(self.Meta.pk_fields.values())
+        foreign_pks = list(filter(lambda f: isinstance(f, fields.ForeignKey), pks))
 
         if foreign_pks:
             pk_vals = tuple( getattr(self, f.name).pk for f in pks )
             if len(pk_vals) == 1:
                 return pk_vals[0]
+            assert False, "not actually supported at this time"
             return pk_vals # pragma: nocover, not actually supported at this time
         else:
             pk_vals = tuple( getattr(self, f.name) for f in pks )
@@ -144,7 +144,7 @@ class Model(object):
         :rtype: ``OrderedDict``
         """
         return OrderedDict( [(name, field.dumps(getattr(self, name)))
-                for name, field in self.Meta.fields.iteritems() ])
+                for name, field in self.Meta.fields.items() ])
 
     @property
     def json(self):

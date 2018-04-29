@@ -1,4 +1,3 @@
-from zope.interface import Interface, implements
 import inspect
 
 from .query import Query
@@ -6,8 +5,6 @@ from .query import Query
 import logging
 logger = logging.getLogger(__name__)
 
-class IRelManager( Interface ):
-    pass
 
 class RelManager(object):
     """
@@ -16,7 +13,6 @@ class RelManager(object):
     The ``RelManager`` class manages queries/connections between two
     models that have a :class:`alkali.fields.ForeignKey` (or equivalent) field.
     """
-    implements(IRelManager)
 
     def __init__( self, foreign, child_class, child_field ):
         """

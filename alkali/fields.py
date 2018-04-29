@@ -36,7 +36,7 @@ class Field(object):
             * primary_key: is this field a primary key of parent model
             * indexed:     is this field indexed (not implemented yet)
         """
-        self._order = Field._counter.next() # DO NOT TOUCH, deleted in MetaModel
+        self._order = next(Field._counter) # DO NOT TOUCH, deleted in MetaModel
 
         assert field_type is not None
         self._field_type = field_type
@@ -165,7 +165,7 @@ class BoolField(Field):
         if value is None:
             return None
 
-        if isinstance(value, types.StringTypes):
+        if isinstance(value, str):
             # if value is an empty string then consider that as not yet
             # set vs False. This may be a mistake.
             if not value:
@@ -189,7 +189,7 @@ class StringField(Field):
     """
 
     def __init__(self, **kw):
-        super(StringField, self).__init__(unicode, **kw)
+        super(StringField, self).__init__(str, **kw)
 
     def cast(self, value):
         if value is None:
@@ -219,7 +219,7 @@ class DateTimeField(Field):
         if value is None:
             return None
 
-        if isinstance(value, types.StringTypes):
+        if isinstance(value, str):
             if value == 'now':
                 value = tznow()
             else:
@@ -240,7 +240,7 @@ class DateTimeField(Field):
             return None
 
         # assume date is in isoformat, this preserves timezone info
-        if isinstance(value, types.StringTypes):
+        if isinstance(value, str):
             value = dateutil.parser.parse(value)
 
         if value.tzinfo is None:
@@ -273,7 +273,7 @@ class ForeignKey(Field):
         from .model import Model
 
         # TODO treat foreign_model as model name and lookup in database
-        # if isinstance(foreign_model, types.StringTypes):
+        # if isinstance(foreign_model, str):
         #     foreign_model = <db>.get_model(foreign_model)
 
         self.foreign_model = foreign_model
@@ -342,6 +342,13 @@ class ForeignKey(Field):
 
 
 class OneToOneField(ForeignKey):
+    """
+    """
+    # TODO maybe use reify
+    # https://docs.pylonsproject.org/projects/pyramid/en/latest/_modules/pyramid/decorator.html#reify
+    # I forsee a problem where you load the primary table and either
+    # create the OneToOneField table entries and replace the as the real file is loaded
+    # or maybe you have some wierd race condition in the other direction
     pass
 
 # TODO class ManyToManyField

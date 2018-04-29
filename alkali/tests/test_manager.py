@@ -6,7 +6,7 @@ import datetime as dt
 import json
 
 from alkali.model import Model
-from alkali.manager import IManager, Manager
+from alkali.manager import Manager
 from alkali.storage import JSONStorage
 from alkali.query import Query
 from alkali import fields
@@ -31,15 +31,12 @@ class TestManager( unittest.TestCase ):
 
     def test_1(self):
         "verify class/instance implementation"
-        self.assertTrue( verifyClass(IManager, Manager) )
 
         man = Manager(MyModel)
-        self.assertTrue( verifyObject(IManager, man) )
         self.assertEqual( "MyModelManager", man._name )
 
         self.assertTrue( repr(man) )
         self.assertTrue( str(man) )
-        self.assertTrue( unicode(man) )
 
     def test_2(self):
         "test saving"

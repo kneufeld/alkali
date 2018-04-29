@@ -1,17 +1,13 @@
-from zope.interface import Interface, implements
 import inspect
 import copy
 
 from .query import Query
-from .storage import IStorage
 from . import fields
 from . import signals
 
 import logging
 logger = logging.getLogger(__name__)
 
-class IManager( Interface ):
-    pass
 
 class Manager(object):
     """
@@ -19,7 +15,6 @@ class Manager(object):
     :class:`alkali.model.Model` instances. Each ``Model`` has it's own
     manager. ``Manager`` could rightly be called ``Table``.
     """
-    implements(IManager)
 
     def __init__( self, model_class ):
         """
@@ -70,7 +65,7 @@ class Manager(object):
 
         :rtype: ``list``
         """
-        return self._instances.keys()
+        return list(self._instances.keys())
 
     @property
     def instances(self):
@@ -79,7 +74,7 @@ class Manager(object):
 
         :rtype: ``list``
         """
-        return map( copy.copy, self._instances.itervalues() )
+        return [copy.copy(obj) for obj in self._instances.values()]
 
     @property
     def dirty(self):
@@ -101,7 +96,7 @@ class Manager(object):
             * reverse: return in reverse order
         :rtype: ``generator``
         """
-        for key in sorted( elements.iterkeys(), reverse=reverse ):
+        for key in sorted(elements.keys(), reverse=reverse):
             yield elements[key]
 
     def save(self, instance, dirty=True, copy_instance=True):
@@ -244,7 +239,7 @@ class Manager(object):
             return True
 
         assert not inspect.isclass(storage)
-        storage = IStorage(storage)
+        storage = storage
         logger.debug( "%s: loading models via storage class: %s", self._name, storage._name )
 
         signals.pre_load.send(self.model_class)

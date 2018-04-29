@@ -16,7 +16,7 @@ class memoized_property(object):
         self.__doc__ = doc
 
         if fget is not None:
-            self._attr_name = '___'+fget.func_name
+            self._attr_name = '___' + fget.__name__
 
     def __get__(self, inst, type=None):
         if inst is None:

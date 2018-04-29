@@ -4,7 +4,7 @@ import tempfile
 import csv
 from zope.interface.verify import verifyObject, verifyClass
 
-from alkali.storage import IStorage, FileStorage, JSONStorage, CSVStorage
+from alkali.storage import FileStorage, JSONStorage, CSVStorage
 from alkali.storage import FileAlreadyLocked
 from alkali import tznow
 from . import MyModel, MyDepModel
@@ -17,11 +17,11 @@ class TestStorage( unittest.TestCase ):
 
     def test_1(self):
         "verify class/instance implementation"
-        self.assertTrue( verifyClass(IStorage, JSONStorage) )
+        # self.assertTrue( verifyClass(IStorage, JSONStorage) )
 
-        for storage in [FileStorage, JSONStorage]:
-            self.assertTrue( verifyClass(IStorage, storage) )
-            self.assertTrue( verifyObject(IStorage, storage(None) ) )
+        # for storage in [FileStorage, JSONStorage]:
+        #     self.assertTrue( verifyClass(IStorage, storage) )
+        #     self.assertTrue( verifyObject(IStorage, storage(None) ) )
 
     def test_2(self):
         "write should handle empty dicts vs None"
@@ -80,15 +80,18 @@ class TestStorage( unittest.TestCase ):
 
     def test_5(self):
         "test plain FileStorage class"
+        # FIXME this is a crap test, it just read/writes a string
         tfile = tempfile.NamedTemporaryFile()
         storage = FileStorage( tfile.name )
 
-        models = [ MyModel() ]
+        m1 = MyModel(int_type=1, str_type="str", dt_type=tznow())
 
-        # TODO test that we can recover original object data
-        self.assertTrue( storage.write( models ) )
+        self.assertTrue( storage.write([m1]) )
         self.assertTrue( open( tfile.name, 'r').read() )
-        self.assertTrue( storage.read(MyModel) )
+
+        m2 = storage.read(MyModel)
+        self.assertTrue(m2)
+        self.assertEqual(str(m1), m2)
 
     def test_10(self):
         "test saving foreign key"
@@ -137,7 +140,7 @@ class TestStorage( unittest.TestCase ):
         def remap_fieldnames(model_class, row):
             fields = model_class.Meta.fields.keys()
 
-            for k in row.keys():
+            for k in list(row.keys()):
                 results_key = k.lower().replace(' ', '_')
 
                 if results_key not in fields:
