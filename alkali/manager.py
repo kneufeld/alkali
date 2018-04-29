@@ -230,7 +230,7 @@ class Manager(object):
                     # elem.pk might try to lookup the very thing that is missing
                     field_name = elem.Meta.pk_fields.keys()[0]
                     pk_value = elem.__dict__[field_name]
-                    logger.warn( "%s.%s: foreign instance missing: %s",
+                    logger.warning( "%s.%s: foreign instance missing: %s",
                            self.model_class.__name__, elem.__dict__[fk_field_name], pk_value)
 
                     # THINK/TODO we need to delete ourselves
