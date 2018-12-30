@@ -345,7 +345,6 @@ class OneToOneField(ForeignKey):
     """
     """
     # TODO maybe use reify
-    # https://docs.pylonsproject.org/projects/pyramid/en/latest/_modules/pyramid/decorator.html#reify
     # I forsee a problem where you load the primary table and either
     # create the OneToOneField table entries and replace the as the real file is loaded
     # or maybe you have some wierd race condition in the other direction
