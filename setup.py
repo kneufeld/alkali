@@ -22,7 +22,7 @@ def pseudo_import( pkg_name ):
     init = os.path.join( pkg_name, '__init__.py' )
 
     # remove imports and 'from foo import'
-    lines = open(init,'r').readlines()
+    lines = open(init, 'r').readlines()
     lines = filter( lambda l: not l.startswith('from'), lines)
     lines = filter( lambda l: not l.startswith('import'), lines)
 
@@ -31,7 +31,7 @@ def pseudo_import( pkg_name ):
     import imp
     module = imp.new_module(pkg_name)
 
-    exec code in module.__dict__
+    exec(code, module.__dict__)
     return module
 
 # trying to make this setup.py as generic as possible
@@ -47,7 +47,7 @@ setup(
 
     # use via: pip install -e .[docs]
     extras_require = {
-        'dev' : open('req_tests.txt').readlines(),
+        'dev': open('req_tests.txt').readlines(),
         'docs': open('req_docs.txt').readlines(),
     },
 
