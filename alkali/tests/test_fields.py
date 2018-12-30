@@ -151,7 +151,7 @@ class TestField( unittest.TestCase ):
     def test_12(self):
         "test save"
         m = MyModel(int_type=1).save()
-        d = MyDepModel(pk1=1, foreign=m).save()
+        MyDepModel(pk1=1, foreign=m).save()
 
     def test_12a(self):
         "test that trying to save unset foreign key fails"

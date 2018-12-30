@@ -2,7 +2,6 @@ import os
 import unittest
 import tempfile
 import csv
-from zope.interface.verify import verifyObject, verifyClass
 
 from alkali.storage import FileStorage, JSONStorage, CSVStorage
 from alkali.storage import FileAlreadyLocked
@@ -19,6 +18,7 @@ class TestStorage( unittest.TestCase ):
         "verify class/instance implementation"
         # self.assertTrue( verifyClass(IStorage, JSONStorage) )
 
+        # from zope.interface.verify import verifyObject, verifyClass
         # for storage in [FileStorage, JSONStorage]:
         #     self.assertTrue( verifyClass(IStorage, storage) )
         #     self.assertTrue( verifyObject(IStorage, storage(None) ) )
@@ -118,7 +118,7 @@ class TestStorage( unittest.TestCase ):
         m2 = MyModel(int_type=2, str_type='a string, with comma', dt_type=now).save()
 
         storage = CSVStorage( tfile.name )
-        storage.write([m1,m2])
+        storage.write([m1, m2])
         del storage
 
         # with open(tfile.name, 'r') as f:
@@ -146,8 +146,6 @@ class TestStorage( unittest.TestCase ):
                 if results_key not in fields:
                     if k == 'Bad Name':
                         results_key = 'dt_type'
-                    else:
-                        raise RuntimeError( "unknown field: {}".format(k) ) # pragma: nocover
 
                 row[results_key] = row.pop(k)
 
@@ -159,7 +157,7 @@ class TestStorage( unittest.TestCase ):
         m = MyModel(int_type=1, str_type='a string, with comma', dt_type=now).save()
 
         with open( tfile.name, 'w' ) as f:
-            d = { 'Int Type':1,
+            d = { 'Int Type': 1,
                     'Str Type': 'a string, with comma',
                     'Bad Name': now}
             writer = csv.DictWriter(f, fieldnames=d.keys())
@@ -209,7 +207,7 @@ class TestStorage( unittest.TestCase ):
 
     def test_creating_new_file(self):
         tname = tempfile.NamedTemporaryFile().name
-        stor1 = FileStorage( tname )
+        FileStorage( tname )
 
         self.assertTrue( os.path.isfile(tname) )
 
