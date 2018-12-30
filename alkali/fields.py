@@ -195,11 +195,11 @@ class StringField(Field):
         if value is None:
             return None
 
-        if type(value) is not self._field_type:
+        if type(value) is not self.field_type:
             try:
                 return self.field_type(value)
             except UnicodeDecodeError:
-                # assume value is a utf-8 byte string
+                # assume value is a utf-8 byte string, will raise if it's not
                 return self.field_type( value.decode('utf-8') )
 
         return value
@@ -334,7 +334,7 @@ class ForeignKey(Field):
         if not isinstance(value, Model):
             raise RuntimeError("ForeignKey value is not a Model")
 
-        return self.pk_field.dumps( value.pk )
+        return self.pk_field.dumps(value.pk)
 
     # def loads() is not required because the Storage loader is probably
     # reading json strings and then using the Model.__init__() to feed
