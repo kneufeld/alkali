@@ -93,6 +93,11 @@ class TestField( unittest.TestCase ):
         self.assertEqual( s, v )
         self.assertEqual( v, f.loads( f.dumps(v) ) )
 
+    def test_int_into_stringfield(self):
+        f = StringField()
+        v = f.cast(1)
+        self.assertEqual( str(1), v )
+
     def test_8(self):
         "test none/null"
         f = DateTimeField()

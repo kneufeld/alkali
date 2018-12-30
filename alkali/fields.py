@@ -196,11 +196,7 @@ class StringField(Field):
             return None
 
         if type(value) is not self.field_type:
-            try:
-                return self.field_type(value)
-            except UnicodeDecodeError:
-                # assume value is a utf-8 byte string, will raise if it's not
-                return self.field_type( value.decode('utf-8') )
+            return self.field_type(value)
 
         return value
 
