@@ -119,7 +119,7 @@ class Model(metaclass=MetaModel):
             pk_vals = tuple( getattr(self, f.name).pk for f in pks )
             if len(pk_vals) == 1:
                 return pk_vals[0]
-            assert False, "not actually supported at this time"
+            assert False, "not actually supported at this time" # pragma: nocover
             return pk_vals # pragma: nocover, not actually supported at this time
         else:
             pk_vals = tuple( getattr(self, f.name) for f in pks )
