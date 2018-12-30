@@ -283,8 +283,6 @@ class TestField( unittest.TestCase ):
             self.assertEqual(True, m.bool_type)
 
     def test_valid_pk(self):
-        return
-        # FIXME need to install pytz
         import pytz
         from . import Entry
         now = dt.datetime.now(pytz.utc)
