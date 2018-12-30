@@ -293,8 +293,8 @@ class Manager(object):
         """
         # FIXME need to support direct access multi pk models
 
-        if len(pk) == 0 and ['pk'] == kw.keys():
-            pk = kw.values()
+        if len(pk) == 0 and list(kw.keys()) == ['pk']:
+            pk = list(kw.values())
 
         # NOTE without this, direct access ForeignKeys are 100x slower
         if len(pk) == 1:
