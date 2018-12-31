@@ -3,6 +3,13 @@
 Here's what we all hope is an accurate list of things that have changed
 between versions.
 
+## v0.7.0
+
+* **Python 3 only**, this is a big breaking change
+* cleaned up some tests
+* refactored some code
+* no actual functionality changes
+
 ## v0.6.0
 
 * add group_by ability to Query
