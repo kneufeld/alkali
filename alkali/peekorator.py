@@ -8,8 +8,10 @@ Acknowledgements:
 * "plof" for the name: http://stackoverflow.com/a/10576559/589362
 * Ned Batchelder for the buffered __peek__: http://stackoverflow.com/a/1517965/589362
 """
+from collections.abc import Iterator
 
-class PeekoratorDefault(object): pass
+class PeekoratorDefault:
+    pass
 
 def peek(peekorator, n=0, default=PeekoratorDefault()):
     """
@@ -30,7 +32,7 @@ def peek(peekorator, n=0, default=PeekoratorDefault()):
             return default
 
 
-class Peekorator(object):
+class Peekorator:
     """
     Wrap a generator (or iterator) and allow the ability to peek at the
     next element in a lazy fashion. If the user never uses peek(), then
@@ -42,8 +44,7 @@ class Peekorator(object):
         :param generator: a generator or iterator that will be iterated over
         """
         # a generator is an iterator
-        import collections
-        if not isinstance( generator, collections.Iterator ):
+        if not isinstance( generator, Iterator ):
             generator = iter(generator)
 
         self.generator = generator
