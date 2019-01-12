@@ -149,8 +149,8 @@ class IntField(Field):
         value is incremented during model instantiation.
         """
         if self.auto_increment:
-            val = getattr(self.meta, '_auto__' + self.name, 0) + 1
-            setattr( self.meta, '_auto__' + self.name, val )
+            val = getattr(self.meta, '_auto_inc__' + self.name, 0) + 1
+            setattr( self.meta, '_auto_inc__' + self.name, val )
             return val
 
         return None
