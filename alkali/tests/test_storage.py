@@ -46,8 +46,8 @@ class TestStorage( unittest.TestCase ):
         tfile = tempfile.NamedTemporaryFile()
 
         for storage in [FileStorage, JSONStorage]:
-            self.assertTrue( storage(tfile.name).write( iter([]) ) )
-            self.assertFalse( storage(tfile.name).write( None ) )
+            self.assertTrue( storage(tfile.name).write(MyModel, iter([])) )
+            self.assertFalse( storage(tfile.name).write(MyModel, None) )
 
     def test_3(self):
         "test simple reading and writing"
@@ -56,7 +56,7 @@ class TestStorage( unittest.TestCase ):
         storage = JSONStorage( tfile.name )
 
         entries = [MyModel(int_type=1), MyModel(int_type=2)]
-        self.assertTrue( storage.write(entries) )
+        self.assertTrue( storage.write(MyModel, entries) )
 
         size = os.path.getsize(tfile.name)
         self.assertTrue( size > 0 )
@@ -73,7 +73,7 @@ class TestStorage( unittest.TestCase ):
         tfile = tempfile.NamedTemporaryFile()
         storage = JSONStorage( tfile.name )
 
-        self.assertTrue( storage.write([]) )
+        self.assertTrue( storage.write(MyModel, []) )
 
         # with open(tfile.name) as f:
         #     print f.read()
@@ -104,7 +104,7 @@ class TestStorage( unittest.TestCase ):
 
         m1 = MyModel(int_type=1, str_type="str", dt_type=tznow())
 
-        self.assertTrue( storage.write([m1]) )
+        self.assertTrue( storage.write(MyModel, [m1]) )
         self.assertTrue( open( tfile.name, 'r').read() )
 
         m2 = storage.read(MyModel)
@@ -118,25 +118,25 @@ class TestStorage( unittest.TestCase ):
 
         tfile = tempfile.NamedTemporaryFile()
         storage = JSONStorage( tfile.name )
-        storage.write([m])
+        storage.write(MyModel, [m])
 
         tfile = tempfile.NamedTemporaryFile()
         storage = JSONStorage( tfile.name )
-        storage.write([d])
+        storage.write(MyDepModel, [d])
 
     def test_15(self):
         "test CSVStorage"
 
         tfile = tempfile.NamedTemporaryFile()
 
-        self.assertFalse( CSVStorage( tfile.name ).write(None) )
+        self.assertFalse( CSVStorage( tfile.name ).write(MyModel, None) )
 
         now = tznow()
         m1 = MyModel(int_type=1, str_type='a string, with comma', dt_type=now).save()
         m2 = MyModel(int_type=2, str_type='a string, with comma', dt_type=now).save()
 
         storage = CSVStorage( tfile.name )
-        storage.write([m1, m2])
+        storage.write(MyModel, [m1, m2])
         del storage
 
         # with open(tfile.name, 'r') as f:
@@ -237,3 +237,35 @@ class TestStorage( unittest.TestCase ):
 
     def test_safe_lock(self):
         FileStorage( None ).lock()
+
+    def test_multi_flock(self):
+        tfile = tempfile.NamedTemporaryFile(mode="w")
+
+        with self.assertRaises(FileAlreadyLocked):
+            (
+                MultiStorage([AutoModel1, AutoModel2], tfile.name),
+                MultiStorage([AutoModel1, AutoModel2], tfile.name)
+            )
+
+    def test_multi_1(self):
+        tfile = tempfile.NamedTemporaryFile(mode="w")
+
+        storage = MultiStorage([AutoModel1, AutoModel2], tfile.name)
+
+        AutoModel1(f1="some text 1").save()
+        AutoModel1(f1="some text 2").save()
+
+        AutoModel2(f1="some other text 1").save()
+
+        m1 = AutoModel1.objects.get(f1__contains='2')
+
+        AutoModel1.objects.store(storage)
+        AutoModel2.objects.store(storage)
+        assert os.path.getsize(tfile.name)
+
+        AutoModel1.objects.load(storage)
+
+        m2 = AutoModel1.objects.get(f1__contains='2')
+        self.assertEqual(m1, m2)
+
+        # db = Database(models=[AutoModel1, AutoModel2], storage=storage, save_on_exit=False)

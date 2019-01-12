@@ -200,7 +200,7 @@ class Manager(object):
             logger.debug( "%s: storing models via storage class: %s", self._name, storage._name )
 
             gen = Manager.sorter(self._instances)
-            storage.write(gen)
+            storage.write(self.model_class, gen)
 
             logger.debug( "%s: finished storing %d records", self._name, len(self) )
             signals.post_store.send(self.model_class)
@@ -238,8 +238,7 @@ class Manager(object):
 
             return True
 
-        assert not inspect.isclass(storage)
-        storage = storage
+        assert not inspect.isclass(storage), "storage is not an instance"
         logger.debug( "%s: loading models via storage class: %s", self._name, storage._name )
 
         signals.pre_load.send(self.model_class)
