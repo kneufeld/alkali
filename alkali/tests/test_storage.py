@@ -3,10 +3,28 @@ import unittest
 import tempfile
 import csv
 
-from alkali.storage import FileStorage, JSONStorage, CSVStorage
+from alkali import Model, fields
+from alkali.storage import FileStorage, JSONStorage, CSVStorage, MultiStorage
 from alkali.storage import FileAlreadyLocked
 from alkali import tznow
 from . import MyModel, MyDepModel
+
+
+class AutoModel1(Model):
+    auto     = fields.IntField(primary_key=True, auto_increment=True)
+    creation = fields.DateTimeField(auto_now_add=True)
+    modified = fields.DateTimeField(auto_now=True)
+    f1       = fields.StringField()
+    f2       = fields.StringField()
+
+
+class AutoModel2(Model):
+    auto     = fields.IntField(primary_key=True, auto_increment=True)
+    creation = fields.DateTimeField(auto_now_add=True)
+    modified = fields.DateTimeField(auto_now=True)
+    f1       = fields.StringField()
+    f2       = fields.StringField()
+
 
 class TestStorage( unittest.TestCase ):
 
