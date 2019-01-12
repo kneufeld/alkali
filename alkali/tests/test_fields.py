@@ -225,6 +225,32 @@ class TestField( unittest.TestCase ):
         m = AutoModel2().save()
         self.assertEqual( 3, m.auto )
 
+    def test_auto_now(self):
+        class AutoModel1( Model ):
+            auto = IntField(primary_key=True, auto_increment=True)
+            modified = DateTimeField(auto_now=True)
+            other = IntField()
+
+        m = AutoModel1()
+        curr = m.modified
+        self.assertNotEqual(None, curr)
+
+        m.other = 2
+        self.assertNotEqual(curr, m.modified)
+
+    def test_auto_now_add(self):
+        class AutoModel1( Model ):
+            auto = IntField(primary_key=True, auto_increment=True)
+            creation = DateTimeField(auto_now_add=True)
+            other = IntField()
+
+        m = AutoModel1()
+        curr = m.creation
+        self.assertNotEqual(None, curr)
+
+        m.other = 2
+        self.assertEqual(curr, m.creation)
+
     def test_25(self):
         "test that Field.__set__ gets called"
 

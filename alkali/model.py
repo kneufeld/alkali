@@ -3,6 +3,7 @@ import json
 
 from .memoized_property import memoized_property
 from .metamodel import MetaModel
+from .utils import tznow
 from . import fields
 from . import signals
 
@@ -84,6 +85,12 @@ class Model(metaclass=MetaModel):
         if curr_val != value:
             self.__dict__['_dirty'] = True
             signals.field_update.send(self.__class__, field=field.name, old_val=curr_val, new_val=value)
+
+        # call any auto fields on this model
+        if self.__dict__['_dirty']:
+            for name, field_class in self.Meta.fields.items():
+                if getattr(field_class, 'auto_now', False):
+                    self.__dict__[name] = tznow()
 
     @property
     def dirty(self):

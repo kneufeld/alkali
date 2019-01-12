@@ -2,6 +2,7 @@ from collections import OrderedDict
 
 from .relmanager import RelManager
 from .fields import Field, ForeignKey, OneToOneField
+from .utils import tznow
 from . import signals
 
 # Architecture
@@ -244,6 +245,12 @@ class MetaModel(type):
 
             # store the actual value in the model's __dict__, used by Field.__get__
             obj.__dict__[name] = value
+
+            if getattr(field, 'auto_now_add', False):
+                obj.__dict__[name] = tznow()
+
+            if getattr(field, 'auto_now', False):
+                obj.__dict__[name] = tznow()
 
         obj._dirty = False
         obj.__init__(*args, **kw)
