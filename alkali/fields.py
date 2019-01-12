@@ -140,7 +140,7 @@ class Field(object):
 class IntField(Field):
 
     def __init__(self, **kw):
-        super(IntField, self).__init__(int, **kw)
+        super().__init__(int, **kw)
 
     @property
     def default_value(self):
@@ -159,7 +159,7 @@ class IntField(Field):
 class BoolField(Field):
 
     def __init__(self, **kw):
-        super(BoolField, self).__init__(bool, **kw)
+        super().__init__(bool, **kw)
 
     def cast(self, value):
         if value is None:
@@ -180,7 +180,7 @@ class BoolField(Field):
 class FloatField(Field):
 
     def __init__(self, **kw):
-        super(FloatField, self).__init__(float, **kw)
+        super().__init__(float, **kw)
 
 
 class StringField(Field):
@@ -189,7 +189,7 @@ class StringField(Field):
     """
 
     def __init__(self, **kw):
-        super(StringField, self).__init__(str, **kw)
+        super().__init__(str, **kw)
 
     def cast(self, value):
         if value is None:
@@ -204,9 +204,7 @@ class StringField(Field):
 class DateTimeField(Field):
 
     def __init__(self, **kw):
-        super(DateTimeField, self).__init__(dt.datetime, **kw)
-
-    # TODO def default_value: auto_now, auto_now_add
+        super().__init__(dt.datetime, **kw)
 
     def cast(self, value):
         """
@@ -248,7 +246,7 @@ class DateTimeField(Field):
 class SetField(Field):
 
     def __init__(self, **kw):
-        super(SetField, self).__init__(set, **kw)
+        super().__init__(set, **kw)
 
 
 class ForeignKey(Field):
