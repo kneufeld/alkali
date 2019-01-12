@@ -2,6 +2,7 @@ import datetime as dt
 import dateutil.parser
 import itertools
 import types
+import uuid
 
 from .utils import tzadd, tznow
 
@@ -79,7 +80,7 @@ class Field(object):
         value = self.cast(value)
         model.set_field(self, value)
 
-    def __str__(self):
+    def __repr__(self):
         # name is set via MetaModel during Model creation
         name = getattr(self, 'name', '')
         return "<{}: {}>".format(self.__class__.__name__, name)
@@ -247,6 +248,33 @@ class SetField(Field):
 
     def __init__(self, **kw):
         super().__init__(set, **kw)
+
+
+class UUIDField(Field):
+    """
+    stored as a string
+    """
+
+    def __init__(self, uuid_ver=uuid.uuid4, **kw):
+        self.uuid_ver = uuid_ver
+        super().__init__(str, **kw)
+
+    def __set__(self, model, value):
+        """
+        Cast the value via individual Field rules and then store the value
+        in model instance.
+
+        This allows the same Field instance to "save" multiple values because
+        the actual value is in a different model instance.
+        """
+        assert False, "UUIDFields are not settable after creation"
+
+    @property
+    def default_value(self):
+        """
+        returns an instance of UUID, type based on uuid_ver function
+        """
+        return str(self.uuid_ver())
 
 
 class ForeignKey(Field):

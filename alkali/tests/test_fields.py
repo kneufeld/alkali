@@ -8,6 +8,7 @@ import datetime as dt
 from alkali.fields import Field
 from alkali.fields import IntField, StringField, BoolField
 from alkali.fields import DateTimeField, FloatField, SetField
+from alkali.fields import UUIDField
 from alkali.fields import ForeignKey, OneToOneField
 from alkali.model import Model
 
@@ -351,3 +352,28 @@ class TestField( unittest.TestCase ):
 
         del e
         self.assertEqual(0, AuxInfoSync.objects.count)
+
+    def test_uuid(self):
+        class AutoModel1(Model):
+            auto = IntField(primary_key=True, auto_increment=True)
+            uuid = UUIDField()
+
+        m = AutoModel1()
+        self.assertEqual(str, type(m.uuid))
+        self.assertEqual(32 + 4, len(m.uuid)) # hex plus dashes
+        self.assertNotEqual(m.uuid, AutoModel1().uuid) # hope this never fires...
+
+        with self.assertRaises(AssertionError):
+            m.uuid = "abc"
+
+    def test_uuid_creation_with_value(self):
+        class AutoModel1(Model):
+            auto = IntField(primary_key=True, auto_increment=True)
+            uuid = UUIDField()
+
+        uuid = '3533c123-3334-4a74-85f9-0f04ed034c53'
+        m = AutoModel1(uuid=uuid)
+        self.assertEqual(uuid, m.uuid)
+
+        with self.assertRaises(AssertionError):
+            m.uuid = "abc"
