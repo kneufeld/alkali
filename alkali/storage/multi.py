@@ -26,7 +26,11 @@ class MultiStorage(FileStorage):
         not the most effecient but by far the simplest
         """
         self._fhandle.seek(0)
-        data = json.load(self._fhandle)
+
+        if os.path.isfile(self.filename) and os.path.getsize(self.filename):
+            data = json.load(self._fhandle)
+        else:
+            data = {} # first time
 
         if not data:
             return None

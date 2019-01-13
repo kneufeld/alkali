@@ -5,10 +5,11 @@ import inspect
 
 from alkali.database import Database
 from alkali.model import Model
-from alkali.storage import JSONStorage, Storage
+from alkali.storage import JSONStorage, Storage, MultiStorage
 from alkali import fields
 from alkali import tznow
-from . import MyModel
+
+from . import MyModel, AutoModel1, AutoModel2
 
 curr_dir = os.path.dirname( os.path.abspath( __file__ ) )
 
@@ -22,11 +23,14 @@ class TestDatabase( unittest.TestCase ):
         from os import getcwd
         from os.path import join
 
-        for d in [getcwd(), join(getcwd(),'alkali','tests')]:
-            for f in ['MyModel.json','foo.bar']:
-                t = join(d,f)
+        for d in [getcwd(), join(getcwd(), 'alkali', 'tests')]:
+            for f in ['MyModel.json', 'foo.bar']:
+                t = join(d, f)
                 if os.path.isfile(t):
                     os.unlink(t)
+
+        AutoModel1.objects.clear()
+        AutoModel2.objects.clear()
 
     def test_1(self):
         "verify instantiation"
@@ -222,3 +226,30 @@ class TestDatabase( unittest.TestCase ):
     def test_bad_load(self):
         db = Database(models=[MyModel])
         self.assertIsNone( db.get_storage(self.__class__) )
+
+    def test_storage_instance(self):
+        tfile = tempfile.NamedTemporaryFile(mode="w")
+
+        db = Database(
+            models=[AutoModel1, AutoModel2],
+            storage=MultiStorage([AutoModel1, AutoModel2], tfile.name)
+        )
+        db.load()
+
+        AutoModel1(f1="some text 1").save()
+        AutoModel2(f1="some text 1").save()
+
+        db.store()
+        db = None
+
+        AutoModel1.objects.clear()
+        AutoModel2.objects.clear()
+
+        db = Database(
+            models=[AutoModel1, AutoModel2],
+            storage=MultiStorage([AutoModel1, AutoModel2], tfile.name)
+        )
+        db.load()
+
+        self.assertEqual("some text 1", AutoModel1.objects.get(f1="some text 1").f1)
+        self.assertEqual("some text 1", AutoModel2.objects.get(f1="some text 1").f1)

@@ -27,7 +27,7 @@ import types
 import inspect
 import os
 
-from .storage import JSONStorage
+from .storage import Storage, JSONStorage
 
 import logging
 logger = logging.getLogger(__name__)
@@ -118,15 +118,19 @@ class Database:
         if isinstance(model, str):
             model = self.get_model(model)
 
+        storage = storage or model.Meta.storage or self._storage_type
+
+        if isinstance(storage, Storage): # not a class
+            assert storage.filename, "storage instances must have filenames"
+            return storage.filename
+
         filename = model.Meta.filename
 
         if not filename:
-            storage = storage or model.Meta.storage or self._storage_type
             filename = "{}.{}".format(model.__name__, storage.extension)
 
         # if filename is absolute, then self._root_dir gets filtered out
         return os.path.join( self._root_dir, filename )
-
 
     def set_storage(self, model, storage=None):
         """
@@ -146,11 +150,15 @@ class Database:
             model = self.get_model(model)
 
         storage = storage or model.Meta.storage or self._storage_type
-        assert inspect.isclass(storage)
 
-        filename = self.get_filename(model, storage)
+        if isinstance(storage, Storage): # not a class
+            self.get_filename(model, storage) # for 100% coverage
+            self._storage[model] = storage
+        else:
+            assert inspect.isclass(storage)
+            filename = self.get_filename(model, storage)
+            self._storage[model] = storage(filename)
 
-        self._storage[model] = storage(filename)
         return self._storage[model]
 
     def get_storage(self, model):
@@ -166,6 +174,7 @@ class Database:
         try:
             return self._storage[model]
         except KeyError:
+            logger.error("no storage defined for model: %s", model.__name__)
             pass
 
         return None
@@ -177,9 +186,6 @@ class Database:
         :param bool force: force store even if :class:`alkali.manager.Manager`
             thinks data is clean
         """
-        # you can't save more than one model with a single storage
-        # instance because the file will get over written
-
         for model in self.models:
             logger.debug( "Database: storing model: %s", model.__name__ )
 

@@ -35,3 +35,18 @@ class AuxInfo(Model):
     entry     = fields.ForeignKey(Entry, primary_key=True)
     entry2    = fields.ForeignKey(Entry2)
     mime_type = fields.StringField()
+
+class AutoModel1(Model):
+    auto     = fields.IntField(primary_key=True, auto_increment=True)
+    creation = fields.DateTimeField(auto_now_add=True)
+    modified = fields.DateTimeField(auto_now=True)
+    f1       = fields.StringField()
+    f2       = fields.StringField()
+
+
+class AutoModel2(Model):
+    auto     = fields.IntField(primary_key=True, auto_increment=True)
+    creation = fields.DateTimeField(auto_now_add=True)
+    modified = fields.DateTimeField(auto_now=True)
+    f1       = fields.StringField()
+    f2       = fields.StringField()

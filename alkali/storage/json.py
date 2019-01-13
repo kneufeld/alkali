@@ -30,7 +30,7 @@ class JSONStorage(FileStorage):
 
         _peek = Peekorator(iter(iterator))
         for e in _peek:
-            data = json.dumps(e.dict)
+            data = json.dumps(e.dict, indent='  ')
             f.write(data)
 
             if not _peek.is_last():
