@@ -30,7 +30,7 @@ So knowing this, why would you use alkali?
 * You'd like a database but must control the on-disk format
 * If a *list* of *dict* is a main data structure in your program
 * You often search/filter your data
-* You like Django and/or SqlAlchemy but don't need anything that heavy
+* You like the Django ORM but aren't making a web app
 * 100% test coverage
 
 Plus alkali is really easy to use, if you've ever used the Django ORM or

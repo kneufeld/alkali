@@ -1,4 +1,3 @@
-
 # Alkali
 
 ![](https://readthedocs.org/projects/alkali/badge/?version=master)
@@ -20,22 +19,28 @@ https://alkali.readthedocs.io/en/master/quickstart.html
 Here's a teaser to whet your appetite.
 
 ```python
+import os
 from alkali import Database, Model, fields, tznow
 
 class Entry(Model):
 
-   date  = fields.DateTimeField(primary_key = True)
-   title = fields.StringField()
-   body  = fields.StringField()
+   date    = fields.DateTimeField(primary_key = True)
+   title   = fields.StringField()
+   body    = fields.StringField()
+   created = fields.DateTimeField(auto_now_add=True)
 
 db = Database(models=[Entry], save_on_exit=True)
 
 e = Entry(date=tznow(), title="my first entry", body="alkali is pretty good")
 e.save()    # adds model instance to Entry.objects
 
-title = Entry.objects.filter(date__le=tznow())[0].title
+title = Entry.objects.filter(date__le=tznow()).first().title
 assert title == "my first entry"
+
+db.store()
+assert os.path.getsize('Entry.json')
 ```
+
 
 ## Installation
 
