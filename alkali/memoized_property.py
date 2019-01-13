@@ -3,7 +3,7 @@
 
 import functools
 
-class memoized_property(object):
+class memoized_property:
 
     def __init__(self, fget=None, fset=None, fdel=None, doc=None):
 

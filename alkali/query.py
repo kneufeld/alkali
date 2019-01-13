@@ -33,7 +33,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Aggregate(object):
+class Aggregate:
     """
     A reducing function that returns a single value
     """
@@ -85,7 +85,7 @@ def as_list(func):
         return ret
     return wrapper
 
-class Query(object):
+class Query:
     """
     this class performs queries on manager instances
     returns lists of model instances

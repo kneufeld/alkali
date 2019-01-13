@@ -33,7 +33,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Database(object):
+class Database:
     """
     This is the parent object that owns and coordinates all the different
     classes and objects defined in this module.
@@ -78,11 +78,9 @@ class Database(object):
             self._models[model.__name__.lower()] = model
             self.set_storage(model)
 
-
     def __del__(self):
         if self._save_on_exit:
             self.store()
-
 
     @property
     def models(self):
@@ -90,7 +88,6 @@ class Database(object):
         **property**: return ``list`` of models in the database
         """
         return self._models.values()
-
 
     def get_model(self, model_name):
         """
@@ -104,7 +101,6 @@ class Database(object):
             pass
 
         return None
-
 
     def get_filename(self, model, storage=None):
         """
@@ -157,7 +153,6 @@ class Database(object):
         self._storage[model] = storage(filename)
         return self._storage[model]
 
-
     def get_storage(self, model):
         """
         get the storage instance for the specified model
@@ -174,7 +169,6 @@ class Database(object):
             pass
 
         return None
-
 
     def store(self, force=False):
         """
@@ -193,7 +187,6 @@ class Database(object):
             model.objects.store(storage, force=force)
 
         return True
-
 
     def load(self):
         """

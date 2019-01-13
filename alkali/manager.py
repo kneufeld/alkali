@@ -9,7 +9,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Manager(object):
+class Manager:
     """
     the ``Manager`` class is the parent/owner of all the
     :class:`alkali.model.Model` instances. Each ``Model`` has it's own

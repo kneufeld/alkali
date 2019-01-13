@@ -6,7 +6,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class RelManager(object):
+class RelManager:
     """
     This is an internal class that a user of alkali unlikely to use directly.
 

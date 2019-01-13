@@ -10,7 +10,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Field(object):
+class Field:
     """
     Base class for all field types. it tries to hold all the functionality
     so derived classes only need to override methods in special circumstances.
