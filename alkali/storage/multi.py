@@ -1,3 +1,4 @@
+import os
 import json
 
 from alkali.storage import FileStorage
@@ -35,25 +36,25 @@ class MultiStorage(FileStorage):
 
     def write(self, model_class, values):
         """
-        this saves all models (warning!) but only when called
-        with the "first_model" (warning!) as determined alphabetically
+        probably not the best way to do this but we load the file
+        and then write it back out with the one updated key/value pair
         """
-        first_model = sorted([self._model_name(model) for model in self.models])[0]
+        self._fhandle.seek(0)
 
-        if self._model_name(model_class) != first_model:
-            logger.debug("since we always save all models, only write once")
-            return
+        if os.path.isfile(self.filename) and os.path.getsize(self.filename):
+            data = json.load(self._fhandle)
+        else:
+            data = {} # first time
 
-        data = {
-            self._model_name(model):
-            [value.dict for value in model.objects._instances.values()]
-
-            for model in self.models
-        }
+        data[self._model_name(model_class)] = [
+            value.dict for value in model_class.objects._instances.values()
+        ]
 
         # import pprint
         # pprint.pprint(data)
 
+        # TODO needs to do this safetly, do we loose data on an encode error?
+        self._fhandle.seek(0)
         json.dump(data, self._fhandle, indent='  ')
         self._fhandle.truncate()
         self._fhandle.flush()

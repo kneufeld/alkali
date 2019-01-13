@@ -2,6 +2,7 @@ import os
 import unittest
 import tempfile
 import csv
+import json
 
 from alkali import Model, fields
 from alkali.storage import FileStorage, JSONStorage, CSVStorage, MultiStorage
@@ -31,6 +32,8 @@ class TestStorage( unittest.TestCase ):
     def tearDown(self):
         MyModel.objects.clear()
         MyDepModel.objects.clear()
+        AutoModel1.objects.clear()
+        AutoModel2.objects.clear()
 
     def test_1(self):
         "verify class/instance implementation"
@@ -45,7 +48,8 @@ class TestStorage( unittest.TestCase ):
         "write should handle empty dicts vs None"
         tfile = tempfile.NamedTemporaryFile()
 
-        for storage in [FileStorage, JSONStorage]:
+        # FIXME can't add MultiStorage to this list because it needs a filename
+        for storage in [FileStorage, JSONStorage, CSVStorage]:
             self.assertTrue( storage(tfile.name).write(MyModel, iter([])) )
             self.assertFalse( storage(tfile.name).write(MyModel, None) )
 
@@ -255,12 +259,10 @@ class TestStorage( unittest.TestCase ):
         AutoModel1(f1="some text 1").save()
         AutoModel1(f1="some text 2").save()
 
-        AutoModel2(f1="some other text 1").save()
-
         m1 = AutoModel1.objects.get(f1__contains='2')
 
         AutoModel1.objects.store(storage)
-        AutoModel2.objects.store(storage)
+        AutoModel2.objects.store(storage) # empty list
         assert os.path.getsize(tfile.name)
 
         AutoModel1.objects.load(storage)
@@ -269,3 +271,30 @@ class TestStorage( unittest.TestCase ):
         self.assertEqual(m1, m2)
 
         # db = Database(models=[AutoModel1, AutoModel2], storage=storage, save_on_exit=False)
+
+    def test_multi_2(self):
+        tfile = tempfile.NamedTemporaryFile(mode="w")
+
+        storage = MultiStorage([AutoModel1, AutoModel2], tfile.name)
+
+        AutoModel1(f1="some text 1").save()
+        AutoModel1(f1="some text 2").save()
+
+        AutoModel2(f1="some text 1").save()
+        AutoModel2(f1="some text 2").save()
+        AutoModel2(f1="some text 3").save()
+
+        AutoModel1.objects.store(storage)
+        AutoModel2.objects.store(storage)
+
+        # with open(tfile.name, 'r') as f:
+        #     print("\nSTART\n")
+        #     print(f.read())
+        #     print("\nEND\n")
+
+        with open(tfile.name, 'r') as f:
+            data = json.load(f)
+
+        self.assertEqual(2, len(data.keys()))
+        self.assertEqual(2, len(data['automodel1']))
+        self.assertEqual(3, len(data['automodel2']))
