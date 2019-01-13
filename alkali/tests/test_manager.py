@@ -265,3 +265,14 @@ class TestManager( unittest.TestCase ):
         # don't pass in 'pk' and actual pk field name
         with self.assertRaises(AssertionError):
             Entry(pk=now, date=now)
+
+    def test_get_or_create(self):
+        m1 = MyModel.objects.get_or_create(int_type=1)
+        self.assertEqual(1, m1.int_type)
+        self.assertEqual(1, MyModel.objects.get(int_type=1).int_type)
+
+        m2 = MyModel.objects.get_or_create(int_type=1)
+        self.assertEqual(1, m2.int_type)
+        self.assertEqual(1, MyModel.objects.get(int_type=1).int_type)
+
+        self.assertEqual(1, MyModel.objects.count)

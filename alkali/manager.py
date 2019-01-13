@@ -311,3 +311,11 @@ class Manager:
                 self.model_class.__name__, len(results), str(kw)) )
 
         return results[0]
+
+    def get_or_create(self, **kw):
+        try:
+            return self.get(**kw)
+        except self.model_class.DoesNotExist:
+            pass
+
+        return self.model_class(**kw).save()
