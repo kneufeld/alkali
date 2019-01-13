@@ -267,7 +267,7 @@ class UUIDField(Field):
         This allows the same Field instance to "save" multiple values because
         the actual value is in a different model instance.
         """
-        assert False, "UUIDFields are not settable after creation"
+        raise RuntimeError("UUIDFields are not settable after creation")
 
     @property
     def default_value(self):

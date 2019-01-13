@@ -363,9 +363,6 @@ class TestField( unittest.TestCase ):
         self.assertEqual(32 + 4, len(m.uuid)) # hex plus dashes
         self.assertNotEqual(m.uuid, AutoModel1().uuid) # hope this never fires...
 
-        with self.assertRaises(AssertionError):
-            m.uuid = "abc"
-
     def test_uuid_creation_with_value(self):
         class AutoModel1(Model):
             auto = IntField(primary_key=True, auto_increment=True)
@@ -375,5 +372,13 @@ class TestField( unittest.TestCase ):
         m = AutoModel1(uuid=uuid)
         self.assertEqual(uuid, m.uuid)
 
-        with self.assertRaises(AssertionError):
+    def test_uuid_read_only(self):
+        class AutoModel1(Model):
+            auto = IntField(primary_key=True, auto_increment=True)
+            uuid = UUIDField()
+
+        m = AutoModel1()
+        self.assertTrue(m.uuid)
+
+        with self.assertRaises(RuntimeError):
             m.uuid = "abc"
