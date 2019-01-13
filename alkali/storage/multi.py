@@ -26,16 +26,25 @@ class MultiStorage(FileStorage):
         """
         self._fhandle.seek(0)
 
-        if os.path.isfile(self.filename) and os.path.getsize(self.filename):
+        try:
             data = json.load(self._fhandle)
-        else:
+        except json.decoder.JSONDecodeError:
             data = {} # first time
+        except Exception as e: # pragma: nocover
+            logger.exception(e)
+            data = {}
 
         if not data:
             return None
 
-        for value in data[self._model_name(model_class)]:
-            yield value
+        try:
+            for value in data[self._model_name(model_class)]:
+                yield value
+        except KeyError: # pragma: nocover
+            logger.warning("model '%s' not in datafile: %s",
+                           self._model_name(model_class),
+                           self.filename
+                           )
 
     def write(self, model_class, values):
         """
@@ -44,10 +53,13 @@ class MultiStorage(FileStorage):
         """
         self._fhandle.seek(0)
 
-        if os.path.isfile(self.filename) and os.path.getsize(self.filename):
+        try:
             data = json.load(self._fhandle)
-        else:
+        except json.decoder.JSONDecodeError:
             data = {} # first time
+        except Exception as e: # pragma: nocover
+            logger.exception(e)
+            data = {}
 
         data[self._model_name(model_class)] = [
             value.dict for value in model_class.objects._instances.values()
