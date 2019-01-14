@@ -4,6 +4,8 @@
 import unittest
 import mock
 import datetime as dt
+import json
+import tempfile
 
 from alkali.fields import Field
 from alkali.fields import IntField, StringField, BoolField
@@ -12,7 +14,7 @@ from alkali.fields import UUIDField
 from alkali.fields import ForeignKey, OneToOneField
 from alkali.model import Model
 
-from . import MyModel, MyMulti, MyDepModel
+from . import MyModel, MyMulti, MyDepModel, AutoModel1
 
 class TestField( unittest.TestCase ):
 
@@ -382,3 +384,32 @@ class TestField( unittest.TestCase ):
 
         with self.assertRaises(RuntimeError):
             m.uuid = "abc"
+
+    def test_date_load_with_autotime(self):
+        """
+        make sure when we load a record that has auto_now or auto_now_add
+        that the value in the file is used
+        """
+        tfile = tempfile.NamedTemporaryFile()
+
+        data = b"""[{
+            "auto": 5,
+            "creation": "2010-01-13T17:52:09.131085-07:00",
+            "modified": "2010-01-13T17:52:09.131178-07:00",
+            "f1": "a value",
+            "f2": null
+            }]"""
+
+        tfile.write(data)
+        tfile.flush()
+
+        creation = dt.datetime.fromisoformat("2010-01-13T17:52:09.131085-07:00")
+        modified = dt.datetime.fromisoformat("2010-01-13T17:52:09.131178-07:00")
+
+        from alkali.storage import JSONStorage
+        storage = JSONStorage(tfile.name)
+        AutoModel1.objects.load(storage)
+        m = AutoModel1.objects.instances[0]
+
+        self.assertEqual(creation, m.creation)
+        self.assertEqual(modified, m.modified)

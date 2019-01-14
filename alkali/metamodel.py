@@ -239,18 +239,18 @@ class MetaModel(type):
 
         # put field values (int,str,etc) into model instance
         for name, field in cls.Meta.fields.items():
-            # THINK: this somewhat duplicates Field.__set__ code
-            value = kw.pop(name, field.default_value)
+            if getattr(field, 'auto_now', False):
+                value = kw.pop(name, tznow().isoformat())
+            elif getattr(field, 'auto_now_add', False):
+                value = kw.pop(name, tznow().isoformat())
+            else:
+                # THINK: this somewhat duplicates Field.__set__ code
+                value = kw.pop(name, field.default_value)
+
             value = field.cast(value)
 
             # store the actual value in the model's __dict__, used by Field.__get__
             obj.__dict__[name] = value
-
-            if getattr(field, 'auto_now_add', False):
-                obj.__dict__[name] = tznow()
-
-            if getattr(field, 'auto_now', False):
-                obj.__dict__[name] = tznow()
 
         obj._dirty = False
         obj.__init__(*args, **kw)
