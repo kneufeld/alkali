@@ -28,6 +28,13 @@ class TestStorage( unittest.TestCase ):
         #     self.assertTrue( verifyClass(IStorage, storage) )
         #     self.assertTrue( verifyObject(IStorage, storage(None) ) )
 
+    def test_notimplemented(self):
+        with self.assertRaises(NotImplementedError):
+            Storage().read(None)
+
+        with self.assertRaises(NotImplementedError):
+            Storage().write(None, None)
+
     def test_2(self):
         "write should handle empty dicts vs None"
         tfile = tempfile.NamedTemporaryFile()
