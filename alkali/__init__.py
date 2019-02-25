@@ -11,4 +11,6 @@ from .manager import Manager
 from .model import Model
 from .query import Query
 from .utils import tznow, tzadd, fromts
-from . import fields, storage
+from . import fields
+from .storage import Storage, JSONStorage, FileStorage, CSVStorage, \
+    MultiStorage, FileAlreadyLocked
