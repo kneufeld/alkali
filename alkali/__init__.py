@@ -12,5 +12,5 @@ from .model import Model
 from .query import Query
 from .utils import tznow, tzadd, fromts
 from . import fields
-from .storage import Storage, JSONStorage, FileStorage, CSVStorage, \
-    MultiStorage, FileAlreadyLocked
+# FIXME don't break the following line, it breaks setup.py
+from .storage import Storage, JSONStorage, FileStorage, CSVStorage, MultiStorage, FileAlreadyLocked
