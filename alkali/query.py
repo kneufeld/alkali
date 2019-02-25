@@ -210,14 +210,14 @@ class Query:
 
         def in_(coll, val):
             if not isinstance(coll, str) \
-            and isinstance(coll, collections.Iterable):
+            and isinstance(coll, collections.abc.Iterable):
                 return bool( set(coll) & set(val) ) # intersection
             else:
                 return coll in val
 
         def rin_(coll, val):
             if not isinstance(val, str) \
-            and isinstance(val, collections.Iterable):
+            and isinstance(val, collections.abc.Iterable):
                 return bool( set(coll) & set(val) ) # intersection
             else:
                 return val in coll
@@ -229,10 +229,10 @@ class Query:
             return re.search(val, coll, re.UNICODE | re.IGNORECASE)
 
         if oper == 'in':
-            assert isinstance(value, collections.Iterable)
+            assert isinstance(value, collections.abc.Iterable)
             oper = in_
         elif oper == 'rin':
-            assert isinstance(field, collections.Iterable)
+            assert isinstance(field, collections.abc.Iterable)
             oper = rin_
         elif oper == 're':
             oper = regex
