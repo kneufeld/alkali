@@ -46,11 +46,14 @@ class MultiStorage(FileStorage):
                            self.filename
                            )
 
-    def write(self, model_class, values):
+    def write(self, model_class, iterator):
         """
         probably not the best way to do this but we load the file
         and then write it back out with the one updated key/value pair
         """
+        if iterator is None:
+            return False
+
         self._fhandle.seek(0)
 
         try:
@@ -62,14 +65,16 @@ class MultiStorage(FileStorage):
             data = {}
 
         data[self._model_name(model_class)] = [
-            value.dict for value in model_class.objects._instances.values()
+            value.dict for value in iterator
         ]
 
         # import pprint
         # pprint.pprint(data)
 
-        # TODO needs to do this safetly, do we loose data on an encode error?
+        # TODO needs to do this safely, do we loose data on an encode error?
         self._fhandle.seek(0)
         json.dump(data, self._fhandle, indent='  ')
         self._fhandle.truncate()
         self._fhandle.flush()
+
+        return True

@@ -6,7 +6,7 @@ import json
 
 from alkali import Model, fields
 from alkali.storage import FileStorage, JSONStorage, CSVStorage, MultiStorage
-from alkali.storage import FileAlreadyLocked
+from alkali.storage import FileAlreadyLocked, Storage
 from alkali import tznow
 from . import MyModel, MyDepModel, AutoModel1, AutoModel2
 
@@ -32,10 +32,13 @@ class TestStorage( unittest.TestCase ):
         "write should handle empty dicts vs None"
         tfile = tempfile.NamedTemporaryFile()
 
-        # FIXME can't add MultiStorage to this list because it needs a filename
         for storage in [FileStorage, JSONStorage, CSVStorage]:
             self.assertTrue( storage(tfile.name).write(MyModel, iter([])) )
             self.assertFalse( storage(tfile.name).write(MyModel, None) )
+
+        for storage in [MultiStorage]:
+            self.assertTrue( storage([MyModel], tfile.name).write(MyModel, iter([])) )
+            self.assertFalse( storage([MyModel], tfile.name).write(MyModel, None) )
 
     def test_3(self):
         "test simple reading and writing"
