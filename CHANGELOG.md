@@ -3,6 +3,26 @@
 Here's what we all hope is an accurate list of things that have changed
 between versions.
 
+## v0.7.2
+
+* updated docs, lots more work to do here
+* pseudo_import in setup.py is more robust
+* add an rss example
+* fix warnings, some types are in collections.abc
+* test Storage.NotImplemented
+* more tests for MultiStorage
+* import Storage objects into alkali for nicer importing
+* fixed timezone bug during serializing of DateTimeField
+* database can now handle using a storage instance...
+* removed more python 2 remnants (object from class definition)
+* using python3 version of super()
+* better implementation of MultiStorage...
+* Storage.write() now takes model_class param
+* adding new UUIDField
+* moved Storage classes into submodule, added new MultiStorage type
+* added auto_now, auto_now_add to DateTimeField
+* some minor refactorings
+
 ## v0.7.1
 
 * updated requirements.txt
