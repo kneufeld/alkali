@@ -198,6 +198,8 @@ class TestStorage( unittest.TestCase ):
         self.assertEqual(now, m.dt_type)
 
     def test_locking(self):
+        if os.name == 'nt':
+            return # windows doesn't have fcntl
 
         tfile = tempfile.NamedTemporaryFile()
         stor1 = FileStorage( tfile.name )
@@ -237,6 +239,9 @@ class TestStorage( unittest.TestCase ):
         FileStorage( None ).lock()
 
     def test_multi_flock(self):
+        if os.name == 'nt':
+            return # windows doesn't have fcntl
+
         tfile = tempfile.NamedTemporaryFile(mode="w")
 
         with self.assertRaises(FileAlreadyLocked):

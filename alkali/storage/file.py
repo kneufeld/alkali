@@ -1,6 +1,5 @@
 import os
 import types
-import fcntl
 from contextlib import contextmanager
 #from zope.interface import Interface, Attribute, implements
 import json
@@ -11,6 +10,19 @@ from . import Storage
 
 import logging
 logger = logging.getLogger(__name__)
+
+try:
+    import fcntl
+except ImportError:
+    # HACK windows doesn't have fcntl module so fake it out
+    class fcntl:
+        LOCK_EX = 0
+        LOCK_NB = 0
+        LOCK_UN = 0
+
+        @staticmethod
+        def flock(*args, **kw):
+            return True
 
 
 class FileAlreadyLocked(Exception):
