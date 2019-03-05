@@ -23,8 +23,7 @@ def pseudo_import( pkg_name ):
 
     # remove imports and 'from foo import'
     lines = open(init, 'r').readlines()
-    lines = filter( lambda l: not l.startswith('from'), lines)
-    lines = filter( lambda l: not l.startswith('import'), lines)
+    lines = filter( lambda l: l.startswith('__'), lines)
 
     code = '\n'.join(lines)
 
