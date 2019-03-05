@@ -6,3 +6,5 @@ alkali.egg-info/
 /prof
 /stats
 /perf.log
+*.json
+.pytest_cache
