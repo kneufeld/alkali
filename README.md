@@ -5,6 +5,9 @@
 ![](https://codecov.io/gh/kneufeld/alkali/branch/master/graph/badge.svg)
 ![](https://coveralls.io/repos/github/kneufeld/alkali/badge.svg?branch=master)
 
+Alkali was featured on [PythonBytes](https://pythonbytes.fm/) episode
+[#119](https://pythonbytes.fm/episodes/show/119/assorted-files-as-django-orm-backends-with-alkali)!
+
 Alkali is a database engine, written in Python 3. It's raison d'être is
 to provide a Django-like ORM while controlling the on disk format. If
 you already have your data in a real database like Postgres then you'll
@@ -40,7 +43,6 @@ assert title == "my first entry"
 db.store()
 assert os.path.getsize('Entry.json')
 ```
-
 
 ## Installation
 

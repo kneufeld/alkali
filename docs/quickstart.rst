@@ -5,21 +5,18 @@ Quickstart
 
 If you've read our :ref:`history` then you know about *jrnl*.
 
-Let's use jrnl to show how to use alkali.
+Let's use `jrnl` to show how to use alkali.
 
 Entry
 ------
 
 ::
 
-    from __future__ import unicode_literals, absolute_import
-    from alkali import Model, fields, tznow
-
-    from .storage import JournalStorage
+    from alkali import Model, fields, tznow, JSONStorage
 
     class Entry(Model):
         class Meta:
-            storage = JournalStorage
+            storage = JSONStorage
 
         date  = fields.DateTimeField(primary_key = True)
         title = fields.StringField()
@@ -44,11 +41,11 @@ Meta
 ::
 
     class Meta:
-        storage = JournalStorage
+        storage = JSONStorage
 
 A ``Meta`` class is optional but it is handy to specify behaviour of the
-given model. In this case we're using ``JournalStorage`` to save this
-model.
+given model. In this case we're using ``JSONStorage`` to save this
+model. `Note: my version of jrnl uses JournalStorage`
 
 Known ``Meta`` properties are:
 
@@ -97,17 +94,17 @@ the ``Database`` in something, in jrnls case that would be the
 
 ::
 
-    from alkali import Database
+  from alkali import Database
 
-    class Journal(object):
-        def __init__(self, filename=None, save_on_exit=True ):
+  class Journal:
+      def __init__(self, filename=None, save_on_exit=True):
 
-            # set the filename in Meta so future Storage calls have a
-            # file to work with
-            Entry.Meta.filename = filename
+          # set the filename in Meta so future Storage calls have a
+          # file to work with
+          Entry.Meta.filename = filename
 
-            self._db = Database( models=[Entry], save_on_exit=save_on_exit )
-            self._db.load()
+          self._db = Database( models=[Entry], save_on_exit=save_on_exit )
+          self._db.load()
 
 Lets break this down a bit.
 
@@ -116,7 +113,7 @@ Database
 
 ::
 
-    self._db = Database( models=[Entry], save_on_exit=save_on_exit )
+    self._db = Database(models=[Entry], save_on_exit=save_on_exit)
     self._db.load()
 
 Create a ``Database`` object. The only required parameter is ``models``,
