@@ -1,5 +1,4 @@
 pytz>=2016.6.1
-python-dateutil==2.5.3
-six==1.10.0
-zope.interface==4.2.0
-blinker==1.4
+python-dateutil>=2.8.0
+zope.interface
+blinker
