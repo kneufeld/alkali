@@ -3,6 +3,11 @@
 Here's what we all hope is an accurate list of things that have changed
 between versions.
 
+## v0.7.1
+
+* updated requirements.txt
+* made fake `fcntl` for windows users
+
 ## v0.7.0
 
 * **Python 3 only**, this is a big breaking change
