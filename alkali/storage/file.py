@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 try:
     import fcntl
-except ImportError:
+except ImportError: # pragma: nocover
     # HACK windows doesn't have fcntl module so fake it out
     class fcntl:
         LOCK_EX = 0
