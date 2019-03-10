@@ -6,5 +6,7 @@ My Thanks.
 
 * Kurt Neufeld
 * Christopher Fietz
+* centralniak
+* hpca01
 
 _no contribution is too small, please append your name_
