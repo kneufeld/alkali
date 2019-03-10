@@ -3,23 +3,28 @@
 Here's what we all hope is an accurate list of things that have changed
 between versions.
 
+## v0.7.3
+
+* renamed AUTHORS.md to CONTRIBUTORS.md
+* added missing folk to CONTRIBUTORS.md
+* including `alkali.storage` submodule when building sdist
+
 ## v0.7.2
 
 * updated docs, lots more work to do here
 * pseudo_import in setup.py is more robust
 * add an rss example
-* fix warnings, some types are in collections.abc
-* test Storage.NotImplemented
-* more tests for MultiStorage
-* import Storage objects into alkali for nicer importing
+* fixed warnings, some types are in collections.abc
 * fixed timezone bug during serializing of DateTimeField
+* test Storage.NotImplemented
+* import Storage objects into alkali for nicer importing
 * database can now handle using a storage instance...
 * removed more python 2 remnants (object from class definition)
 * using python3 version of super()
-* better implementation of MultiStorage...
 * Storage.write() now takes model_class param
 * adding new UUIDField
-* moved Storage classes into submodule, added new MultiStorage type
+* moved Storage classes into submodule
+* added new MultiStorage type, save mutliple models in one file
 * added auto_now, auto_now_add to DateTimeField
 * some minor refactorings
 

@@ -1,5 +1,5 @@
 __title__        = 'alkali'
-__version__      = '0.7.2'
+__version__      = '0.7.3'
 __author__       = 'Kurt Neufeld'
 __author_email__ = 'kneufeld@burgundywall.com'
 __license__      = 'MIT License'
