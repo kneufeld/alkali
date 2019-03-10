@@ -1,4 +1,4 @@
-# Authors
+# Contributors
 
 List of anyone who has written some code or submitted a bug.
 
