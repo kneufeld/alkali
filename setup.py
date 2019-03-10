@@ -9,7 +9,7 @@ the developer to easily control the on disk format.
 
 import os
 import sys
-from setuptools import setup
+from setuptools import setup, find_packages
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
 pkg_name = 'alkali'
@@ -40,7 +40,7 @@ conditional_dependencies = {}
 
 setup(
     name = pkg_name,
-    packages = [pkg_name],
+    packages = find_packages(exclude=['*.tests']),
 
     install_requires = open('requirements.txt').readlines(),
 
